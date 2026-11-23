@@ -7,6 +7,8 @@ public enum StreamState: Equatable, Sendable {
 
     public enum Footer: Equatable, Sendable {
         case idle
+        case loading
+        case failed(LoadError)
         case end
     }
 }

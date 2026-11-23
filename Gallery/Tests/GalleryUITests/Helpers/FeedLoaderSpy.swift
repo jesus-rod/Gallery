@@ -1,4 +1,5 @@
 import GalleryCore
+import Testing
 
 @MainActor
 final class FeedLoaderSpy {
@@ -27,12 +28,20 @@ final class FeedLoaderSpy {
 
     func loadFeed() async throws -> Paginated<Photo> {
         loadFeedCallCount += 1
-        return try await resolve(feedStubs.removeFirst())
+        return try await resolve(next(from: &feedStubs, named: "loadFeed"))
     }
 
     private func loadMore() async throws -> Paginated<Photo> {
         loadMoreCallCount += 1
-        return try await resolve(loadMoreStubs.removeFirst())
+        return try await resolve(next(from: &loadMoreStubs, named: "loadMore"))
+    }
+
+    private func next(from stubs: inout [Stub], named name: String) -> Stub {
+        guard !stubs.isEmpty else {
+            Issue.record("Unexpected \(name) call with no stubbed result.")
+            return Stub(result: .failure(AnyError()), gate: nil)
+        }
+        return stubs.removeFirst()
     }
 
     private func resolve(_ stub: Stub) async throws -> Paginated<Photo> {

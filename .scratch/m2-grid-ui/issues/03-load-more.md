@@ -1,6 +1,6 @@
 # 03 — Load more
 
-Status: ready-for-agent
+Status: done
 Blocked by: 02
 
 `photoAppeared(_:)` triggers `loadMore` when the Photo is within the last 6 items.
