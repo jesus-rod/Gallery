@@ -172,7 +172,7 @@ Instruments, on device after scrolling about 500 images (to fill in):
 
 ## Testing
 
-- **267 unit tests** in Swift Testing, in three targets: Core 69, ImageLoading 50, UI 148, including 14 snapshot tests of the cell and the empty and error states in light and dark. Every class under test goes through `makeSUT` with leak tracking. Logic was built test first, one test at a time.
+- **272 unit tests** in Swift Testing, in three targets: Core 73, ImageLoading 50, UI 149, including 14 snapshot tests of the cell and the empty and error states in light and dark. Every class under test goes through `makeSUT` with leak tracking. Logic was built test first, one test at a time.
 - **4 XCUITests**, one per user journey: browse and page the feed, search and clear back to the feed, open a photo full screen and close it, launch offline with a saved feed. They run on bundled fixtures (`-useStubs`), with no network and no key.
 - **CI** runs `swift test`, then the UI tests on a simulator.
 
