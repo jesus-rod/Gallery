@@ -1,6 +1,6 @@
 # 04 — File image data store
 
-Status: ready-for-agent
+Status: done
 
 `FileImageDataStore(directory:)` storing raw bytes in a directory (Caches in the app), file name derived from the URL (SHA-256 via CryptoKit, or a stable hash).
 
@@ -10,3 +10,7 @@ Status: ready-for-agent
 - Retrieve marks the entry as recently used (modification date touched).
 - `evict(toFit: bytes)` removes least-recently-used files until the total is at or under the budget; no-op under budget.
 - Operations off the main actor; separate instances on separate directories do not interfere.
+
+## Comments
+
+- An actor; file names are SHA-256 of the URL (CryptoKit, a system framework with no UI, consistent with ADR 0002). Last use is the file modification date, set from an injected `currentDate` so LRU tests are deterministic.
