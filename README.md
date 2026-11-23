@@ -55,9 +55,15 @@ classDiagram
     +fullScreenImage()
     +prefetch()
   }
-  <<protocol>> ImageLoader
-  <<protocol>> ImageDataLoader
-  <<protocol>> ImageDataStore
+  class ImageLoader {
+    <<protocol>>
+  }
+  class ImageDataLoader {
+    <<protocol>>
+  }
+  class ImageDataStore {
+    <<protocol>>
+  }
   ImagePipeline ..> PhotoImages : builds closures
   ImagePipeline --> MemoryCachingImageLoader
   ImagePipeline --> ImagePrefetcher
@@ -86,8 +92,12 @@ classDiagram
     +loadOfflineFeed()
     +search(query)
   }
-  <<protocol>> FeedStore
-  <<protocol>> HTTPClient
+  class FeedStore {
+    <<protocol>>
+  }
+  class HTTPClient {
+    <<protocol>>
+  }
   GalleryViewModel --> StreamPager
   CompositionRoot ..> GalleryViewModel : injects closures
   CompositionRoot ..> OfflineFeed : saving(loadFeed, store)
