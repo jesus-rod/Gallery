@@ -39,9 +39,10 @@ enum CompositionRoot {
             let (data, response) = try await client.send(request)
             return try EditorialPhotosMapper.map(data, from: response)
         }
+        let store = CodableFeedStore(fileURL: makeFeedStoreURL())
         return GalleryViewModel(
-            loadFeed: { try await feedStream.firstPage() },
-            loadOfflineFeed: { [] },
+            loadFeed: OfflineFeed.saving({ try await feedStream.firstPage() }, to: store),
+            loadOfflineFeed: { (try? await store.retrieve()) ?? [] },
             search: { query in
                 let searchStream = PhotoStream { page in
                     let request = UnsplashEndpoint.search(query: query, page: page).request(baseURL: baseURL)
@@ -62,10 +63,23 @@ enum CompositionRoot {
         )
     }
 
+    private static func makeFeedStoreURL() -> URL {
+        #if DEBUG
+            if isUsingStubs {
+                let directory = URL.temporaryDirectory.appending(path: "OfflineFeed-stubs", directoryHint: .isDirectory)
+                if ProcessInfo.processInfo.arguments.contains("-resetOfflineFeed") {
+                    try? FileManager.default.removeItem(at: directory)
+                }
+                return directory.appending(path: "feed.json")
+            }
+        #endif
+        return URL.applicationSupportDirectory.appending(path: "OfflineFeed/feed.json")
+    }
+
     private static func makeAPIClient() -> HTTPClient {
         #if DEBUG
             if isUsingStubs {
-                return StubHTTPClient()
+                return StubHTTPClient(isOffline: ProcessInfo.processInfo.arguments.contains("-stubOffline"))
             }
         #endif
         let accessKey = Bundle.main.object(forInfoDictionaryKey: "UnsplashAccessKey") as? String ?? ""

@@ -1,6 +1,6 @@
 # 05 — Composition root and stub flags
 
-Status: ready-for-agent
+Status: done
 Blocked by: 02, 03
 
 ## Files
