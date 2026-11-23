@@ -1,6 +1,6 @@
 # M6 — Offline feed
 
-Status: in progress (an agent implements the tickets; the user reviews the seams table)
+Status: done
 
 ## Goal
 
@@ -89,3 +89,13 @@ Saving Search results, offline full-screen Renditions, an expiry policy, reachab
 - Decisions go into `docs/decision-log.md` under `## M6 — Offline feed` (created in ticket 01), in the same commit as the code.
 - One commit per ticket, conventional subject from the ticket, 2–4 line body, the ticket's `Status: done` in the same commit. Plain `git commit` (authored by the user's git config); never a `Co-Authored-By` or Claude attribution line.
 - Do not edit `.scratch/roadmap.md`; the main session updates it after merging.
+
+## Review notes
+
+Quick essential-feed review of the M6 commits.
+
+- Storage models are separate from the domain: `LocalPhoto`, `LocalRenditions` and `LocalPhotographer` are private to `CodableFeedStore.swift`; `Photo` is still not `Codable`; Core imports no UI framework.
+- The fallback rule lives in one place, `StreamPager.showOfflineFeedOrFail`, used by first load, retry and refresh. Search pagers get no offline closure.
+- Every class or actor SUT (`CodableFeedStore`, `GalleryViewModel`) goes through a `makeSUT` helper with `trackForMemoryLeaks`; Core tests gained the `LeakTracking.swift` helper copied from the UI tests. `OfflineFeed.saving` is a pure function, tested through a leak-tracked spy store.
+- No code comments in the new Swift files.
+- Open for M7/M8: the refresh error banner is an overlay at the top of the grid, behind the large navigation title and search field, so it may be hard to see; XCUITest can't observe it (see ticket 06). The Offline banner never hides when the network returns (reachability is out of scope); it hides on the next successful first Page. `OfflineFeed.saving` re-saves up to 300 Photos on every load more until full; check the write cost in M8's Instruments run.
