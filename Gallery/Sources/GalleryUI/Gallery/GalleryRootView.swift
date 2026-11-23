@@ -6,6 +6,7 @@ public struct GalleryRootView: View {
     private let referralAppName: String
 
     @State private var searchText = ""
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var path: [FullScreenRoute] = []
     @Namespace private var zoomNamespace
 
@@ -25,8 +26,10 @@ public struct GalleryRootView: View {
                 if let results = viewModel.searchResults {
                     searchContent(results)
                         .id(results.query)
+                        .transition(.opacity)
                 }
             }
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isShowingSearch)
             .safeAreaInset(edge: .top, spacing: 0) {
                 if let error = viewModel.refreshError {
                     RefreshErrorBanner(error: error, onDismiss: viewModel.dismissRefreshError)
