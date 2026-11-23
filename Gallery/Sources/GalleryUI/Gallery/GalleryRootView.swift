@@ -2,9 +2,11 @@ import SwiftUI
 
 public struct GalleryRootView: View {
     private let viewModel: GalleryViewModel
+    private let images: PhotoImages
 
-    public init(viewModel: GalleryViewModel) {
+    public init(viewModel: GalleryViewModel, images: PhotoImages) {
         self.viewModel = viewModel
+        self.images = images
     }
 
     public var body: some View {
@@ -28,6 +30,7 @@ public struct GalleryRootView: View {
             PhotoGrid(
                 photos: photos,
                 footer: footer,
+                images: images,
                 onPhotoAppear: { photo in Task { await viewModel.photoAppeared(photo) } },
                 onRetry: { Task { await viewModel.retry() } }
             )

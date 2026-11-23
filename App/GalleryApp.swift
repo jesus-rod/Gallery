@@ -1,16 +1,25 @@
 import Foundation
 import GalleryCore
+import GalleryImageLoading
 import GalleryUI
 import SwiftUI
+import UIKit
 
 @main
 struct GalleryApp: App {
     @State private var viewModel = CompositionRoot.makeGalleryViewModel()
+    private let imagePipeline = CompositionRoot.makeImagePipeline()
 
     var body: some Scene {
         WindowGroup {
-            GalleryRootView(viewModel: viewModel)
+            GalleryRootView(viewModel: viewModel, images: imagePipeline.photoImages)
+                .task { imagePipeline.evictDiskCache() }
+                .onReceive(memoryWarnings) { _ in imagePipeline.clearMemoryCache() }
         }
+    }
+
+    private var memoryWarnings: NotificationCenter.Publisher {
+        NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)
     }
 }
 
@@ -29,9 +38,18 @@ enum CompositionRoot {
         return GalleryViewModel(loadFeed: { try await stream.firstPage() })
     }
 
+    static func makeImagePipeline() -> ImagePipeline {
+        let client = makeImageClient()
+        return ImagePipeline(
+            fetch: { url in try await client.send(URLRequest(url: url)) },
+            directory: URL.cachesDirectory.appending(path: "Renditions", directoryHint: .isDirectory),
+            configuration: .default
+        )
+    }
+
     private static func makeAPIClient() -> HTTPClient {
         #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("-useStubs") {
+            if isUsingStubs {
                 return StubHTTPClient()
             }
         #endif
@@ -40,5 +58,20 @@ enum CompositionRoot {
             decoratee: URLSessionHTTPClient(session: URLSession(configuration: .default)),
             accessKey: accessKey
         )
+    }
+
+    private static func makeImageClient() -> HTTPClient {
+        #if DEBUG
+            if isUsingStubs {
+                return StubImageHTTPClient()
+            }
+        #endif
+        let configuration = URLSessionConfiguration.default
+        configuration.urlCache = nil
+        return URLSessionHTTPClient(session: URLSession(configuration: configuration))
+    }
+
+    private static var isUsingStubs: Bool {
+        ProcessInfo.processInfo.arguments.contains("-useStubs")
     }
 }

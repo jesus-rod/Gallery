@@ -23,6 +23,17 @@
         }
       }
     },
+    "Loading" : {
+      "comment" : "VoiceOver value of a photo cell while its image is still loading.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        }
+      }
+    },
     "Loading photos" : {
       "comment" : "VoiceOver label for the grid while the first page loads.",
       "localizations" : {
