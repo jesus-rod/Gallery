@@ -24,11 +24,12 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M6 | Offline feed (`.scratch/m6-offline-feed/`) | done, merged |
 | M7 | Polish: UX states, accessibility (`.scratch/m7-polish/`) | done, merged (VoiceOver and Accessibility Inspector check left for M8) |
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 done; **next: ticket 08** (snapshot matrix on the iOS simulator, ready-for-agent, not started); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
-| M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | spec and tickets 01–08 written, seams approved; **next: ticket 01** (`pageURL`) |
+| M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | ticket 01 done; **next: ticket 02** (glass chrome); XCUITests paused until the end of M9 |
 
 ## Resume here (2026-11-23, later)
 
-- **Next: M9 ticket 01** (`.scratch/m9-photos-polish/issues/01-photo-page-url.md`), then 02–07 in order via `/tdd`; 08 is the user's Instruments recording plus the write-up. Read `.scratch/m9-photos-polish/spec.md` first.
+- **Next: M9 ticket 02** (`.scratch/m9-photos-polish/issues/02-glass-chrome.md`), then 03–07 in order via `/tdd`; 08 is the user's Instruments recording plus the write-up. Read `.scratch/m9-photos-polish/spec.md` first. Ticket 01 is done (`3f3901b`, all 4 XCUITests passed on it).
+- **XCUITests are paused** while the look and feel changes (user's call, 2026-11-23): CI skips the step (`if: ${{ false }}` in `.github/workflows/ci.yml`) and agents don't run them locally. Tickets' XCUITest updates wait too; re-enable and update the journeys together at the end of M9, before M8 ticket 08.
 - Direction (user's choice): Apple Photos (iOS 26) structure plus three wow pieces: ambient glow from the BlurHash Preview, swiping between photos with parallax (ADR 0007, ticket 05), stretchy hero on the feed. The user is open to bolder design; keep the brief's grid with captions.
 - M8 ticket 08 (snapshot matrix) waits until M9 is done so it records the final look. When it runs: devices iPhone SE, iPhone 17, iPad; ask the user for the "iPhone Duo" point size and safe areas; one Sonnet agent, check every image before merging.
 - Repo is public at `github.com/jesus-rod/Gallery` (`origin`). Push after each approved commit.
