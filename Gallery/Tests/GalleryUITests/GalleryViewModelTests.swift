@@ -358,6 +358,126 @@ struct GalleryViewModelTests {
         #expect(sut.searchResults == nil)
     }
 
+    @Test func searchPhotoAppeared_withinTheLastSixPhotosLoadsMoreAndAppends() async {
+        let (sut, loader) = makeSUT()
+        let firstPage = makePhotos(1...10)
+        let secondPage = makePhotos(11...12)
+        loader.stubSearch(.success(loader.page(firstPage)))
+        loader.stubLoadMore(.success(loader.page(firstPage + secondPage, hasMore: false)))
+        await sut.search("cats")
+
+        await sut.searchPhotoAppeared(firstPage[4])
+
+        #expect(loader.loadMoreCallCount == 1)
+        #expect(
+            sut.searchResults
+                == SearchResults(query: "cats", state: .loaded(photos: firstPage + secondPage, footer: .end)))
+    }
+
+    @Test func searchPhotoAppeared_beforeTheLastSixPhotosDoesNotLoadMore() async {
+        let (sut, loader) = makeSUT()
+        let firstPage = makePhotos(1...10)
+        loader.stubSearch(.success(loader.page(firstPage)))
+        await sut.search("cats")
+
+        await sut.searchPhotoAppeared(firstPage[3])
+
+        #expect(loader.loadMoreCallCount == 0)
+    }
+
+    @Test func searchPhotoAppeared_whileLoadingMoreShowsALoadingFooterAndDoesNotLoadAgain() async {
+        let (sut, loader) = makeSUT()
+        let firstPage = makePhotos(1...10)
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page(firstPage)))
+        loader.stubLoadMore(.success(loader.page(firstPage + makePhotos(11...12))), gate: gate)
+        await sut.search("cats")
+
+        let firstAppearance = Task { await sut.searchPhotoAppeared(firstPage[9]) }
+        await gate.untilReached()
+        await sut.searchPhotoAppeared(firstPage[9])
+
+        #expect(loader.loadMoreCallCount == 1)
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: firstPage, footer: .loading)))
+        gate.open()
+        await firstAppearance.value
+    }
+
+    @Test func searchPhotoAppeared_loadMoreFailureKeepsThePhotosAndShowsAFailedFooter() async {
+        let (sut, loader) = makeSUT()
+        let firstPage = makePhotos(1...10)
+        loader.stubSearch(.success(loader.page(firstPage)))
+        loader.stubLoadMore(.failure(URLError(.notConnectedToInternet)))
+        await sut.search("cats")
+
+        await sut.searchPhotoAppeared(firstPage[9])
+
+        #expect(
+            sut.searchResults
+                == SearchResults(query: "cats", state: .loaded(photos: firstPage, footer: .failed(.offline))))
+    }
+
+    @Test func retrySearch_afterALoadMoreFailureCallsTheSameLoadMoreAgain() async {
+        let (sut, loader) = makeSUT()
+        let firstPage = makePhotos(1...10)
+        let secondPage = makePhotos(11...12)
+        loader.stubSearch(.success(loader.page(firstPage)))
+        loader.stubLoadMore(.failure(AnyError()))
+        loader.stubLoadMore(.success(loader.page(firstPage + secondPage, hasMore: false)))
+        await sut.search("cats")
+        await sut.searchPhotoAppeared(firstPage[9])
+
+        await sut.retrySearch()
+
+        #expect(loader.searchQueries.count == 1)
+        #expect(loader.loadMoreCallCount == 2)
+        #expect(
+            sut.searchResults
+                == SearchResults(query: "cats", state: .loaded(photos: firstPage + secondPage, footer: .end)))
+    }
+
+    @Test func searchPhotoAppeared_atTheEndOfTheResultsRequestsNothing() async {
+        let (sut, loader) = makeSUT()
+        let firstPage = makePhotos(1...10)
+        loader.stubSearch(.success(loader.page(firstPage, hasMore: false)))
+        await sut.search("cats")
+
+        await sut.searchPhotoAppeared(firstPage[9])
+        await sut.retrySearch()
+
+        #expect(loader.loadMoreCallCount == 0)
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: firstPage, footer: .end)))
+    }
+
+    @Test func searchPhotoAppeared_withoutASearchDoesNothing() async {
+        let (sut, loader) = makeSUT()
+        let feedPhotos = makePhotos(1...10)
+        loader.stubFeed(.success(loader.page(feedPhotos)))
+        await sut.load()
+
+        await sut.searchPhotoAppeared(feedPhotos[9])
+
+        #expect(loader.loadMoreCallCount == 0)
+        #expect(sut.feed == .loaded(photos: feedPhotos, footer: .idle))
+    }
+
+    @Test func photoAppeared_duringASearchLoadsMoreOfTheFeedOnly() async {
+        let (sut, loader) = makeSUT()
+        let feedPhotos = makePhotos(1...10)
+        let searchPhotos = makePhotos(21...30)
+        loader.stubFeed(.success(loader.page(feedPhotos)))
+        loader.stubSearch(.success(loader.page(searchPhotos)))
+        loader.stubLoadMore(.success(loader.page(feedPhotos + makePhotos(11...12), hasMore: false)))
+        await sut.load()
+        await sut.search("cats")
+
+        await sut.photoAppeared(feedPhotos[9])
+
+        #expect(loader.loadMoreCallCount == 1)
+        #expect(sut.feed == .loaded(photos: feedPhotos + makePhotos(11...12), footer: .end))
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: searchPhotos, footer: .idle)))
+    }
+
     private func makeSUT(sourceLocation: SourceLocation = #_sourceLocation) -> (GalleryViewModel, FeedLoaderSpy) {
         let loader = FeedLoaderSpy()
         let sut = GalleryViewModel(loadFeed: loader.loadFeed, search: loader.search)

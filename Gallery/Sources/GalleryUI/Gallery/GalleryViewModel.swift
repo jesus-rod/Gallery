@@ -62,4 +62,8 @@ public final class GalleryViewModel {
     public func retrySearch() async {
         await activeSearch?.pager.retry()
     }
+
+    public func searchPhotoAppeared(_ photo: Photo) async {
+        await activeSearch?.pager.photoAppeared(photo)
+    }
 }

@@ -1,6 +1,6 @@
 # 03 — Load more Search results
 
-Status: ready-for-agent
+Status: done
 Blocked by: 02
 
 `searchPhotoAppeared(_:)` forwards to the active search's `StreamPager`, which already holds the load-more rules (6-item threshold, one request in flight, failed footer, end). Expect each test to fail first only because the method does not exist yet; that compile failure is the red step.
