@@ -169,6 +169,68 @@ struct GalleryViewModelTests {
         #expect(sut.feed == .loaded(photos: photos, footer: .end))
     }
 
+    @Test func refresh_replacesThePhotosWithTheFirstPage() async {
+        let (sut, loader) = makeSUT()
+        let refreshed = makePhotos(20...21)
+        loader.stubFeed(.success(loader.page(makePhotos(1...10))))
+        loader.stubFeed(.success(loader.page(refreshed, hasMore: false)))
+        await sut.load()
+
+        await sut.refresh()
+
+        #expect(loader.loadFeedCallCount == 2)
+        #expect(sut.feed == .loaded(photos: refreshed, footer: .end))
+    }
+
+    @Test func refresh_failureKeepsThePhotosAndExposesTheError() async {
+        let (sut, loader) = makeSUT()
+        let photos = makePhotos(1...10)
+        loader.stubFeed(.success(loader.page(photos)))
+        loader.stubFeed(.failure(UnsplashAPIError.rateLimited))
+        await sut.load()
+
+        await sut.refresh()
+
+        #expect(sut.feed == .loaded(photos: photos, footer: .idle))
+        #expect(sut.refreshError == .rateLimited)
+    }
+
+    @Test func refreshError_clearsOnDismissAndOnTheNextRefresh() async {
+        let (sut, loader) = makeSUT()
+        loader.stubFeed(.success(loader.page(makePhotos(1...10))))
+        loader.stubFeed(.failure(AnyError()))
+        loader.stubFeed(.failure(AnyError()))
+        loader.stubFeed(.success(loader.page(makePhotos(1...10))))
+        await sut.load()
+
+        await sut.refresh()
+        sut.dismissRefreshError()
+        #expect(sut.refreshError == nil)
+
+        await sut.refresh()
+        await sut.refresh()
+        #expect(sut.refreshError == nil)
+    }
+
+    @Test func refresh_discardsALoadMoreThatCompletesAfterIt() async {
+        let (sut, loader) = makeSUT()
+        let firstPage = makePhotos(1...10)
+        let refreshed = makePhotos(20...21)
+        let gate = Gate()
+        loader.stubFeed(.success(loader.page(firstPage)))
+        loader.stubLoadMore(.success(loader.page(firstPage + makePhotos(11...12))), gate: gate)
+        loader.stubFeed(.success(loader.page(refreshed, hasMore: false)))
+        await sut.load()
+
+        let lateLoadMore = Task { await sut.photoAppeared(firstPage[9]) }
+        await gate.untilReached()
+        await sut.refresh()
+        gate.open()
+        await lateLoadMore.value
+
+        #expect(sut.feed == .loaded(photos: refreshed, footer: .end))
+    }
+
     private func makeSUT(sourceLocation: SourceLocation = #_sourceLocation) -> (GalleryViewModel, FeedLoaderSpy) {
         let loader = FeedLoaderSpy()
         let sut = GalleryViewModel(loadFeed: loader.loadFeed)

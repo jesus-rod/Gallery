@@ -1,6 +1,6 @@
 # 04 — Pull to refresh
 
-Status: ready-for-agent
+Status: done
 Blocked by: 02
 
 `refresh()` reloads the first Page.

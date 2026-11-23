@@ -7,9 +7,11 @@ public final class GalleryViewModel {
     public typealias LoadFeed = @Sendable () async throws -> Paginated<Photo>
 
     public private(set) var feed: StreamState = .loading
+    public private(set) var refreshError: LoadError?
 
     @ObservationIgnored private let loadFeed: LoadFeed
     @ObservationIgnored private var loadMore: Paginated<Photo>.LoadMore?
+    @ObservationIgnored private var generation = 0
 
     public init(loadFeed: @escaping LoadFeed) {
         self.loadFeed = loadFeed
@@ -17,9 +19,22 @@ public final class GalleryViewModel {
 
     public func load() async {
         do {
-            show(try await loadFeed())
+            showFirstPage(try await loadFeed())
         } catch {
             feed = .failed(LoadError(error))
+        }
+    }
+
+    public func dismissRefreshError() {
+        refreshError = nil
+    }
+
+    public func refresh() async {
+        refreshError = nil
+        do {
+            showFirstPage(try await loadFeed())
+        } catch {
+            refreshError = LoadError(error)
         }
     }
 
@@ -44,12 +59,21 @@ public final class GalleryViewModel {
 
     private func loadMore(after photos: [Photo]) async {
         guard let loadMore else { return }
+        let generation = generation
         feed = .loaded(photos: photos, footer: .loading)
         do {
-            show(try await loadMore())
+            let page = try await loadMore()
+            guard generation == self.generation else { return }
+            show(page)
         } catch {
+            guard generation == self.generation else { return }
             feed = .loaded(photos: photos, footer: .failed(LoadError(error)))
         }
+    }
+
+    private func showFirstPage(_ page: Paginated<Photo>) {
+        generation += 1
+        show(page)
     }
 
     private func show(_ page: Paginated<Photo>) {
