@@ -1,6 +1,6 @@
 # 02 — Load the first Page
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01
 
 `GalleryViewModel` with `feed: StreamState`, built from `loadFeed: () async throws -> Paginated<Photo>`. `load()` moves `loading` → `loaded(photos, footer)` or `failed(LoadError)`.
