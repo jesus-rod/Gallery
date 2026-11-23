@@ -5,28 +5,29 @@ import Observation
 @Observable
 @MainActor
 final class PhotoImageModel {
-    enum State: Equatable {
-        case preview(CGImage?)
-        case image(CGImage)
-    }
-
-    private(set) var state: State
+    @ObservationIgnored private var previewStorage: CGImage??
+    private(set) var image: CGImage?
     private let photo: Photo
     private let images: PhotoImages
 
     init(photo: Photo, images: PhotoImages) {
         self.photo = photo
         self.images = images
-        self.state = .preview(images.preview(photo))
+    }
+
+    var preview: CGImage? {
+        if let previewStorage { return previewStorage }
+        let preview = images.preview(photo)
+        previewStorage = .some(preview)
+        return preview
     }
 
     var isLoaded: Bool {
-        if case .image = state { return true }
-        return false
+        image != nil
     }
 
     func load(size: ImageSize) async {
-        guard let image = try? await images.image(photo, size) else { return }
-        state = .image(image)
+        guard let loaded = try? await images.image(photo, size), !Task.isCancelled else { return }
+        image = loaded
     }
 }

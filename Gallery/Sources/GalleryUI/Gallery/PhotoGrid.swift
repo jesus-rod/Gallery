@@ -86,12 +86,12 @@ struct PhotoCell: View {
             .aspectRatio(1, contentMode: .fit)
             .overlay {
                 ZStack {
-                    if case .preview(let preview?) = model.state {
+                    if let preview = model.preview {
                         Image(decorative: preview, scale: 1)
                             .resizable()
                             .scaledToFill()
                     }
-                    if case .image(let image) = model.state {
+                    if let image = model.image {
                         Image(decorative: image, scale: size.scale)
                             .resizable()
                             .scaledToFill()

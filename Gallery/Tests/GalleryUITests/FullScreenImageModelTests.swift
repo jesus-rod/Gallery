@@ -12,11 +12,27 @@ struct FullScreenImageModelTests {
     private let fitting = FittingSize(width: 400, height: 800, scale: 3)
     private let otherFitting = FittingSize(width: 800, height: 400, scale: 3)
 
+    @Test func init_doesNotLookUpThePreview() {
+        let (_, images) = makeSUT(preview: makeImage())
+
+        #expect(images.previewCallCount == 0)
+    }
+
+    @Test func preview_isLookedUpOnceOnFirstRead() {
+        let (sut, images) = makeSUT(preview: makeImage())
+
+        _ = sut.preview
+        _ = sut.preview
+
+        #expect(images.previewCallCount == 1)
+    }
+
     @Test func init_showsThePhotosPreview() {
         let preview = makeImage()
         let (sut, _) = makeSUT(preview: preview)
 
-        #expect(sut.state == .preview(preview))
+        #expect(sut.preview == preview)
+        #expect(sut.state == .preview)
     }
 
     @Test func load_requestsTheGridImageAtTheGridSizeAndTheFullImageAtTheFittingSize() async {
@@ -88,7 +104,8 @@ struct FullScreenImageModelTests {
 
         await sut.load(fitting: fitting)
 
-        #expect(sut.state == .preview(preview))
+        #expect(sut.state == .preview)
+        #expect(sut.preview == preview)
     }
 
     @Test func load_requestsOnlyTheFullImageOnceItIsShown() async {

@@ -1,6 +1,6 @@
 # 03 — Cell image model: no work on redraw, image fades in over the Preview
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 Three findings in the same two types, fixed together.
@@ -64,3 +64,11 @@ final class PhotoImageModel {
 ## Commit
 
 `fix(ui): build cell image models lazily and fade the image over the Preview`
+
+## Comments
+
+- `init_doesNotLookUpThePreview` in the full-screen tests was first red as a compile error (the `preview` property did not exist yet), not as an assertion failure; the lazy Preview was added in the same step.
+- `preview_isLookedUpOnceOnFirstRead` (both models) and `load_showsTheLoadedImageAndKeepsThePreview` passed on their first run, because the memoized getter and kept Preview were written with the reshape.
+- `FullScreenImageModel` keeps its `State` enum with a payload-free `.preview` case, and the Preview is a separate lazy property, so the ordering tests stay unchanged in shape.
+- `load_keepsThePreviewOnFailure` is renamed `load_keepsNoImageOnFailure`; the cancel guard is `!Task.isCancelled` after the load.
+- The visual fade was not checked in a simulator screenshot; the layering (Preview always drawn, image inserted with `.transition(.opacity)`) is covered by the build and UI tests only.

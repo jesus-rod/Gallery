@@ -68,3 +68,5 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 
 - Each `StreamPager` owns its in-flight request and can cancel it. A new Query or Cancel cancels every request of the old search (first Page, load more, retry), not just its first Page, so an abandoned search stops spending the Request budget.
 - Re-submitting the shown Query is still a no-op, except after its first Page failed: then it searches again, like Retry.
+- Image models do no work in `init`: SwiftUI rebuilds a view's `State(initialValue:)` argument on every parent redraw and keeps only the first, so the Preview is looked up lazily on first read and memoized.
+- The Preview stays underneath and the image fades in on top, instead of cross-fading the two, which showed the grey cell fill mid-fade.

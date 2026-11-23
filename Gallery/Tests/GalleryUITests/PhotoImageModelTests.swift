@@ -10,17 +10,32 @@ import Testing
 struct PhotoImageModelTests {
     private let size = ImageSize(points: 100, scale: 2)
 
+    @Test func init_doesNotLookUpThePreview() {
+        let (_, images) = makeSUT(preview: makeImage())
+
+        #expect(images.previewCallCount == 0)
+    }
+
+    @Test func preview_isLookedUpOnceOnFirstRead() {
+        let (sut, images) = makeSUT(preview: makeImage())
+
+        _ = sut.preview
+        _ = sut.preview
+
+        #expect(images.previewCallCount == 1)
+    }
+
     @Test func init_showsThePhotosPreview() {
         let preview = makeImage()
         let (sut, _) = makeSUT(preview: preview)
 
-        #expect(sut.state == .preview(preview))
+        #expect(sut.preview == preview)
     }
 
     @Test func init_showsNoPreviewWhenThereIsNone() {
         let (sut, _) = makeSUT(preview: nil)
 
-        #expect(sut.state == .preview(nil))
+        #expect(sut.preview == nil)
     }
 
     @Test func load_requestsThePhotoAtTheGivenSize() async {
@@ -39,17 +54,30 @@ struct PhotoImageModelTests {
 
         await sut.load(size: size)
 
-        #expect(sut.state == .image(image))
+        #expect(sut.image == image)
     }
 
-    @Test func load_keepsThePreviewOnFailure() async {
+    @Test func load_showsTheLoadedImageAndKeepsThePreview() async {
+        let preview = makeImage()
+        let image = makeImage(width: 2)
+        let (sut, images) = makeSUT(preview: preview)
+        images.stub(.success(image))
+
+        await sut.load(size: size)
+
+        #expect(sut.image == image)
+        #expect(sut.preview == preview)
+    }
+
+    @Test func load_keepsNoImageOnFailure() async {
         let preview = makeImage()
         let (sut, images) = makeSUT(preview: preview)
         images.stub(.failure(AnyError()))
 
         await sut.load(size: size)
 
-        #expect(sut.state == .preview(preview))
+        #expect(sut.image == nil)
+        #expect(sut.preview == preview)
     }
 
     @Test func load_keepsTheLoadedImageWhenALaterLoadFails() async {
@@ -61,7 +89,21 @@ struct PhotoImageModelTests {
         images.stub(.failure(AnyError()))
         await sut.load(size: ImageSize(points: 200, scale: 2))
 
-        #expect(sut.state == .image(image))
+        #expect(sut.image == image)
+    }
+
+    @Test func load_cancelledLeavesTheImageUnchanged() async {
+        let gate = Gate()
+        let (sut, images) = makeSUT()
+        images.stub(.success(makeImage()), gate: gate)
+
+        let load = Task { await sut.load(size: size) }
+        await gate.untilReached()
+        load.cancel()
+        gate.open()
+        await load.value
+
+        #expect(sut.image == nil)
     }
 
     @Test func isLoaded_isTrueOnlyOnceTheImageIsShown() async {
@@ -112,10 +154,12 @@ final class PhotoImagesSpy: @unchecked Sendable {
     private var _requests: [Request] = []
     private var _fullScreenRequests: [FullScreenRequest] = []
     private var _prefetches: [Prefetch] = []
+    private var _previewCallCount = 0
 
     var requests: [Request] { lock.withLock { _requests } }
     var fullScreenRequests: [FullScreenRequest] { lock.withLock { _fullScreenRequests } }
     var prefetches: [Prefetch] { lock.withLock { _prefetches } }
+    var previewCallCount: Int { lock.withLock { _previewCallCount } }
 
     init(preview: CGImage? = nil) {
         self.preview = preview
@@ -137,7 +181,10 @@ final class PhotoImagesSpy: @unchecked Sendable {
 
     var images: PhotoImages {
         PhotoImages(
-            preview: { [preview] _ in preview },
+            preview: { [self] _ in
+                lock.withLock { _previewCallCount += 1 }
+                return preview
+            },
             image: { [self] photo, size in
                 let (result, gate) = lock.withLock {
                     _requests.append(Request(photoID: photo.id, size: size))

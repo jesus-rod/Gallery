@@ -6,7 +6,7 @@ import Observation
 @Observable
 final class FullScreenImageModel {
     enum State: Equatable {
-        case preview(CGImage?)
+        case preview
         case gridImage(CGImage)
         case fullImage(CGImage)
     }
@@ -16,6 +16,7 @@ final class FullScreenImageModel {
         case fullImage(CGImage)
     }
 
+    @ObservationIgnored private var previewStorage: CGImage??
     private(set) var state: State
     private let photo: Photo
     private let images: PhotoImages
@@ -25,7 +26,14 @@ final class FullScreenImageModel {
         self.photo = photo
         self.images = images
         self.gridSize = gridSize
-        self.state = .preview(images.preview(photo))
+        self.state = .preview
+    }
+
+    var preview: CGImage? {
+        if let previewStorage { return previewStorage }
+        let preview = images.preview(photo)
+        previewStorage = .some(preview)
+        return preview
     }
 
     var isFullImageShown: Bool {
