@@ -9,6 +9,7 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 3. Per ticket, `/tdd`: one failing test, minimal code to green, repeat. Swift Testing. Run `swift test` in `Gallery/` and `swift format lint -r Gallery` from the repo root.
 4. Ticket green: set `Status: done`, propose commits (subject + body), commit only after the user approves. Authored by the user, never a co-author line.
 5. Quick essential-feed review per milestone. No code comments anywhere.
+6. Every notable decision goes into `docs/decision-log.md` in the same commit as the code; big or hard-to-reverse ones also get an ADR. The log feeds the presentation.
 
 ## Milestones
 
