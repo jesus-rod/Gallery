@@ -14,6 +14,9 @@ final class GalleryAppUITests: XCTestCase {
         let firstCell = app.images.matching(identifier: "photo-cell").firstMatch
         XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "The first page should show its first cell")
         XCTAssertEqual(firstCell.label, "Fixture photo 1", "The first cell should be the first fixture Photo")
+        XCTAssertLessThanOrEqual(
+            firstCell.frame.width, grid.frame.width / 2,
+            "The cell's accessibility frame should be the cell, not its overflowing image")
 
         let loaded = NSPredicate(format: "value == nil OR value == ''")
         expectation(for: loaded, evaluatedWith: firstCell)

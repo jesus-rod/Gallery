@@ -15,6 +15,7 @@ struct FullScreenPhotoView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.displayScale) private var displayScale
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(route: FullScreenRoute, images: PhotoImages, referralAppName: String) {
         self.route = route
@@ -32,7 +33,11 @@ struct FullScreenPhotoView: View {
             .gesture(tapGesture)
             .simultaneousGesture(magnifyGesture)
             .simultaneousGesture(dragGesture)
-            chrome
+            .accessibilitySortPriority(2)
+            closeLayer
+                .accessibilitySortPriority(3)
+            captionLayer
+                .accessibilitySortPriority(1)
         }
         .ignoresSafeArea()
         .onGeometryChange(for: CGSize.self) {
@@ -70,6 +75,21 @@ struct FullScreenPhotoView: View {
     }
 
     private var photoImage: some View {
+        Color.clear
+            .frame(width: content.width, height: content.height)
+            .accessibilityElement()
+            .accessibilityLabel(caption(for: route.photo))
+            .accessibilityValue(model.isFullImageShown ? Text(verbatim: "") : Text("Loading", bundle: .module))
+            .accessibilityAddTraits(.isImage)
+            .accessibilityIdentifier("full-screen-photo")
+            .overlay {
+                images
+                    .accessibilityHidden(true)
+            }
+            .clipped()
+    }
+
+    private var images: some View {
         ZStack {
             if let preview = model.preview {
                 Image(decorative: preview, scale: 1)
@@ -83,14 +103,7 @@ struct FullScreenPhotoView: View {
                     .transition(.opacity)
             }
         }
-        .frame(width: content.width, height: content.height)
-        .clipped()
-        .animation(.easeOut(duration: 0.25), value: model.state)
-        .accessibilityElement()
-        .accessibilityLabel(caption(for: route.photo))
-        .accessibilityValue(model.isFullImageShown ? Text(verbatim: "") : Text("Loading", bundle: .module))
-        .accessibilityAddTraits(.isImage)
-        .accessibilityIdentifier("full-screen-photo")
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.25), value: model.state)
     }
 
     private var sharperImage: CGImage? {
@@ -102,28 +115,43 @@ struct FullScreenPhotoView: View {
         }
     }
 
-    private var chrome: some View {
-        VStack {
-            HStack {
+    private var closeLayer: some View {
+        Color.clear
+            .overlay(alignment: .topLeading) {
                 closeButton
-                Spacer()
             }
-            Spacer()
-            VStack(alignment: .leading, spacing: 8) {
-                Text(verbatim: caption(for: route.photo))
-                    .font(.headline)
-                    .lineLimit(3)
-                PhotoCreditView(photographer: route.photo.photographer, appName: referralAppName)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .background(LinearGradient(colors: [.clear, .black.opacity(0.6)], startPoint: .top, endPoint: .bottom))
+            .safeAreaPadding()
+            .foregroundStyle(.white)
+            .opacity(isChromeVisible ? 1 : 0)
+            .allowsHitTesting(isChromeVisible)
+            .accessibilityElement(children: .contain)
+            .accessibilityHidden(!isChromeVisible)
+    }
+
+    private var captionLayer: some View {
+        ViewThatFits(in: .vertical) {
+            captionBlock
+            ScrollView { captionBlock }
         }
+        .frame(maxWidth: .infinity, maxHeight: container.height * 0.4, alignment: .leading)
+        .padding()
+        .background(LinearGradient(colors: [.clear, .black.opacity(0.6)], startPoint: .top, endPoint: .bottom))
+        .frame(maxHeight: .infinity, alignment: .bottom)
         .safeAreaPadding()
         .foregroundStyle(.white)
         .opacity(isChromeVisible ? 1 : 0)
         .allowsHitTesting(isChromeVisible)
         .accessibilityHidden(!isChromeVisible)
+    }
+
+    private var captionBlock: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(verbatim: caption(for: route.photo))
+                .font(.headline)
+                .lineLimit(3)
+            PhotoCreditView(photographer: route.photo.photographer, appName: referralAppName)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var closeButton: some View {
@@ -190,7 +218,7 @@ struct FullScreenPhotoView: View {
                 ) {
                     dismiss()
                 } else {
-                    withAnimation(.spring) {
+                    withAnimation(reduceMotion ? nil : .spring) {
                         dismissTranslation = .zero
                     }
                 }

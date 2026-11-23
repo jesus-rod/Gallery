@@ -80,3 +80,17 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - Portrait Photos taller than 3:1 get a CDN centre crop at 3:1 in the grid (`h`, `fit=crop`), so they fill the cell at full sharpness with bounded memory. The earlier rule capped the decode size too, which made them narrower than the cell. The full-screen Rendition never crops.
 - Updating a cached file's last-used date is best effort: if it fails, the read still counts as a hit.
 - One XCUITest per user journey (feed, search, full screen), with each step asserted. Details live in unit tests, because every XCUITest relaunches the app and costs seconds. The six M2–M4 UI tests became two.
+
+## M7 — Polish
+
+- A 401 gets its own state ("Access key not accepted"), because a wrong key is the most likely first-run failure for someone setting the project up; the message names the config file.
+- Both mappers share one `requireDecodable` check (rate limit, 401, require 200, decode or `invalidData`), closing the duplication noted in M1.
+- Search results get pull to refresh, sharing the feed's brief refresh error, which now shows over Search results too. A refresh that finishes after its Query was replaced or cancelled is ignored, so it cannot show a stale error.
+- The hidden feed may still finish an in-flight load more while searching: accepted, it costs at most one request the user already triggered.
+- Images already in the memory cache are read synchronously (`NSCache` is thread safe) through a `PhotoImages.cachedImage` closure, so a cell scrolled back into view or a reopened Photo shows its image on the first frame, with no Preview and no fade.
+- The cell decides "no fade" from the model's memoized first lookup (`wasCachedOnAppear`) rather than a view flag set after appearing, which would race the first frame; `PhotoImageModel` now takes its grid size at init so that lookup is possible.
+- Accessibility frames come from the sized shape, not the overflowing images, so VoiceOver's focus box matches what is on screen: the cell's accessibility element is its square, and the full-screen element is a clear frame of the fitted size, with the images in a hidden overlay.
+- Reduce Motion removes the image fades and the spring back after an abandoned drag; the navigation zoom stays, since the system already adapts it. The overlay toggle was never animated.
+- The full-screen overlay is split into a Close layer and a Caption layer around the gesture layer (raised with `zIndex`), so VoiceOver reads Close, image, Caption, credit by tree order. At large Dynamic Type sizes the Caption block scrolls inside 40% of the screen height (`ViewThatFits`), and the credit never truncates.
+- The Close layer is `.accessibilityElement(children: .contain)`: a full-screen layer holding a single Button otherwise merged into it and reported the whole screen as its frame, so the UI test tapped the screen centre instead of the button.
+- Snapshot tests (swift-snapshot-testing, test-only) render on macOS inside `swift test`, light and dark at a fixed size: fast and simulator-free, guarding layout regressions rather than exact iOS pixels. The hosted views get an explicit `windowBackgroundColor` background, because an off-screen host has none and dark-mode text would render white on white.

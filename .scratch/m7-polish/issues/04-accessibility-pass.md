@@ -1,6 +1,6 @@
 # 04 — VoiceOver frames, Reduce Motion, Dynamic Type
 
-Status: ready-for-agent
+Status: done
 Blocked by: 03 (touches the same cell code)
 
 View-only. Covered by previews, the feed journey's new assertion, and a manual check.
@@ -33,3 +33,7 @@ View-only. Covered by previews, the feed journey's new assertion, and a manual c
 ## Commit
 
 `fix(ui): match VoiceOver frames to the visible image and respect Reduce Motion`
+
+## Comments
+
+- The full-screen overlay became two layers (Close, Caption) so VoiceOver order follows the view tree plus `accessibilitySortPriority` (Close 3, image 2, Caption 1); the Caption block uses `ViewThatFits` with a scrolling fallback capped at 40% of the height. The overlay toggle was never animated, so Reduce Motion only affects the image fades and the drag spring-back. Verified by the UI tests (the new frame assertion failed before the fix: 313 pt vs 210 pt); VoiceOver itself was not run.

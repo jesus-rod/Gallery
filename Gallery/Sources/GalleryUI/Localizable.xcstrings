@@ -1,6 +1,28 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Access key not accepted" : {
+      "comment" : "Title shown when Unsplash rejects the access key.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access key not accepted"
+          }
+        }
+      }
+    },
+    "Check the Unsplash access key in Config/Secrets.xcconfig, then try again." : {
+      "comment" : "Message shown when Unsplash rejects the access key.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check the Unsplash access key in Config/Secrets.xcconfig, then try again."
+          }
+        }
+      }
+    },
     "Check your connection and try again." : {
       "comment" : "Message shown when the device has no network connection.",
       "localizations" : {

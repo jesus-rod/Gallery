@@ -12,6 +12,7 @@
 
     private let failingImages = PhotoImages(
         preview: PreviewData.images.preview,
+        cachedImage: { _, _ in nil },
         image: { _, _ in throw URLError(.notConnectedToInternet) },
         fullScreenImage: { _, _ in throw URLError(.notConnectedToInternet) },
         prefetch: { _, _ in }
@@ -23,6 +24,15 @@
             images: PreviewData.images,
             referralAppName: PreviewData.referralAppName
         )
+    }
+
+    #Preview("Full screen, accessibility XXXL") {
+        FullScreenPhotoView(
+            route: previewRoute,
+            images: PreviewData.images,
+            referralAppName: PreviewData.referralAppName
+        )
+        .dynamicTypeSize(.accessibility5)
     }
 
     #Preview("Full screen, image failed") {

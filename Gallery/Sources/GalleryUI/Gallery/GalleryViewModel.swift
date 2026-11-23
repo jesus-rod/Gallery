@@ -42,6 +42,14 @@ public final class GalleryViewModel {
         refreshError = await feedPager.refresh()
     }
 
+    public func refreshSearch() async {
+        guard let pager = activeSearch?.pager else { return }
+        refreshError = nil
+        let error = await pager.refresh()
+        guard pager === activeSearch?.pager else { return }
+        refreshError = error
+    }
+
     public func retry() async {
         await feedPager.retry()
     }

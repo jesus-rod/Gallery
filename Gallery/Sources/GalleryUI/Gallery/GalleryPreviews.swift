@@ -24,6 +24,7 @@
 
         static let images = PhotoImages(
             preview: { photo in solidImage(hue: hue(of: photo), brightness: 0.5) },
+            cachedImage: { _, _ in nil },
             image: { photo, _ in try await loadedImage(of: photo) },
             fullScreenImage: { photo, _ in try await loadedImage(of: photo) },
             prefetch: { _, _ in }
@@ -85,6 +86,20 @@
         GalleryRootView(
             viewModel: PreviewData.viewModel { throw UnsplashAPIError.rateLimited }, images: PreviewData.images,
             referralAppName: PreviewData.referralAppName)
+    }
+
+    #Preview("Invalid key") {
+        GalleryRootView(
+            viewModel: PreviewData.viewModel { throw UnsplashAPIError.unauthorized }, images: PreviewData.images,
+            referralAppName: PreviewData.referralAppName)
+    }
+
+    #Preview("Offline, accessibility XXXL") {
+        GalleryRootView(
+            viewModel: PreviewData.viewModel { throw URLError(.notConnectedToInternet) }, images: PreviewData.images,
+            referralAppName: PreviewData.referralAppName
+        )
+        .dynamicTypeSize(.accessibility5)
     }
 
     #Preview("Search results") {

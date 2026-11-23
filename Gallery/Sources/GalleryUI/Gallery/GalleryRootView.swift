@@ -27,6 +27,11 @@ public struct GalleryRootView: View {
                         .id(results.query)
                 }
             }
+            .overlay(alignment: .top) {
+                if let error = viewModel.refreshError {
+                    RefreshErrorBanner(error: error, onDismiss: viewModel.dismissRefreshError)
+                }
+            }
             .navigationTitle(Text("Gallery", bundle: .module))
             .searchField(text: $searchText)
             .onSubmit(of: .search) {
@@ -71,11 +76,6 @@ public struct GalleryRootView: View {
                 onRetry: { Task { await viewModel.retry() } }
             )
             .refreshable { await viewModel.refresh() }
-            .overlay(alignment: .top) {
-                if let error = viewModel.refreshError {
-                    RefreshErrorBanner(error: error, onDismiss: viewModel.dismissRefreshError)
-                }
-            }
         }
     }
 
@@ -101,6 +101,7 @@ public struct GalleryRootView: View {
                 onOpen: openFullScreen,
                 onRetry: { Task { await viewModel.retrySearch() } }
             )
+            .refreshable { await viewModel.refreshSearch() }
         }
     }
 }

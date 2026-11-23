@@ -1,6 +1,6 @@
 # M7 — Polish: UX states and accessibility
 
-Status: in progress (an agent implements the tickets; the user reviews the seams table)
+Status: done
 
 ## Goal
 
@@ -57,6 +57,23 @@ public enum LoadError { case offline, rateLimited, invalidKey, generic }
 ## Tickets (in order)
 
 01 401 → invalid key state (Core + UI, TDD) · 02 pull to refresh on Search results (UI, TDD) · 03 synchronous memory-cache hit, no Preview or fade (ImageLoading + UI, TDD) · 04 VoiceOver frames, Reduce Motion, Dynamic Type pass · 05 snapshot tests · 06 review notes, spec done.
+
+## Review notes
+
+Quick essential-feed pass over the M7 commits.
+
+- Views depend only on `PhotoImages` closures (`cachedImage` is the only new one); no view knows about URLs, caches or the pipeline. `App/ImagePipeline.swift` is the only place that builds the grid Rendition for the lookup.
+- `GalleryCore` and `GalleryImageLoading` still import neither each other nor `GalleryUI`; the only new dependency is test-only (swift-snapshot-testing on `GalleryUITests`).
+- No code comments in the M7 diff; no iOS 18 API added (the zoom transition stays behind `#available` from M5).
+- Class SUTs (`MemoryCachingImageLoader`, `PhotoImageModel`, `FullScreenImageModel`) are built through `makeSUT` with leak tracking; `GalleryViewModel` tests use the existing `makeSUT`.
+- Tests were written one at a time, with exceptions: the Search mapper 401 test came right after the shared `requireDecodable` helper (a refactor of the Editorial change), and some tests passed on arrival because the minimal code of the previous test already covered them (`refreshSearch` tests 2 and 3, `PhotoImageModel.image` before load).
+- Found by the UI tests, not by unit tests: a full-screen layer holding a single Button merges into it for accessibility and reports the whole screen as the button's frame. The Close layer is now `.accessibilityElement(children: .contain)`. Worth remembering for any future overlay with one control.
+
+Open, carried to M8:
+- VoiceOver itself and the Accessibility Inspector were not run: focus boxes, the Close, image, Caption, credit order and the large Dynamic Type overlay are verified only through the UI tests' frame assertion and previews. Check on device.
+- `PhotoCreditView` still has no translations (the `%1$@` / `%2$@` ordering is kept literally by the replace-range code, which a translator could still break); English only is in scope.
+- Snapshot images are macOS renderings and differ from iOS pixels; they guard layout only.
+- `Gallery.xcodeproj/project.xcworkspace/xcshareddata/` (swiftpm resolution) appears untracked after an `xcodebuild` run; decide in M8 whether to commit or ignore it.
 
 ## Out of scope
 

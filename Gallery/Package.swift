@@ -11,6 +11,9 @@ let package = Package(
         .library(name: "GalleryImageLoading", targets: ["GalleryImageLoading"]),
         .library(name: "GalleryUI", targets: ["GalleryUI"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.17.0")
+    ],
     targets: [
         .target(name: "GalleryCore"),
         .testTarget(name: "GalleryCoreTests", dependencies: ["GalleryCore"]),
@@ -23,6 +26,12 @@ let package = Package(
             dependencies: ["GalleryCore", "GalleryImageLoading"],
             resources: [.process("Localizable.xcstrings")]
         ),
-        .testTarget(name: "GalleryUITests", dependencies: ["GalleryUI", "GalleryCore"]),
+        .testTarget(
+            name: "GalleryUITests",
+            dependencies: [
+                "GalleryUI", "GalleryCore",
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            ]
+        ),
     ]
 )
