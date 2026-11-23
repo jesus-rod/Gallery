@@ -1,6 +1,6 @@
 # 02 — Glass full-screen chrome: title, Back, Share, Info
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01
 
 ## Files

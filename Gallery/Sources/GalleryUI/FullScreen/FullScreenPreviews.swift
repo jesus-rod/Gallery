@@ -35,6 +35,20 @@
         .dynamicTypeSize(.accessibility5)
     }
 
+    #Preview("Chrome over a bright photo") {
+        @Previewable @State var isInfoPresented = false
+        let photo = previewRoute.photo
+        FullScreenChromeLayer(
+            caption: caption(for: photo),
+            photographer: photo.photographer,
+            shareURL: shareURL(for: photo, appName: PreviewData.referralAppName),
+            appName: PreviewData.referralAppName,
+            isVisible: true,
+            isInfoPresented: $isInfoPresented
+        )
+        .background(LinearGradient(colors: [.white, .yellow], startPoint: .top, endPoint: .bottom))
+    }
+
     #Preview("Full screen, image failed") {
         FullScreenPhotoView(
             route: previewRoute,

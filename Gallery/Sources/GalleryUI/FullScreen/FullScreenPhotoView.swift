@@ -12,6 +12,7 @@ struct FullScreenPhotoView: View {
     @State private var panStart: ZoomTransform?
     @State private var dismissTranslation = CGSize.zero
     @State private var isChromeVisible = true
+    @State private var isInfoPresented = false
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.displayScale) private var displayScale
@@ -33,23 +34,22 @@ struct FullScreenPhotoView: View {
             .gesture(tapGesture)
             .simultaneousGesture(magnifyGesture)
             .simultaneousGesture(dragGesture)
+            .ignoresSafeArea()
+            .onGeometryChange(for: CGSize.self) {
+                $0.size
+            } action: {
+                container = $0
+            }
             .accessibilitySortPriority(2)
-            FullScreenCloseLayer(isVisible: isChromeVisible)
-                .accessibilitySortPriority(3)
-            FullScreenCaptionLayer(
+            FullScreenChromeLayer(
                 caption: caption(for: route.photo),
                 photographer: route.photo.photographer,
+                shareURL: shareURL(for: route.photo, appName: referralAppName),
                 appName: referralAppName,
-                maxHeight: container.height * 0.4,
-                isVisible: isChromeVisible
+                isVisible: isChromeVisible,
+                isInfoPresented: $isInfoPresented
             )
-            .accessibilitySortPriority(1)
-        }
-        .ignoresSafeArea()
-        .onGeometryChange(for: CGSize.self) {
-            $0.size
-        } action: {
-            container = $0
+            .accessibilitySortPriority(3)
         }
         .accessibilityAction(.escape, close)
         .task(id: fittingSize) {

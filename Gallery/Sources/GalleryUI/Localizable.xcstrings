@@ -12,6 +12,17 @@
         }
       }
     },
+    "Back" : {
+      "comment" : "Accessibility label of the button that closes the full-screen photo and returns to the grid.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
     "Check the Unsplash access key in Config/Secrets.xcconfig, then try again." : {
       "comment" : "Message shown when Unsplash rejects the access key.",
       "localizations" : {
@@ -34,17 +45,6 @@
         }
       }
     },
-    "Close" : {
-      "comment" : "Accessibility label of the button that closes the full-screen photo.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Close"
-          }
-        }
-      }
-    },
     "Gallery" : {
       "comment" : "Navigation title of the photo grid.",
       "localizations" : {
@@ -52,6 +52,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gallery"
+          }
+        }
+      }
+    },
+    "Info" : {
+      "comment" : "Accessibility label of the button that shows the photo's details.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
           }
         }
       }
@@ -111,6 +122,17 @@
         }
       }
     },
+    "Photo by %@" : {
+      "comment" : "Second line of the full-screen title, linking to the photographer's Unsplash profile. %@ is the photographer's name.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo by %@"
+          }
+        }
+      }
+    },
     "Retry" : {
       "comment" : "Button that retries a failed request.",
       "localizations" : {
@@ -129,6 +151,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search photos"
+          }
+        }
+      }
+    },
+    "Share" : {
+      "comment" : "Accessibility label of the button that shares the photo's Unsplash page.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share"
           }
         }
       }
