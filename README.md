@@ -192,7 +192,3 @@ Built with Claude Code as a pair. The whole trail is in the repo:
 - [`docs/decision-log.md`](docs/decision-log.md) and [`docs/adr/`](docs/adr/): every decision as it was made.
 
 How it was used: grilling the plan into a domain glossary (`CONTEXT.md`), ADRs and milestone specs; agents implementing tickets test first, one test at a time, later two milestones in parallel git worktrees; and review passes (standards, spec, security, SwiftUI performance) whose fixes are separate commits. I reviewed and verified every agent batch (tests, lint, authorship) before merging. Device checks, Instruments and the final review are mine.
-
-## Time log
-
-_TODO_
