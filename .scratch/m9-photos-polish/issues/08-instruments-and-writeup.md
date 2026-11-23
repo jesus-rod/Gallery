@@ -1,6 +1,6 @@
 # 08 — Instruments pass for the new effects, write-up
 
-Status: ready-for-human (recording), then ready-for-agent (write-up). README Design section, overview lines, ADR 0007 row and test counts done ahead of the recording; still to do: Instruments numbers, two screenshots with a live key (stub fixtures only show gradients), roadmap.
+Status: done. Instruments checks recorded and written up in the decision log (M9 section) and README; glow approved on device. Open, carried to the M9 review fixes: full-screen memory retention (swipe-only trace ended at 306 MB persistent) and the full-run after-fix memory number. Two screenshots with a live key are still open (README feed and Duo images).
 Blocked by: 01–07
 
 ## Human part (user records on device, Release build)

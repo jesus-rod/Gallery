@@ -64,6 +64,11 @@ final class FullScreenImageModel {
         }
     }
 
+    func release() {
+        loadedState = nil
+        cachedGridStorage = nil
+    }
+
     private func apply(_ loaded: Loaded?) {
         switch loaded {
         case .gridImage(let image)?:

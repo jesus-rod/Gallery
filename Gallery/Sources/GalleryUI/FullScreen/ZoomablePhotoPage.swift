@@ -67,6 +67,7 @@ struct ZoomablePhotoPage: View {
                 guard loadsFullImage, fittingSize.width > 0, fittingSize.height > 0 else { return }
                 await model.load(fitting: fittingSize)
             }
+            .onDisappear(perform: model.release)
             .onChange(of: isCurrent) { _, isCurrent in
                 if !isCurrent { transform = ZoomTransform() }
             }

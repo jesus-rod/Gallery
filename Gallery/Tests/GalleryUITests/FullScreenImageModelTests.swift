@@ -186,6 +186,28 @@ struct FullScreenImageModelTests {
         #expect(sut.state == .fullImage(full))
     }
 
+    @Test func release_dropsTheShownFullImage() async {
+        let (sut, images) = makeSUT()
+        images.stub(.success(makeImage()))
+        images.stubFullScreen(.success(makeImage(width: 2)))
+        await sut.load(fitting: fitting)
+
+        sut.release()
+
+        #expect(sut.state == .preview)
+    }
+
+    @Test func release_asksTheCacheForTheGridImageAgain() {
+        let cached = makeImage(width: 3)
+        let (sut, images) = makeSUT(photo: makePhoto(id: "a"), cached: cached)
+        _ = sut.state
+
+        sut.release()
+
+        #expect(sut.state == .gridImage(cached))
+        #expect(images.cachedImageRequests.count == 2)
+    }
+
     private func untilState(_ expected: FullScreenImageModel.State, of sut: FullScreenImageModel) async {
         for _ in 0..<500 where sut.state != expected {
             await Task.yield()

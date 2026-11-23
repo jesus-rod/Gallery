@@ -172,7 +172,7 @@ On an iPhone 15 Plus (60 Hz, iOS 27), Release build, live key. Run A used the Sw
 | Grid scroll, ~300 images | 6.5 ms/s hitch time, 13% main thread, all downsampling off the main thread | unchanged |
 | Full-screen swipe, ~50 photos | **20.7 ms/s**, 19 GPU-bound hitches, a 159 ms hang | **8.1 ms/s**, 1 GPU-bound hitch, no hang |
 | Dismiss drag | 3.4 ms/s | unchanged |
-| Memory after scrolling ~500 images | **1.17 GB** still in memory, 1.135 GB of it decoded grid images | _re-record pending_ |
+| Memory after scrolling ~500 images | **1.17 GB** still in memory, 1.135 GB of it decoded grid images | Not yet measured over the same steps. A full-screen swipe alone ends at 306 MB, so full-screen memory is still an open item |
 
 Three problems found, three fixes:
 
@@ -184,7 +184,7 @@ How the fixes were checked: each one started from a trace, not a guess (a first 
 
 ## Testing
 
-- **278 unit tests** in Swift Testing, in three targets: Core 73, ImageLoading 50, UI 155, including 14 snapshot tests of the cell and the empty and error states in light and dark. Every class under test goes through `makeSUT` with leak tracking. Logic was built test first, one test at a time.
+- **280 unit tests** in Swift Testing, in three targets: Core 73, ImageLoading 50, UI 157, including 14 snapshot tests of the cell and the empty and error states in light and dark. Every class under test goes through `makeSUT` with leak tracking. Logic was built test first, one test at a time.
 - **4 XCUITests**, one per user journey: browse and page the feed, search and clear back to the feed, open a photo full screen and close it, launch offline with a saved feed. They run on bundled fixtures (`-useStubs`), with no network and no key.
 - **CI** runs `swift test`, then the UI tests on a simulator.
 

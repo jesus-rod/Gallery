@@ -24,9 +24,16 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M6 | Offline feed (`.scratch/m6-offline-feed/`) | done, merged |
 | M7 | Polish: UX states, accessibility (`.scratch/m7-polish/`) | done, merged (VoiceOver and Accessibility Inspector check left for M8) |
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 done; **next: ticket 08** (snapshot matrix on the iOS simulator, ready-for-agent, not started); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
-| M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | tickets 01–07 done; journeys, app icon, README Design section and screenshots pushed; review fixes (`.scratch/m9-review-fixes/`) done; **next: ticket 08** (user records Instruments, agent writes the numbers up) |
+| M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | done. Tickets 01–08 and review fixes (`.scratch/m9-review-fixes/`) done. Open: full-screen memory retention (see decision log, M9) |
 
-## Resume here (2026-11-23, late evening: Instruments pass)
+## Resume here (2026-11-23, Instruments write-up)
+
+- **Next: M8 ticket 08** (snapshot matrix, `.scratch/m8-ship/issues/08-snapshot-matrix.md`) is unblocked. Ask the user for the "iPhone Duo" point size and safe areas first.
+- M9 is done. The Instruments numbers and the glow approval are in the decision log (M9 section). The one open item is full-screen memory: a swipe-only Allocations trace ended with 306 MB persistent, 285 MB of it decoded images, still arriving through the swipe. The full-run after-fix Run B is still to be recorded.
+- The `allocations-intruments-2.trace` in the repo root was overwritten with the swipe-only run; the earlier 145 s run is gone. `allocations-intruments.trace` is the before-fix Run B (1.17 GB persistent). Traces are excluded from git.
+- Checked in the simulator (iPhone 18 Pro, iOS 27.2) with the Xcode MCP and a temporary probe: RSS was identical before and after the fix, because the app's baseline (~390 MB) dominates and the stub images are small. Don't use the simulator for memory numbers.
+
+## Earlier resume note (2026-11-23, late evening: Instruments pass)
 
 - **Next: `.scratch/m9-review-fixes/issues/07-grid-images-retained.md`.** Run B (Allocations) found 1.17 GB persistent, 1.135 GB of it decoded grid images kept by cells after scrolling. The fix (`PhotoImageModel.release()` on `onDisappear` in `PhotoCell` and `HeroHeader`, 2 new tests) is **in the working tree, uncommitted**; 278 tests green, lint clean. Ticket 07 "Next" lists the steps: optional simulator check, commit, user re-records Run B, write-up.
 - Done this session and pushed: review fixes 01–04 (`cfda3f4`, `3c83454`, `b5bde4f`, `4bb3c45`); README time log dropped and test counts (`e4482fd`, `02b3815`); ticket 05 pager cost (`29e524e`) and ticket 06 glow without live blur (`645ecad`), with re-records (`a3c7a60`, `6e667d1`). Full-screen swipe: 20.7 → 15.9 → 8.1 ms/s hitch time, GPU hitches 19 → 1, no hang.
