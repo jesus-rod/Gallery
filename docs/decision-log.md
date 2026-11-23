@@ -62,3 +62,4 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - Links to the Photographer and to Unsplash carry `utm_source=gallery_ios&utm_medium=referral`, as the API guidelines require. `UnsplashAttribution` builds them in Core; the app name comes from the composition root.
 - The Full-screen view asks for the grid image (a memory-cache hit, since the cell just showed it) and the full-screen Rendition at the same time, and never steps down: Preview → grid image → full image. A failed full image leaves the grid image; there is no error screen for it.
 - The full-screen Rendition goes through the same pipeline and memory cache as the grid, with its own quality setting (80, grid 75), so reopening a Photo is instant.
+- Zoom and pan maths live in a pure `ZoomTransform` value, tested without views; gestures only feed it numbers. 1× to 4×, double tap toggles 2.5× towards the tapped point, and the image edges never come inside the screen edges.
