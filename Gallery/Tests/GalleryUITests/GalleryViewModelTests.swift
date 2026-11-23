@@ -616,6 +616,100 @@ struct GalleryViewModelTests {
         #expect(loader.searchQueries.isEmpty)
     }
 
+    @Test func search_cancelsTheLoadMoreOfThePreviousQuery() async {
+        let (sut, loader) = makeSUT()
+        let cats = makePhotos(1...10)
+        let dogs = makePhotos(21...22)
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page(cats)))
+        loader.stubSearch(.success(loader.page(dogs, hasMore: false)))
+        loader.stubLoadMore(.success(loader.page(cats + makePhotos(11...12), hasMore: false)), gate: gate)
+        await sut.search("cats")
+
+        let loadMore = Task { await sut.searchPhotoAppeared(cats[9]) }
+        await gate.untilReached()
+        await sut.search("dogs")
+        gate.open()
+        await loadMore.value
+
+        #expect(loader.cancelledLoadMoreCount == 1)
+        #expect(sut.searchResults == SearchResults(query: "dogs", state: .loaded(photos: dogs, footer: .end)))
+    }
+
+    @Test func search_cancelsTheRetryOfThePreviousQuery() async {
+        let (sut, loader) = makeSUT()
+        let dogs = makePhotos(21...22)
+        let gate = Gate()
+        loader.stubSearch(.failure(AnyError()))
+        loader.stubSearch(.success(loader.page(makePhotos(1...3), hasMore: false)), gate: gate)
+        loader.stubSearch(.success(loader.page(dogs, hasMore: false)))
+        await sut.search("cats")
+
+        let retry = Task { await sut.retrySearch() }
+        await gate.untilReached()
+        await sut.search("dogs")
+        gate.open()
+        await retry.value
+
+        #expect(loader.cancelledSearchQueries == ["cats"])
+        #expect(sut.searchResults == SearchResults(query: "dogs", state: .loaded(photos: dogs, footer: .end)))
+    }
+
+    @Test func cancelSearch_cancelsAnInFlightSearchLoadMore() async {
+        let (sut, loader) = makeSUT()
+        let cats = makePhotos(1...10)
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page(cats)))
+        loader.stubLoadMore(.success(loader.page(cats + makePhotos(11...12), hasMore: false)), gate: gate)
+        await sut.search("cats")
+
+        let loadMore = Task { await sut.searchPhotoAppeared(cats[9]) }
+        await gate.untilReached()
+        sut.cancelSearch()
+        gate.open()
+        await loadMore.value
+
+        #expect(loader.cancelledLoadMoreCount == 1)
+        #expect(sut.searchResults == nil)
+    }
+
+    @Test func cancelSearch_cancelsAnInFlightSearchRetry() async {
+        let (sut, loader) = makeSUT()
+        let gate = Gate()
+        loader.stubSearch(.failure(AnyError()))
+        loader.stubSearch(.success(loader.page(makePhotos(1...3), hasMore: false)), gate: gate)
+        await sut.search("cats")
+
+        let retry = Task { await sut.retrySearch() }
+        await gate.untilReached()
+        sut.cancelSearch()
+        gate.open()
+        await retry.value
+
+        #expect(loader.cancelledSearchQueries == ["cats"])
+        #expect(sut.searchResults == nil)
+    }
+
+    @Test func cancelSearch_doesNotCancelTheFeedsLoadMore() async {
+        let (sut, loader) = makeSUT()
+        let feedPhotos = makePhotos(1...10)
+        let gate = Gate()
+        loader.stubFeed(.success(loader.page(feedPhotos)))
+        loader.stubLoadMore(.success(loader.page(feedPhotos + makePhotos(11...12), hasMore: false)), gate: gate)
+        loader.stubSearch(.success(loader.page([], hasMore: false)))
+        await sut.load()
+
+        let feedLoadMore = Task { await sut.photoAppeared(feedPhotos[9]) }
+        await gate.untilReached()
+        await sut.search("cats")
+        sut.cancelSearch()
+        gate.open()
+        await feedLoadMore.value
+
+        #expect(loader.cancelledLoadMoreCount == 0)
+        #expect(sut.feed == .loaded(photos: feedPhotos + makePhotos(11...12), footer: .end))
+    }
+
     private func makeSUT(sourceLocation: SourceLocation = #_sourceLocation) -> (GalleryViewModel, FeedLoaderSpy) {
         let loader = FeedLoaderSpy()
         let sut = GalleryViewModel(loadFeed: loader.loadFeed, search: loader.search)

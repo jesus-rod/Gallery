@@ -1,6 +1,6 @@
 # 01 — Cancel every in-flight request of an old search
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 Today only the first-Page load runs in `searchTask`, so `cancelSearch()` and a new Query cancel that and nothing else. A search load more or a `retrySearch()` in flight keeps its request running; the result is discarded (the pager is unreferenced) but the request still costs Request budget. M4 spec: "Submitting "dogs" while "cats" is still loading cancels the "cats" request" and "Any in-flight search is cancelled and its result discarded."
@@ -50,3 +50,8 @@ Spy: record cancellation for load more too, the same way `search` does: after th
 ## Commit
 
 `fix(ui): cancel every in-flight request of an abandoned search`
+
+## Comments
+
+- Only the first test (load more) was seen red. The retry, cancel-retry, cancel-load-more and feed-isolation tests passed on their first run, because `StreamPager.run` wraps every request path once the first test is green. They stay as regression tests.
+- `cancelSearch_doesNotCancelTheFeedsLoadMore` overlaps the existing `cancelSearch_keepsTheFeedLoadMoreRunning`; it is kept because the ticket lists it and it asserts the new cancellation counter.

@@ -11,17 +11,26 @@ final class StreamPager {
     @ObservationIgnored private let loadFirstPage: LoadFirstPage
     @ObservationIgnored private var loadMore: Paginated<Photo>.LoadMore?
     @ObservationIgnored private var generation = 0
+    @ObservationIgnored private var inFlight: Task<Void, Never>?
 
     init(loadFirstPage: @escaping LoadFirstPage) {
         self.loadFirstPage = loadFirstPage
     }
 
     func load() async {
-        do {
-            showFirstPage(try await loadFirstPage())
-        } catch {
-            state = .failed(LoadError(error))
+        await run {
+            do {
+                self.showFirstPage(try await self.loadFirstPage())
+            } catch {
+                self.state = .failed(LoadError(error))
+            }
         }
+    }
+
+    func cancel() {
+        inFlight?.cancel()
+        inFlight = nil
+        generation += 1
     }
 
     func refresh() async -> LoadError? {
@@ -39,7 +48,7 @@ final class StreamPager {
             state = .loading
             await load()
         case .loaded(let photos, .failed):
-            await loadMore(after: photos)
+            await run { await self.loadMore(after: photos) }
         default:
             return
         }
@@ -49,7 +58,13 @@ final class StreamPager {
         guard case .loaded(let photos, .idle) = state,
             photos.suffix(Self.loadMoreThreshold).contains(where: { $0.id == photo.id })
         else { return }
-        await loadMore(after: photos)
+        await run { await self.loadMore(after: photos) }
+    }
+
+    private func run(_ operation: @escaping @MainActor @Sendable () async -> Void) async {
+        let task = Task { await operation() }
+        inFlight = task
+        await task.value
     }
 
     private func loadMore(after photos: [Photo]) async {

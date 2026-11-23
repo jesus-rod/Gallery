@@ -17,7 +17,6 @@ public final class GalleryViewModel {
 
     @ObservationIgnored private let feedPager: StreamPager
     @ObservationIgnored private let searchPhotos: Search
-    @ObservationIgnored private var searchTask: Task<Void, Never>?
     private var activeSearch: ActiveSearch?
 
     private struct ActiveSearch {
@@ -54,13 +53,11 @@ public final class GalleryViewModel {
     public func search(_ query: String) async {
         let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty, query != activeSearch?.query else { return }
-        searchTask?.cancel()
+        activeSearch?.pager.cancel()
         let searchPhotos = searchPhotos
         let pager = StreamPager(loadFirstPage: { try await searchPhotos(query) })
         activeSearch = ActiveSearch(query: query, pager: pager)
-        let task = Task { await pager.load() }
-        searchTask = task
-        await task.value
+        await pager.load()
     }
 
     public func retrySearch() async {
@@ -72,8 +69,7 @@ public final class GalleryViewModel {
     }
 
     public func cancelSearch() {
-        searchTask?.cancel()
-        searchTask = nil
+        activeSearch?.pager.cancel()
         activeSearch = nil
     }
 }

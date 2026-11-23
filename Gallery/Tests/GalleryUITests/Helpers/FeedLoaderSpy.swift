@@ -12,6 +12,7 @@ final class FeedLoaderSpy {
     private(set) var loadMoreCallCount = 0
     private(set) var searchQueries: [String] = []
     private(set) var cancelledSearchQueries: [String] = []
+    private(set) var cancelledLoadMoreCount = 0
     private var feedStubs: [Stub] = []
     private var loadMoreStubs: [Stub] = []
     private var searchStubs: [Stub] = []
@@ -48,7 +49,10 @@ final class FeedLoaderSpy {
 
     private func loadMore() async throws -> Paginated<Photo> {
         loadMoreCallCount += 1
-        return try await resolve(next(from: &loadMoreStubs, named: "loadMore"))
+        let stub = next(from: &loadMoreStubs, named: "loadMore")
+        await stub.gate?.pass()
+        if Task.isCancelled { cancelledLoadMoreCount += 1 }
+        return try stub.result.get()
     }
 
     private func next(from stubs: inout [Stub], named name: String) -> Stub {
