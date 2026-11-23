@@ -15,6 +15,18 @@ final class GalleryAppUITests: XCTestCase {
     }
 
     @MainActor
+    func test_launch_loadsTheImagesOfTheFirstCells() {
+        let app = launchWithStubs()
+
+        let firstCell = app.images.matching(identifier: "photo-cell").firstMatch
+        XCTAssertTrue(firstCell.waitForExistence(timeout: 5))
+
+        let loaded = NSPredicate(format: "value == nil OR value == ''")
+        expectation(for: loaded, evaluatedWith: firstCell)
+        waitForExpectations(timeout: 5)
+    }
+
+    @MainActor
     func test_scrollingToTheEnd_loadsTheNextPage() {
         let app = launchWithStubs()
         let grid = app.scrollViews["photo-grid"]
