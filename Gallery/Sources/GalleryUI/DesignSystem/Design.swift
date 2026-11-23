@@ -23,6 +23,18 @@ enum Design {
         static let dim = 0.3
     }
 
+    enum Hero {
+        static let regularWidthMaximumHeight: CGFloat = 480
+        static let regularWidth: CGFloat = 600
+
+        static func height(for container: CGSize) -> CGFloat {
+            let isLandscape = container.width > container.height
+            let share = container.height * (isLandscape ? 0.5 : 0.6)
+            let capped = container.width >= regularWidth ? min(share, regularWidthMaximumHeight) : share
+            return capped.rounded()
+        }
+    }
+
     enum Motion {
         static func imageFade(reduceMotion: Bool) -> Animation? {
             reduceMotion ? nil : .easeOut(duration: 0.25)

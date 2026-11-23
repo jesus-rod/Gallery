@@ -81,7 +81,7 @@ public struct GalleryRootView: View {
     private var feedContent: some View {
         switch viewModel.feed {
         case .loading:
-            SkeletonGrid()
+            SkeletonGrid(showsHero: true)
         case .failed(let error):
             LoadErrorView(error: error) {
                 Task { await viewModel.retry() }
@@ -94,6 +94,7 @@ public struct GalleryRootView: View {
                 streamID: GalleryViewModel.feedStreamID,
                 zoomNamespace: zoomNamespace,
                 focusedPhotoID: focusedPhotoID(in: GalleryViewModel.feedStreamID),
+                hero: photos.first.map { PhotoGrid.Hero(photo: $0, appName: referralAppName) },
                 onPhotoAppear: { photo in Task { await viewModel.photoAppeared(photo) } },
                 onOpen: openFullScreen,
                 onRetry: { Task { await viewModel.retry() } }

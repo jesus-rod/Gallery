@@ -1,6 +1,6 @@
 # 06 — Stretchy hero at the top of the feed
 
-Status: ready-for-agent
+Status: done
 Blocked by: 02
 
 ## Shape
