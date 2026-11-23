@@ -1,6 +1,6 @@
 # 07 — Search UI: field, results, empty state, feed kept alive
 
-Status: ready-for-agent
+Status: done
 Blocked by: 05, 06
 
 `GalleryRootView` gets a search field and shows Search results over the Editorial feed. The feed view stays in the hierarchy while hidden, so its scroll position survives. Views stay logic-free: no unit tests here; check with `#Preview`s and a manual `-useStubs` run, and ticket 08 adds the XCUITests.

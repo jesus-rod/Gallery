@@ -45,6 +45,17 @@
         }
       }
     },
+    "No photos for “%@”" : {
+      "comment" : "Title shown when a search finds no photos; the argument is the Query.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No photos for “%@”"
+          }
+        }
+      }
+    },
     "Retry" : {
       "comment" : "Button that retries a failed request.",
       "localizations" : {
@@ -52,6 +63,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Retry"
+          }
+        }
+      }
+    },
+    "Search photos" : {
+      "comment" : "Prompt in the search field above the grid.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search photos"
           }
         }
       }
@@ -74,6 +96,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Taking a short break"
+          }
+        }
+      }
+    },
+    "Try a different search." : {
+      "comment" : "Message shown when a search finds no photos.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try a different search."
           }
         }
       }

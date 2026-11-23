@@ -79,6 +79,16 @@
             viewModel: PreviewData.viewModel { throw UnsplashAPIError.rateLimited }, images: PreviewData.images)
     }
 
+    #Preview("Search results") {
+        let viewModel = PreviewData.viewModel { Paginated(items: PreviewData.photos(1...30)) }
+        GalleryRootView(viewModel: viewModel, images: PreviewData.images)
+            .task { await viewModel.search("cats") }
+    }
+
+    #Preview("No search results") {
+        EmptySearchView(query: "cats")
+    }
+
     #Preview("Footer states") {
         VStack {
             FooterView(footer: .loading, onRetry: {})

@@ -50,4 +50,7 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - The Query is trimmed; an empty Query, or the Query already shown, sends no request (Request budget).
 - A new Query cancels the previous search's `Task` (the cancellation reaches `URLSession` through `PhotoStream`), and a late result can never show because it lands on the previous Query's pager, which nothing references any more.
 - Cancelling search only drops the search pager; the feed's pager, Photos and in-flight load more are untouched, so going back costs no request.
+- The feed view stays in a `ZStack` under Search results, hidden with opacity, hit testing and accessibility off, so its scroll position survives a search without storing it by hand.
+- Clearing the search field (or Cancel, which clears it) returns to the feed; the search field is always visible (`navigationBarDrawer(displayMode: .always)`).
+- Each Query's grid gets `.id(query)`, so new results start at the top.
 - `-useStubs` also answers search: `search-<query>-page-N.json` for "cats" (two Pages, `total_pages: 2`), zero results for any other Query, so the XCUITests stay offline.
