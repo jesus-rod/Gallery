@@ -24,12 +24,12 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M6 | Offline feed (`.scratch/m6-offline-feed/`) | done, merged |
 | M7 | Polish: UX states, accessibility (`.scratch/m7-polish/`) | done, merged (VoiceOver and Accessibility Inspector check left for M8) |
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 done; **next: ticket 08** (snapshot matrix on the iOS simulator, ready-for-agent, not started); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
-| M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | tickets 01–07 done; journeys, app icon, README Design section and screenshots pushed; **next: ticket 08** (user records Instruments, agent writes the numbers up) |
+| M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | tickets 01–07 done; journeys, app icon, README Design section and screenshots pushed; review fixes (`.scratch/m9-review-fixes/`) done; **next: ticket 08** (user records Instruments, agent writes the numbers up) |
 
-## Resume here (2026-11-23, after the review pass)
+## Resume here (2026-11-23, review fixes done)
 
-- **Next: `.scratch/m9-review-fixes/`**, tickets 01 → 04 in order (01 is housekeeping and unblocks the rest; agree ticket 04's seam with the user before its first test). The spec lists what the `/swiftui-pro` and `/ios-skills:essential-feed` reviews found and what was deliberately left out of this cut. After that, M9 ticket 08 (below) is still next.
-- **`3760214` fixed the back button sitting 54 pt lower after a search** (an active search keeps an empty nav bar over full screen). The journeys, lint and `swift test` all passed after it; the search journey also passed three repeat runs. Pushed.
+- **`.scratch/m9-review-fixes/` is done and pushed**: `cfda3f4` (decision log for the full-screen-after-search fix), `3c83454` (megapixels formatted with the locale), `b5bde4f` (refresh banner follows Reduce Motion and is announced; offline journey passed), and the `LoadFailure` commit (load errors classified in `GalleryCore`, new glossary term "Load failure"). The spec's "Not in this cut" list still holds the deferred findings.
+- **Next: M9 ticket 08** (below): the user records Instruments, the agent writes the numbers up.
 - XCUITest target is `GalleryAppUITests` (`-only-testing:GalleryAppUITests/GalleryAppUITests/<test>`), not `AppUITests` (that's only the folder).
 
 ## Earlier notes (2026-11-23, late night)

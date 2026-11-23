@@ -1,6 +1,6 @@
 # 04 — Classify load errors in the core, triangulated
 
-Status: ready-for-agent (agree the seam with the user first)
+Status: done (seam agreed: LoadFailure in Core)
 Blocked by: 01
 
 `GalleryUI/Gallery/LoadError.swift` switches over `URLError` codes and `UnsplashAPIError` to pick offline / rate limited / invalid key / generic. The UI module so knows the transport's error types (EF-14). The mapping is also only half tested (EF-32): `GalleryViewModelTests` (around line 29) covers `.notConnectedToInternet`, `.rateLimited` and a generic error; `.networkConnectionLost`, `.dataNotAllowed`, `.timedOut` and `UnsplashAPIError.unauthorized → .invalidKey` are untested.

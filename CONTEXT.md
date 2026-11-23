@@ -59,3 +59,7 @@ _Avoid_: Quota, rate limit (that is the event of exhausting it)
 **Offline feed**:
 The most recently loaded Photos of the Editorial feed, kept on the device so they can be shown when the network is unavailable.
 _Avoid_: Cache (too generic), snapshot, saved feed
+
+**Load failure**:
+Why a Page could not be loaded, in the user's terms: offline, Request budget exhausted, access key rejected, or anything else. Each screen chooses its own wording for it.
+_Avoid_: Network error (most failures are not about the network), API error

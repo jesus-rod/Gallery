@@ -1,6 +1,6 @@
 # Review fixes after M9
 
-Status: tickets ready
+Status: done
 
 ## Goal
 
