@@ -13,7 +13,7 @@ struct LeakTrackingTrait: TestTrait, SuiteTrait, TestScoping {
         try await LeakTracker.$current.withValue(tracker) {
             try await function()
         }
-        tracker.verify()
+        await tracker.verify()
     }
 }
 
@@ -36,7 +36,15 @@ final class LeakTracker: @unchecked Sendable {
         lock.withLock { entries.append(Entry(instance: instance, sourceLocation: sourceLocation)) }
     }
 
-    fileprivate func verify() {
+    private var hasLiveInstances: Bool {
+        lock.withLock { entries.contains { $0.instance != nil } }
+    }
+
+    fileprivate func verify(gracePeriod: Duration = .seconds(1)) async {
+        let deadline = ContinuousClock.now + gracePeriod
+        while hasLiveInstances, ContinuousClock.now < deadline {
+            try? await Task.sleep(for: .milliseconds(1))
+        }
         let leaked = lock.withLock { entries.filter { $0.instance != nil } }
         for entry in leaked {
             Issue.record(

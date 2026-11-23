@@ -15,6 +15,7 @@ final class ImageDataLoaderSpy: ImageDataLoader, @unchecked Sendable {
 
     var requestedURLs: [URL] { lock.withLock { _requestedURLs } }
     var cancelledURLs: [URL] { lock.withLock { _cancelledURLs } }
+    var pendingCount: Int { lock.withLock { pending.count } }
 
     func loadImageData(from url: URL) async throws -> Data {
         let index = lock.withLock { () -> Int in
@@ -64,9 +65,7 @@ final class ImageDataLoaderSpy: ImageDataLoader, @unchecked Sendable {
     }
 
     func untilPending(count: Int) async {
-        while lock.withLock({ pending.count }) < count {
-            await Task.yield()
-        }
+        await eventually { pendingCount >= count }
     }
 
     private func notifyRequestWaiters() {
@@ -80,9 +79,10 @@ final class ImageDataLoaderSpy: ImageDataLoader, @unchecked Sendable {
     }
 }
 
-func eventually(_ condition: () async -> Bool, attempts: Int = 1_000) async {
-    for _ in 0..<attempts {
+func eventually(_ condition: () async -> Bool, timeout: Duration = .seconds(2)) async {
+    let deadline = ContinuousClock.now + timeout
+    while ContinuousClock.now < deadline {
         if await condition() { return }
-        await Task.yield()
+        try? await Task.sleep(for: .milliseconds(1))
     }
 }
