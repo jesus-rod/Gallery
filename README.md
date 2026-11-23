@@ -40,9 +40,9 @@ The structure follows Apple Photos on iOS 26, with three additions that cost no 
 - **Stretchy hero**: the feed opens with its first photo full width. Pulling down stretches it from the top, scrolling moves it at half speed. Both are computed in `.visualEffect`, so scrolling writes no state.
 - **Glass chrome**: Back, Share and Info are glass circles (material before iOS 26). The title holds the caption and "Photo by Name", so the photo stays unobstructed and the credit stays on screen. Info opens a sheet with the full credit, description and size.
 
-| Feed with hero | Full screen | Ambient glow |
+| Feed | Full screen | Ambient glow |
 |---|---|---|
-| <img src="docs/images/feed.jpg" width="250" alt="Feed with the stretchy hero and the grid"> | <img src="docs/images/full-screen.jpg" width="250" alt="Full-screen photo with glass controls"> | <img src="docs/images/full-screen-glow.jpg" width="250" alt="Full-screen photo glowing with its own colours"> |
+| <img src="docs/images/feed.jpg" width="250" alt="Feed with the hero photo and the grid"> | <img src="docs/images/full-screen.jpg" width="250" alt="Full-screen photo with glass controls"> | <img src="docs/images/full-screen-glow.jpg" width="250" alt="Full-screen photo glowing with its own colours"> |
 
 <img src="docs/images/landscape.jpg" width="770" alt="Full-screen photo in landscape">
 
