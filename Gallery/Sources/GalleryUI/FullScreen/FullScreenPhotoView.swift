@@ -70,6 +70,7 @@ struct FullScreenPhotoView: View {
         }
         #if os(iOS)
             .toolbar(.hidden, for: .navigationBar)
+            .navigationBarBackButtonHidden(true)
             .statusBarHidden(!isChromeVisible)
         #endif
     }
