@@ -53,9 +53,14 @@
         }
 
         @MainActor
-        static func viewModel(_ load: @escaping GalleryViewModel.LoadFeed) -> GalleryViewModel {
+        static func viewModel(
+            offlineFeed: [Photo] = [],
+            _ load: @escaping GalleryViewModel.LoadFeed
+        ) -> GalleryViewModel {
             GalleryViewModel(
-                loadFeed: load, loadOfflineFeed: { [] }, search: { _ in Paginated(items: PreviewData.photos(31...42)) })
+                loadFeed: load,
+                loadOfflineFeed: { offlineFeed },
+                search: { _ in Paginated(items: PreviewData.photos(31...42)) })
         }
     }
 
@@ -80,6 +85,22 @@
         GalleryRootView(
             viewModel: PreviewData.viewModel { throw URLError(.notConnectedToInternet) }, images: PreviewData.images,
             referralAppName: PreviewData.referralAppName)
+    }
+
+    #Preview("Offline feed") {
+        GalleryRootView(
+            viewModel: PreviewData.viewModel(offlineFeed: PreviewData.photos(1...12)) {
+                throw URLError(.notConnectedToInternet)
+            },
+            images: PreviewData.images,
+            referralAppName: PreviewData.referralAppName)
+    }
+
+    #Preview("Offline banners") {
+        VStack {
+            OfflineBanner(reason: .offline)
+            OfflineBanner(reason: .rateLimited)
+        }
     }
 
     #Preview("Rate limited") {

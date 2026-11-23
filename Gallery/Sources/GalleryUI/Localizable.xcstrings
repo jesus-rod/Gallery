@@ -111,6 +111,17 @@
         }
       }
     },
+    "Showing saved photos" : {
+      "comment" : "Banner above the grid when saved photos are shown because loading failed for a reason other than being offline.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Showing saved photos"
+          }
+        }
+      }
+    },
     "Something went wrong" : {
       "comment" : "Title shown for an unexpected loading error.",
       "localizations" : {
@@ -184,6 +195,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "You're offline"
+          }
+        }
+      }
+    },
+    "You're offline · Showing saved photos" : {
+      "comment" : "Banner above the grid when saved photos are shown because the device has no network connection.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're offline · Showing saved photos"
           }
         }
       }

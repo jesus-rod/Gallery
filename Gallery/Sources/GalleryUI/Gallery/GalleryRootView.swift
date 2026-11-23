@@ -71,6 +71,11 @@ public struct GalleryRootView: View {
                 onRetry: { Task { await viewModel.retry() } }
             )
             .refreshable { await viewModel.refresh() }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if let reason = viewModel.offlineFeedReason {
+                    OfflineBanner(reason: reason)
+                }
+            }
             .overlay(alignment: .top) {
                 if let error = viewModel.refreshError {
                     RefreshErrorBanner(error: error, onDismiss: viewModel.dismissRefreshError)

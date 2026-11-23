@@ -89,3 +89,4 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - The view model falls back to the Offline feed on any first-Page error, not only offline, because a rate-limited or failing API also leaves nothing to show; `offlineFeedReason` keeps the error so the banner can say why.
 - The Offline feed has no load more: paging needs the network, and the saved Photos are a prefix of the feed.
 - The fallback lives in `StreamPager` (one place, used by first load, retry and refresh); Search pagers get no offline closure, so Search results are never replaced by saved Photos.
+- The Offline banner is persistent (not auto-dismissed) and sits in a top safe-area inset of the feed grid, so it pushes Photos down instead of covering them and hides with the feed during search; the refresh error banner stays an overlay above it.
