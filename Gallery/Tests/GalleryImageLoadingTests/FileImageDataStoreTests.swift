@@ -55,6 +55,17 @@ final class FileImageDataStoreTests {
         #expect(try await FileImageDataStore(directory: other).retrieve(for: urlA) == nil)
     }
 
+    @Test func retrieve_returnsTheDataWhenUpdatingTheLastUsedDateFails() async throws {
+        let sut = makeSUT()
+        try await sut.insert(tenBytes, for: urlA)
+        let file = try #require(
+            try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil).first)
+        try FileManager.default.setAttributes([.immutable: true], ofItemAtPath: file.path())
+        defer { try? FileManager.default.setAttributes([.immutable: false], ofItemAtPath: file.path()) }
+
+        #expect(try await sut.retrieve(for: urlA) == tenBytes)
+    }
+
     @Test func evict_doesNothingWhenUnderBudget() async throws {
         let sut = makeSUT()
         try await sut.insert(tenBytes, for: urlA)

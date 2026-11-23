@@ -1,6 +1,6 @@
 # 05 — A disk hit survives a failed last-used update
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 `FileImageDataStore.retrieve(for:)` reads the data, then `try markUsed(file)`. If updating the modification date fails, `retrieve` throws even though it has the bytes, and `DiskCachingImageDataLoader` treats the error as a miss and fetches from the network. The last-used date only feeds LRU eviction, so a failure there should never cost a download. Same rule as the M3 decision "Store errors never fail a load".
@@ -30,3 +30,7 @@ Blocked by: none
 ## Commit
 
 `fix(image-loading): keep a disk hit when the last-used date can't be updated`
+
+## Comments
+
+- The immutable flag made `setAttributes` fail on macOS as the ticket expected, so no production seam was needed. The test finds the cached file through the store directory, since the file-name helper is private.

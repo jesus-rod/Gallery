@@ -15,7 +15,7 @@ public actor FileImageDataStore: ImageDataStore {
         let file = fileURL(for: url)
         guard fileManager.fileExists(atPath: file.path()) else { return nil }
         let data = try Data(contentsOf: file)
-        try markUsed(file)
+        try? markUsed(file)
         return data
     }
 
