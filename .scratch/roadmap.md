@@ -26,11 +26,16 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 done; **next: ticket 08** (snapshot matrix on the iOS simulator, ready-for-agent, not started); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
 | M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | tickets 01–07 done; journeys, app icon, README Design section and screenshots pushed; **next: ticket 08** (user records Instruments, agent writes the numbers up) |
 
-## Resume here (2026-11-23, late night)
+## Resume here (2026-11-23, after the review pass)
+
+- **Next: `.scratch/m9-review-fixes/`**, tickets 01 → 04 in order (01 is housekeeping and unblocks the rest; agree ticket 04's seam with the user before its first test). The spec lists what the `/swiftui-pro` and `/ios-skills:essential-feed` reviews found and what was deliberately left out of this cut. After that, M9 ticket 08 (below) is still next.
+- **`3760214` fixed the back button sitting 54 pt lower after a search** (an active search keeps an empty nav bar over full screen). The journeys, lint and `swift test` all passed after it; the search journey also passed three repeat runs. Pushed.
+- XCUITest target is `GalleryAppUITests` (`-only-testing:GalleryAppUITests/GalleryAppUITests/<test>`), not `AppUITests` (that's only the folder).
+
+## Earlier notes (2026-11-23, late night)
 
 - **M9 tickets 01–07 are done and pushed**, plus `6043016` (README Design section, ADR 0007 row, test counts), `037ae1a` (XCUITest journeys for the new look), `7e612bc` (app icon), `8a4e2db` and `a388fdb` (README screenshots taken with a live key, in `docs/images/`, including iPhone Duo) and `b2edc3e` (edge-to-edge feed with a floating title like Photos).
 - **Edge-to-edge feed (`b2edc3e`)**: the grid ignores the side safe area (Duo strip, landscape) and, with a hero, the top one; a custom large white "Gallery" toolbar item stays pinned while the hero shows; soft top scroll edge. User approved the look as is. Accepted gap: on iOS 27 the soft edge is tinted light and the status bar stays dark (iOS 27 only applies the dark bar scheme with a "visible" bar background, which turns the edge hard). If the user revisits it, the fallback is our own dark gradient behind the title.
-- **Not rerun after `b2edc3e`'s last two tweaks** (bar background removed, soft edge added): the XCUITest journeys (they passed just before) and lint/`swift test` (passed just before). Run them at the start of the next session.
 - **README screenshots are stale**: `docs/images/feed.jpg`, `duo-folded.jpg` and `duo-unfolded.jpg` show the old white header and the Duo side strip. Ask the user for new ones (they take them with a live key on their own simulator and send Desktop paths); convert with `sips -s format jpeg -s formatOptions 82 -Z <max side>`.
 - **XCUITests run locally on demand only, never in CI** (user's call): CI keeps `if: ${{ false }}` in `.github/workflows/ci.yml`. All four journeys passed on iPhone 17 Pro iOS 26 (`B24D2789…`) and iPhone 17 iOS 27.0 (`A9F21523-F10E-4219-9FD6-6F7F7FE91D73`). Run them when a change touches a journey or when the user asks.
 - **App icon**: `App/Assets.xcassets/AppIcon.appiconset/AppIcon.png`, a single 1024 px universal icon drawn by a throwaway CoreGraphics script (not in the repo; redraw it if the icon changes).
