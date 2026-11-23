@@ -139,11 +139,15 @@ public struct GalleryRootView: View {
 extension View {
     fileprivate func searchField(text: Binding<String>) -> some View {
         #if os(iOS)
-            searchable(
-                text: text,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: Text("Search photos", bundle: .module)
-            )
+            if #available(iOS 26, *) {
+                searchable(text: text, prompt: Text("Search photos", bundle: .module))
+            } else {
+                searchable(
+                    text: text,
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: Text("Search photos", bundle: .module)
+                )
+            }
         #else
             searchable(text: text, prompt: Text("Search photos", bundle: .module))
         #endif

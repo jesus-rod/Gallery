@@ -14,6 +14,7 @@ enum Design {
 
     enum Opacity {
         static let scrim = 0.6
+        static let cellScrim = 0.45
         static let titleScrim = 0.45
         static let secondaryText = 0.75
     }

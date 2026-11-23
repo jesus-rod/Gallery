@@ -76,15 +76,15 @@ struct PhotoCell: View {
 
     private var captionLabel: some View {
         Text(verbatim: caption)
-            .font(.caption)
+            .font(.caption.weight(.medium))
             .lineLimit(1)
             .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, Design.Spacing.small)
-            .padding(.top, Design.Spacing.medium)
+            .padding(.top, Design.Spacing.small)
             .padding(.bottom, Design.Spacing.small)
-            .background(Scrim())
+            .background(Scrim(opacity: Design.Opacity.cellScrim))
     }
 
     private var fadeAnimation: Animation? {

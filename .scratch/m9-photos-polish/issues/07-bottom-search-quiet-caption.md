@@ -1,6 +1,6 @@
 # 07 — Bottom search on iOS 26, quieter grid Caption
 
-Status: ready-for-agent
+Status: done
 Blocked by: none (do after 06 so the hero and the bars are checked together)
 
 ## Files
