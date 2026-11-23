@@ -19,7 +19,7 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M1 | Feed API + paging (`.scratch/m1-feed-api/`) | done |
 | M2 | Grid UI with fixtures, `-useStubs` launch path, XCUITest target (`.scratch/m2-grid-ui/`) | done |
 | M3 | Image pipeline (`.scratch/m3-image-pipeline/`) | done (ticket 12, the live-key run, is waiting on the user) |
-| M4 | Search | next: write spec |
+| M4 | Search (`.scratch/m4-search/`) | spec written, tickets ready |
 | M5 | Full-screen view + transition | |
 | M6 | Offline feed | |
 | M7 | Polish: UX states, accessibility | |
