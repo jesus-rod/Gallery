@@ -34,10 +34,16 @@ struct FullScreenPhotoView: View {
             .simultaneousGesture(magnifyGesture)
             .simultaneousGesture(dragGesture)
             .accessibilitySortPriority(2)
-            closeLayer
+            FullScreenCloseLayer(isVisible: isChromeVisible)
                 .accessibilitySortPriority(3)
-            captionLayer
-                .accessibilitySortPriority(1)
+            FullScreenCaptionLayer(
+                caption: caption(for: route.photo),
+                photographer: route.photo.photographer,
+                appName: referralAppName,
+                maxHeight: container.height * 0.4,
+                isVisible: isChromeVisible
+            )
+            .accessibilitySortPriority(1)
         }
         .ignoresSafeArea()
         .onGeometryChange(for: CGSize.self) {
@@ -45,7 +51,7 @@ struct FullScreenPhotoView: View {
         } action: {
             container = $0
         }
-        .accessibilityAction(.escape) { dismiss() }
+        .accessibilityAction(.escape, close)
         .task(id: fittingSize) {
             guard fittingSize.width > 0, fittingSize.height > 0 else { return }
             await model.load(fitting: fittingSize)
@@ -113,60 +119,6 @@ struct FullScreenPhotoView: View {
         }
     }
 
-    private var closeLayer: some View {
-        Color.clear
-            .overlay(alignment: .topLeading) {
-                closeButton
-            }
-            .safeAreaPadding()
-            .foregroundStyle(.white)
-            .opacity(isChromeVisible ? 1 : 0)
-            .allowsHitTesting(isChromeVisible)
-            .accessibilityElement(children: .contain)
-            .accessibilityHidden(!isChromeVisible)
-    }
-
-    private var captionLayer: some View {
-        ViewThatFits(in: .vertical) {
-            captionBlock
-            ScrollView { captionBlock }
-        }
-        .frame(maxWidth: .infinity, maxHeight: container.height * 0.4, alignment: .leading)
-        .padding()
-        .background(LinearGradient(colors: [.clear, .black.opacity(0.6)], startPoint: .top, endPoint: .bottom))
-        .frame(maxHeight: .infinity, alignment: .bottom)
-        .safeAreaPadding()
-        .foregroundStyle(.white)
-        .opacity(isChromeVisible ? 1 : 0)
-        .allowsHitTesting(isChromeVisible)
-        .accessibilityHidden(!isChromeVisible)
-    }
-
-    private var captionBlock: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(verbatim: caption(for: route.photo))
-                .font(.headline)
-                .lineLimit(3)
-            PhotoCreditView(photographer: route.photo.photographer, appName: referralAppName)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var closeButton: some View {
-        Button {
-            dismiss()
-        } label: {
-            Image(systemName: "xmark")
-                .font(.title3.weight(.semibold))
-                .frame(width: 44, height: 44)
-                .background(.black.opacity(0.4), in: .circle)
-                .contentShape(.circle)
-        }
-        .foregroundStyle(.white)
-        .accessibilityLabel(Text("Close", bundle: .module))
-        .accessibilityIdentifier("full-screen-close")
-    }
-
     private var tapGesture: some Gesture {
         SpatialTapGesture(count: 2)
             .onEnded { value in
@@ -221,6 +173,10 @@ struct FullScreenPhotoView: View {
                     }
                 }
             }
+    }
+
+    private func close() {
+        dismiss()
     }
 
     private func apply(_ next: ZoomTransform) {
