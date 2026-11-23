@@ -1,6 +1,6 @@
 # 06 — Merge the XCUITests into one test per journey
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01–05 (run after the other review fixes; ticket 03 runs the UI tests)
 
 The roadmap settles on "2–3 XCUITest acceptance tests", but M2–M4 left six, each relaunching the app. Merge them into one test per user journey and leave the details to unit tests, which already cover them.

@@ -6,88 +6,61 @@ final class GalleryAppUITests: XCTestCase {
     }
 
     @MainActor
-    func test_launch_showsTheFirstPageOfTheEditorialFeed() {
+    func test_browsingTheEditorialFeed_showsLoadedPhotosAndPagesOnScroll() {
         let app = launchWithStubs()
+        let grid = app.scrollViews["photo-grid"]
+        XCTAssertTrue(grid.waitForExistence(timeout: 5), "The feed grid should appear on launch")
 
         let firstCell = app.images.matching(identifier: "photo-cell").firstMatch
-        XCTAssertTrue(firstCell.waitForExistence(timeout: 5))
-        XCTAssertEqual(firstCell.label, "Fixture photo 1")
-    }
-
-    @MainActor
-    func test_launch_loadsTheImagesOfTheFirstCells() {
-        let app = launchWithStubs()
-
-        let firstCell = app.images.matching(identifier: "photo-cell").firstMatch
-        XCTAssertTrue(firstCell.waitForExistence(timeout: 5))
+        XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "The first page should show its first cell")
+        XCTAssertEqual(firstCell.label, "Fixture photo 1", "The first cell should be the first fixture Photo")
 
         let loaded = NSPredicate(format: "value == nil OR value == ''")
         expectation(for: loaded, evaluatedWith: firstCell)
         waitForExpectations(timeout: 5)
-    }
-
-    @MainActor
-    func test_scrollingToTheEnd_loadsTheNextPage() {
-        let app = launchWithStubs()
-        let grid = app.scrollViews["photo-grid"]
-        XCTAssertTrue(grid.waitForExistence(timeout: 5))
 
         let firstPhotoOfPage2 = app.images["Fixture photo 31"]
-        for _ in 0..<20 where !firstPhotoOfPage2.exists {
-            grid.swipeUp(velocity: .fast)
-        }
-
-        XCTAssertTrue(firstPhotoOfPage2.waitForExistence(timeout: 5))
+        scrollUntil(firstPhotoOfPage2, in: grid)
+        XCTAssertTrue(firstPhotoOfPage2.waitForExistence(timeout: 5), "Scrolling to the end should load the next page")
     }
 
     @MainActor
-    func test_submittingAQuery_showsItsSearchResults() {
-        let app = launchWithStubs()
-        XCTAssertTrue(app.images["Fixture photo 1"].waitForExistence(timeout: 5))
-
-        submitSearch("cats", in: app)
-
-        XCTAssertTrue(app.images["Cat fixture photo 1"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.images["Fixture photo 1"].exists)
-    }
-
-    @MainActor
-    func test_clearingTheQuery_returnsToTheFeedAtTheSameScrollPosition() {
+    func test_searching_showsResultsAndClearingReturnsToTheFeedWhereItWas() {
         let app = launchWithStubs()
         let grid = app.scrollViews["photo-grid"]
-        XCTAssertTrue(grid.waitForExistence(timeout: 5))
+        XCTAssertTrue(grid.waitForExistence(timeout: 5), "The feed grid should appear on launch")
 
         let firstPhotoOfPage2 = app.images["Fixture photo 31"]
-        for _ in 0..<20 where !firstPhotoOfPage2.exists {
-            grid.swipeUp(velocity: .fast)
-        }
-        XCTAssertTrue(firstPhotoOfPage2.waitForExistence(timeout: 5))
+        scrollUntil(firstPhotoOfPage2, in: grid)
+        XCTAssertTrue(firstPhotoOfPage2.waitForExistence(timeout: 5), "Scrolling to the end should load the next page")
 
         submitSearch("cats", in: app)
-        XCTAssertTrue(app.images["Cat fixture photo 1"].waitForExistence(timeout: 5))
+        XCTAssertTrue(
+            app.images["Cat fixture photo 1"].waitForExistence(timeout: 5),
+            "Submitting a Query should show its Search results")
+        XCTAssertFalse(app.images["Fixture photo 1"].exists, "The feed should be hidden while Search results show")
 
         let field = app.searchFields.firstMatch
         field.tap()
         field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: "cats".count))
 
-        XCTAssertTrue(app.images["Fixture photo 31"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.images["Cat fixture photo 1"].exists)
+        XCTAssertTrue(
+            app.images["Fixture photo 31"].waitForExistence(timeout: 5),
+            "Clearing the Query should return to the feed at its scroll position")
+        XCTAssertFalse(app.images["Cat fixture photo 1"].exists, "Clearing the Query should remove its Search results")
     }
 
     @MainActor
-    func test_searchingWithNoResults_showsTheQueryInTheEmptyState() {
-        let app = launchWithStubs()
-        XCTAssertTrue(app.images["Fixture photo 1"].waitForExistence(timeout: 5))
-
-        submitSearch("zzzz", in: app)
-
-        XCTAssertTrue(app.staticTexts["No photos for “zzzz”"].waitForExistence(timeout: 5))
+    private func scrollUntil(_ element: XCUIElement, in grid: XCUIElement) {
+        for _ in 0..<20 where !element.exists {
+            grid.swipeUp(velocity: .fast)
+        }
     }
 
     @MainActor
     private func submitSearch(_ query: String, in app: XCUIApplication) {
         let field = app.searchFields.firstMatch
-        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        XCTAssertTrue(field.waitForExistence(timeout: 5), "The search field should be visible")
         field.tap()
         field.typeText(query + "\n")
     }
