@@ -162,17 +162,29 @@ Every decision, big or small, is listed in [`docs/decision-log.md`](docs/decisio
 - **No duplicated work**: one in-flight request per URL, shared by every caller (cell, prefetch, full screen). Prefetch covers the next 9 photos. Cancelling a prefetch never cancels a visible cell.
 - **Minimal SwiftUI updates**: `@Observable` models scoped per cell. Images already in memory show on the first frame, with no placeholder or fade. The full-screen overlay is kept out of per-frame gesture updates.
 
-Instruments, on device after scrolling about 500 images (to fill in):
+### Measured with Instruments
 
-| Instrument | Result |
-|---|---|
-| Time Profiler (scroll) | _TODO: hitches, main-thread time_ |
-| Allocations (scroll ~500, open/close ~20 full screen) | _TODO: steady-state memory_ |
-| SwiftUI (body updates while scrolling) | _TODO_ |
+On an iPhone 15 Plus (60 Hz, iOS 27), Release build, live key. Run A used the SwiftUI template (SwiftUI, Hangs, Animation Hitches, Time Profiler); Run B used Allocations. Apple's hitch guidance: under 5 ms/s is good, 5–10 noticeable, over 10 critical.
+
+| Scenario | Before | After |
+|---|---|---|
+| Hero pull and feed scroll | 0 hitches, 10% main thread | unchanged |
+| Grid scroll, ~300 images | 6.5 ms/s hitch time, 13% main thread, all downsampling off the main thread | unchanged |
+| Full-screen swipe, ~50 photos | **20.7 ms/s**, 19 GPU-bound hitches, a 159 ms hang | **8.1 ms/s**, 1 GPU-bound hitch, no hang |
+| Dismiss drag | 3.4 ms/s | unchanged |
+| Memory after scrolling ~500 images | **1.17 GB** still in memory, 1.135 GB of it decoded grid images | _re-record pending_ |
+
+Three problems found, three fixes:
+
+1. **The full-screen pager rebuilt itself on every update** (Time Profiler: `FullScreenPhotoView.body` on every page change and every frame of the dismiss drag, copying the whole Stream each time). A small `PagerWindow` value now works out the current photo and the neighbours that load the full image once per update, and the drag offset moved to its own observable model that only the views that move read. Result: 15.9 ms/s, no mid-swipe hang, and the body no longer shows in the profile.
+2. **The ambient glow was a radius-60 blur over the whole screen**, doubled during the page cross-fade (Animation Hitches: GPU-bound frames with up to 31 offscreen passes). A BlurHash is already smooth, so the glow is now the 32 × 32 Preview scaled up and dimmed, with no filter. Result: 8.1 ms/s, GPU hitches 19 → 1.
+3. **Grid cells kept their decoded images after scrolling away** (Allocations: 438 live images, far beyond the 100 MB cache). SwiftUI keeps a lazy grid cell's state after it leaves the screen, so each cell's image model held on to its image. Cells and the hero now release the image on `onDisappear` and read it back from the memory or disk cache when they return.
+
+How the fixes were checked: each one started from a trace, not a guess (a first guess for problem 3, that full-screen images were being kept, was wrong and reverted). The logic changes were built test first: `PagerWindowTests` for the pager window, and two `PhotoImageModelTests` for releasing and re-reading the cache. Then the same scenario was recorded again on the same phone with the same build settings, and the numbers above come from those recordings, read with `xctrace export`. The full method and every run are in [`.scratch/m9-photos-polish/instruments-run-a.md`](.scratch/m9-photos-polish/instruments-run-a.md).
 
 ## Testing
 
-- **272 unit tests** in Swift Testing, in three targets: Core 73, ImageLoading 50, UI 149, including 14 snapshot tests of the cell and the empty and error states in light and dark. Every class under test goes through `makeSUT` with leak tracking. Logic was built test first, one test at a time.
+- **278 unit tests** in Swift Testing, in three targets: Core 73, ImageLoading 50, UI 155, including 14 snapshot tests of the cell and the empty and error states in light and dark. Every class under test goes through `makeSUT` with leak tracking. Logic was built test first, one test at a time.
 - **4 XCUITests**, one per user journey: browse and page the feed, search and clear back to the feed, open a photo full screen and close it, launch offline with a saved feed. They run on bundled fixtures (`-useStubs`), with no network and no key.
 - **CI** runs `swift test`, then the UI tests on a simulator.
 
