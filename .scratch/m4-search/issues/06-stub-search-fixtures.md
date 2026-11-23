@@ -1,6 +1,6 @@
 # 06 — Search fixtures for `-useStubs`
 
-Status: ready-for-agent
+Status: done
 Blocked by: 02
 
 `StubHTTPClient` answers `/search/photos` from bundled fixtures, so search works offline under `-useStubs` and the XCUITests (ticket 08) never touch the network. "cats" has two Pages (30 + 10 Photos, `total_pages: 2`); every other Query, and any missing page, answers zero results. No unit test: the app target has no unit test target (same as M2/07); ticket 08 covers this end to end.
