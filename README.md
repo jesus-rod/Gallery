@@ -46,6 +46,10 @@ The structure follows Apple Photos on iOS 26, with three additions that cost no 
 
 <img src="docs/images/landscape.jpg" width="770" alt="Full-screen photo in landscape">
 
+On iPhone Duo, folded and unfolded:
+
+<img src="docs/images/duo-folded.jpg" height="380" alt="Feed on iPhone Duo, folded"> <img src="docs/images/duo-unfolded.jpg" height="380" alt="Full-screen photo on iPhone Duo, unfolded">
+
 ## Architecture
 
 ```mermaid
