@@ -15,7 +15,7 @@ struct FullScreenCaptionLayer: View {
         }
         .frame(maxWidth: .infinity, maxHeight: maxHeight, alignment: .leading)
         .padding()
-        .background(LinearGradient(colors: [.clear, .black.opacity(0.6)], startPoint: .top, endPoint: .bottom))
+        .background(Scrim())
         .frame(maxHeight: .infinity, alignment: .bottom)
         .safeAreaPadding()
         .foregroundStyle(.white)
@@ -25,7 +25,7 @@ struct FullScreenCaptionLayer: View {
     }
 
     private var captionBlock: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Design.Spacing.small) {
             Text(verbatim: caption)
                 .font(.headline)
                 .lineLimit(3)

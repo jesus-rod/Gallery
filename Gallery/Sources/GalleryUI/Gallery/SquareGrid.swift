@@ -13,14 +13,14 @@ struct SquareGrid<Content: View>: View {
     #endif
 
     private var cellSide: CGFloat {
-        let spacing = gridSpacing * CGFloat(columnCount - 1)
+        let spacing = Design.Spacing.gridGap * CGFloat(columnCount - 1)
         return max(0, ((width - spacing) / CGFloat(columnCount)).rounded(.down))
     }
 
     var body: some View {
         LazyVGrid(
-            columns: Array(repeating: GridItem(.flexible(), spacing: gridSpacing), count: columnCount),
-            spacing: gridSpacing
+            columns: Array(repeating: GridItem(.flexible(), spacing: Design.Spacing.gridGap), count: columnCount),
+            spacing: Design.Spacing.gridGap
         ) {
             content(cellSide)
         }
@@ -31,5 +31,3 @@ struct SquareGrid<Content: View>: View {
         }
     }
 }
-
-private let gridSpacing: CGFloat = 2

@@ -81,13 +81,13 @@ struct PhotoCell: View {
             .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 8)
-            .padding(.top, 16)
-            .padding(.bottom, 6)
-            .background(LinearGradient(colors: [.clear, .black.opacity(0.55)], startPoint: .top, endPoint: .bottom))
+            .padding(.horizontal, Design.Spacing.small)
+            .padding(.top, Design.Spacing.medium)
+            .padding(.bottom, Design.Spacing.small)
+            .background(Scrim())
     }
 
     private var fadeAnimation: Animation? {
-        model.wasCachedOnAppear || reduceMotion ? nil : .easeOut(duration: 0.25)
+        model.wasCachedOnAppear ? nil : Design.Motion.imageFade(reduceMotion: reduceMotion)
     }
 }

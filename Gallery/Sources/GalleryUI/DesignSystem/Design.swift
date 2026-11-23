@@ -1,0 +1,29 @@
+import SwiftUI
+
+enum Design {
+    enum Spacing {
+        static let gridGap: CGFloat = 2
+        static let small: CGFloat = 8
+        static let medium: CGFloat = 16
+    }
+
+    enum Size {
+        static let hitTarget: CGFloat = 44
+        static let bannerCornerRadius: CGFloat = 20
+    }
+
+    enum Opacity {
+        static let scrim = 0.6
+        static let controlFill = 0.4
+    }
+
+    enum Motion {
+        static func imageFade(reduceMotion: Bool) -> Animation? {
+            reduceMotion ? nil : .easeOut(duration: 0.25)
+        }
+
+        static func streamSwitch(reduceMotion: Bool) -> Animation? {
+            reduceMotion ? nil : .easeInOut(duration: 0.2)
+        }
+    }
+}

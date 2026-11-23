@@ -11,8 +11,8 @@ struct FullScreenCloseLayer: View {
                 Button(action: close) {
                     Image(systemName: "xmark")
                         .font(.title3.weight(.semibold))
-                        .frame(width: 44, height: 44)
-                        .background(.black.opacity(0.4), in: .circle)
+                        .frame(width: Design.Size.hitTarget, height: Design.Size.hitTarget)
+                        .background(.black.opacity(Design.Opacity.controlFill), in: .circle)
                         .contentShape(.circle)
                 }
                 .foregroundStyle(.white)

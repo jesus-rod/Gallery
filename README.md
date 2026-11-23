@@ -107,6 +107,7 @@ Arrows follow the dependency-diagram notation: `<|..` conforms, `-->` has a (str
 - **Boundaries by closure.** `GalleryViewModel` takes `loadFeed`, `loadOfflineFeed` and `search` closures, and views take `PhotoImages`. UI tests and previews swap them freely, and the UI never sees URLs, caches or Unsplash.
 - **Mappers only translate.** `PhotoStream` owns every paging rule: stop on `total_pages` or an empty page, drop duplicate ids. Mappers turn a response into a `PhotoPage` or a typed error (rate limited, invalid key, invalid data).
 - **Decorators, not a god object.** Memory cache → downsampling → disk cache → dedup → network, each one small and unit tested on its own (ADR 0001, 0006).
+- **Styles in one place.** Spacing, hit target, scrim and control opacities, fade timings, the banner chip and the caption scrim live in `GalleryUI/DesignSystem/`. They move into their own module once a second feature or app needs them; with one feature, a module would be speculative.
 - **Storage models separate from the domain.** `Photo` is not `Codable`. The Offline feed saves private `Local*` mirrors in a versioned JSON file (ADR 0004).
 
 ## Technical choices

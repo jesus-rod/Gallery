@@ -14,7 +14,7 @@ struct FooterView: View {
                 .padding()
                 .accessibilityIdentifier("footer-loading")
         case .failed(let error):
-            VStack(spacing: 8) {
+            VStack(spacing: Design.Spacing.small) {
                 Text(error.title)
                     .font(.footnote)
                     .foregroundStyle(.secondary)

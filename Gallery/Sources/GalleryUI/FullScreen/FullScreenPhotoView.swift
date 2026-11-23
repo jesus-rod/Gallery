@@ -107,7 +107,7 @@ struct FullScreenPhotoView: View {
                     .transition(.opacity)
             }
         }
-        .animation(reduceMotion ? nil : .easeOut(duration: 0.25), value: model.state)
+        .animation(Design.Motion.imageFade(reduceMotion: reduceMotion), value: model.state)
     }
 
     private var sharperImage: CGImage? {

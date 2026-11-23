@@ -29,7 +29,7 @@ public struct GalleryRootView: View {
                         .transition(.opacity)
                 }
             }
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isShowingSearch)
+            .animation(Design.Motion.streamSwitch(reduceMotion: reduceMotion), value: isShowingSearch)
             .safeAreaInset(edge: .top, spacing: 0) {
                 if let error = viewModel.refreshError {
                     RefreshErrorBanner(error: error, onDismiss: viewModel.dismissRefreshError)
