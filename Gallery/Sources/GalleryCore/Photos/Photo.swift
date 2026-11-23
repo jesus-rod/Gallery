@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Photo: Equatable, Sendable {
+public struct Photo: Hashable, Sendable {
     public let id: String
     public let width: Int
     public let height: Int
@@ -32,7 +32,7 @@ public struct Photo: Equatable, Sendable {
 }
 
 extension Photo {
-    public struct Renditions: Equatable, Sendable {
+    public struct Renditions: Hashable, Sendable {
         public let raw: URL
         public let small: URL
         public let regular: URL
@@ -44,7 +44,7 @@ extension Photo {
         }
     }
 
-    public struct Photographer: Equatable, Sendable {
+    public struct Photographer: Hashable, Sendable {
         public let name: String
         public let profileURL: URL
 

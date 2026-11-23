@@ -52,7 +52,7 @@ final class ImagePipeline: Sendable {
 
     private static func rendition(
         for photo: Photo, size: ImageSize, configuration: ImagePipelineConfiguration
-    ) -> UnsplashRendition.Grid {
+    ) -> UnsplashRendition.Sized {
         UnsplashRendition.grid(
             for: photo, side: size.points, scale: size.scale, quality: configuration.renditionQuality)
     }

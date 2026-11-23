@@ -54,3 +54,8 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - Clearing the search field (or Cancel, which clears it) returns to the feed; the search field is always visible (`navigationBarDrawer(displayMode: .always)`).
 - Each Query's grid gets `.id(query)`, so new results start at the top.
 - `-useStubs` also answers search: `search-<query>-page-N.json` for "cats" (two Pages, `total_pages: 2`), zero results for any other Query, so the XCUITests stay offline.
+
+## M5 — Full-screen view
+
+- The full-screen Rendition is sized from `raw` to the screen (aspect fit × display scale), replacing the earlier plan to use `regular`: `regular` is 1080 px wide, softer than an iPhone Pro Max (1320 px) or any iPad, and too big for a landscape Photo on a small phone. It reuses the grid's URL builder, renamed `sizedURL`.
+- `Photo` is `Hashable` so it can be a navigation value; it is still not `Codable`.
