@@ -1,6 +1,6 @@
 # 06 — XCUITest: offline journey
 
-Status: ready-for-agent
+Status: done
 Blocked by: 04, 05
 
 One journey (the project keeps one XCUITest per journey). Details are unit tested in 01–03.
@@ -25,3 +25,8 @@ All four UI tests pass; lint clean.
 ## Commit
 
 `test(app): cover launching offline with a saved feed`
+
+## Comments
+
+- Deviation: the test does not assert `refresh-error`. XCUITest blocks until the app is idle, and the app is not idle while the 3 s refresh banner shows, so the gesture only returned after the banner had gone (confirmed with temporary logging: the failed refresh ran and set the error). The test pulls from the Offline banner, then asserts the saved Photos and the Offline banner are still there. The failed refresh itself is covered by `GalleryViewModelTests`.
+- No production change.
