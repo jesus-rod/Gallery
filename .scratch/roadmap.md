@@ -16,7 +16,7 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 |---|---|---|
 | M0 | Scaffold: package, app target, key config, CI, README skeleton | done |
 | M1 | Feed API + paging (`.scratch/m1-feed-api/`) | done |
-| M2 | Grid UI with fixtures, `-useStubs` launch path, XCUITest target | next: write spec |
+| M2 | Grid UI with fixtures, `-useStubs` launch path, XCUITest target (`.scratch/m2-grid-ui/`) | spec written, seams to agree |
 
 ## Carried into M2
 
