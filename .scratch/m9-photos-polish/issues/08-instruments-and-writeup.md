@@ -1,6 +1,6 @@
 # 08 — Instruments pass for the new effects, write-up
 
-Status: ready-for-human (recording), then ready-for-agent (write-up)
+Status: ready-for-human (recording), then ready-for-agent (write-up). README Design section, overview lines, ADR 0007 row and test counts done ahead of the recording; still to do: Instruments numbers, two screenshots with a live key (stub fixtures only show gradients), roadmap.
 Blocked by: 01–07
 
 ## Human part (user records on device, Release build)

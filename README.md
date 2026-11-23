@@ -4,9 +4,9 @@
 
 An Unsplash photo browser in SwiftUI for iOS 17+, on iPhone and iPad:
 
-- **Grid**: Editorial photos in square cells (2 columns compact, 3 regular), each with its caption (alt description → description → "Untitled photo") and endless scroll.
-- **Search**: the same grid and endless scroll for a query, cross-fading over the feed, which keeps its scroll position underneath.
-- **Full screen**: opens with a zoom from the cell on iOS 18+ (standard push on iOS 17). Pinch and double-tap zoom, pan, drag down or Close to return, Photographer credit with Unsplash referral links.
+- **Grid**: a stretchy hero of the first Editorial photo, then square cells (2 columns compact, 3 regular), each with its caption (alt description → description → "Untitled photo"), and endless scroll.
+- **Search**: the same grid and endless scroll for a query (field at the bottom on iOS 26), cross-fading over the feed, which keeps its scroll position underneath.
+- **Full screen**: opens with a zoom from the cell on iOS 18+ (standard push on iOS 17), glowing with the photo's own colours. Swipe between photos with parallax, pinch and double-tap zoom, pan, swipe up for Info, Share, drag down or Back to return, Photographer credit with Unsplash referral links.
 - **Own image pipeline**: memory and disk caches, in-flight dedup, prefetch and cancellation, downsampling off the main thread, BlurHash placeholders, and a rendition sized to each cell and each screen.
 - **Offline feed**: the last ~300 feed photos are saved and shown, with a banner, when the network fails.
 - **States**: skeleton, paging footer with retry, full-screen errors, a friendly rate-limit message, invalid access key, empty search, pull to refresh, Dynamic Type, VoiceOver, Reduce Motion, dark mode.
@@ -30,6 +30,19 @@ Run the logic tests without a simulator:
 ```sh
 cd Gallery && swift test
 ```
+
+## Design
+
+The structure follows Apple Photos on iOS 26, with three additions that cost no extra requests:
+
+- **Ambient glow**: the full screen glows with the photo's colours. The glow is its BlurHash Preview, already decoded at 32 × 32 for the placeholder, blurred and dimmed behind the photo. It needs no download or decode of its own. It fades to black when the controls hide, and Reduce Transparency turns it off.
+- **Swipe between photos**: full screen pages through the Stream it was opened from (feed or Search results), with parallax, and loads more near the end through the grid's own paging path (ADR 0007). Only the current photo and its neighbours hold full-size images.
+- **Stretchy hero**: the feed opens with its first photo full width. Pulling down stretches it from the top, scrolling moves it at half speed. Both are computed in `.visualEffect`, so scrolling writes no state.
+- **Glass chrome**: Back, Share and Info are glass circles (material before iOS 26). The title holds the caption and "Photo by Name", so the photo stays unobstructed and the credit stays on screen. Info opens a sheet with the full credit, description and size.
+
+| Feed | Full screen |
+|---|---|
+| _TODO: screenshot with a live key_ | _TODO: screenshot with a live key_ |
 
 ## Architecture
 
@@ -130,6 +143,7 @@ Arrows follow the dependency-diagram notation: `<|..` conforms, `-->` has a (str
 | Offline feed: JSON file, network first, no expiry | A few hundred records read and written whole; shown only when the alternative is an empty screen | ADR 0004 |
 | Fixed square cells in `LazyVGrid` | Known pixel size per cell, so each rendition is requested at exactly that size | ADR 0005 |
 | In-flight dedup with per-caller cancellation | A cancelled prefetch must not cancel the visible cell's shared load | ADR 0006 |
+| Full screen pages through the Stream, not one Photo | Swiping is the first thing people try in a photo viewer; reusing the Stream keeps paging rules and the request budget in one place | ADR 0007 |
 | Renditions sized from `raw` (`w`, `dpr`, `q`, `fm=jpg`), keeping the URL's existing query items | `regular` (1080 px) is too soft on large phones and iPads and too big for small cells | decision log, M3/M5 |
 | One request in flight per Stream; a new Query, Cancel or refresh cancels the old request | Every request counts against the hourly budget | decision log, review fixes and M8 |
 
@@ -152,7 +166,7 @@ Instruments, on device after scrolling about 500 images (to fill in):
 
 ## Testing
 
-- **244 unit tests** in Swift Testing, in three targets: Core 67, ImageLoading 50, UI 127, including 14 snapshot tests of the cell and the empty and error states in light and dark. Every class under test goes through `makeSUT` with leak tracking. Logic was built test first, one test at a time.
+- **267 unit tests** in Swift Testing, in three targets: Core 69, ImageLoading 50, UI 148, including 14 snapshot tests of the cell and the empty and error states in light and dark. Every class under test goes through `makeSUT` with leak tracking. Logic was built test first, one test at a time.
 - **4 XCUITests**, one per user journey: browse and page the feed, search and clear back to the feed, open a photo full screen and close it, launch offline with a saved feed. They run on bundled fixtures (`-useStubs`), with no network and no key.
 - **CI** runs `swift test`, then the UI tests on a simulator.
 
@@ -162,7 +176,7 @@ Instruments, on device after scrolling about 500 images (to fill in):
 - **iOS 17 gets a standard push**, not the zoom transition: `NavigationStack` has no zoom on iOS 17, and faking one would mean presenting over the stack.
 - **The Offline banner hides on the next successful load**, not when the network comes back (no reachability monitoring).
 - **Snapshot tests render on macOS**: they guard layout, not exact iOS pixels.
-- **Not built**: swiping between photos in full screen, a sharper rendition when zoomed past 1×, translations (the String Catalog is English only).
+- **Not built**: a sharper rendition when zoomed past 1×, translations (the String Catalog is English only).
 
 ## AI usage
 
