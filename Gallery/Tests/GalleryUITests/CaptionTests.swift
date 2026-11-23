@@ -29,20 +29,3 @@ struct CaptionTests {
         #expect(caption(for: makePhoto(description: blank, altDescription: nil)) == "Untitled photo")
     }
 }
-
-private func makePhoto(description: String? = nil, altDescription: String? = nil) -> Photo {
-    Photo(
-        id: "any-id",
-        width: 1,
-        height: 1,
-        blurHash: nil,
-        description: description,
-        altDescription: altDescription,
-        renditions: Photo.Renditions(
-            raw: URL(string: "https://images.unsplash.com/raw")!,
-            small: URL(string: "https://images.unsplash.com/small")!,
-            regular: URL(string: "https://images.unsplash.com/regular")!
-        ),
-        photographer: Photo.Photographer(name: "A photographer", profileURL: URL(string: "https://unsplash.com/@a")!)
-    )
-}
