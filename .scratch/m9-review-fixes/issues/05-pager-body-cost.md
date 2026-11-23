@@ -1,6 +1,6 @@
 # 05 — Cut the full-screen pager's per-update cost
 
-Status: code done (276 tests, lint, 4 journeys green); waiting on the user's re-record of Run A steps 3 and 5
+Status: done; re-record: step 3 20.7 → 15.9 ms/s, app-update hitches halved, mid-swipe hang gone; GPU hitches unchanged (glow, next ticket)
 Blocked by: none
 
 Instruments Run A (`.scratch/m9-photos-polish/instruments-run-a.md`, iPhone 15 Plus, Release) showed the full-screen swipe through ~50 photos at **20.7 ms/s hitch time** (76 hitches, 19 GPU-bound) and one 159 ms hang, against 0–6.5 ms/s everywhere else. Time Profiler: `FullScreenPhotoView.body` re-evaluates on every page change and on every frame of the dismiss drag; each pass copies the whole Stream (`Array(pages.enumerated())`) and runs `currentIndex` (a linear search) once per visible page. The Stream grows while swiping (load more), so the cost grows with it. This was deferred from the swiftui-pro review ("`FullScreenPhotoView.pager` recomputes `currentIndex` per visible page").

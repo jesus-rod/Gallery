@@ -17,3 +17,16 @@ Apple's guidance: under 5 ms/s good, 5–10 noticeable, over 10 critical.
 - Step 5: the dismiss drag re-evaluates the same body every frame (12% main thread) but stays smooth; no `.drawingGroup()` needed.
 - Step 2: cost spread over SwiftUI lazy layout (~2 s inclusive) and `PhotoCell.body` (~340 ms); BlurHash placeholder decode on the main thread totals 56 ms over the whole run.
 - Image downsampling: ~12 s CPU, all on background threads.
+
+## Re-record after the pager fix (`29e524e`), 20:35
+
+Same phone and template, Release, steps 3 and 5 only (91 s; step 3 at 15–60 s, step 5 at 60–91 s by the recorder's notes and main-thread activity). The app symbols were missing; symbolicated a copy with the Release dSYM from DerivedData.
+
+| Step | Run A | Re-record |
+|---|---|---|
+| 3 Full-screen swipe | 20.7 ms/s; 76 hitches in 62 s (40 app update, 19 GPU, 17 unlabelled); 159 ms hang mid-swipe | **15.9 ms/s**; 43 hitches in 45 s (14 app update, 17 GPU, 12 unlabelled); no hang mid-swipe |
+| 5 Dismiss drag | 3.4 ms/s, 9 hitches | 4.2 ms/s, 8 hitches (same, within noise) |
+
+- `FullScreenPhotoView.body` no longer appears in either step (Run A: ~224 ms in step 3, ~180 ms in step 5). Our code in step 3 is now the visible pages' `ZoomablePhotoPage.body` (~80 ms) and the grid cells behind (~66 ms); the rest is UIKit/Core Animation commit and SwiftUI display-list work.
+- App-update hitches per second halved (0.65 → 0.31). GPU hitches did not change (0.31 → 0.38 per second) and are now the largest cause: the ambient glow (radius-60 blur of a full-screen upscale, two layers during the 0.35 s cross-fade) is the suspect.
+- One 115 ms hang remains, now at the moment full screen opens (`GalleryRootView.openFullScreen`), not mid-swipe.
