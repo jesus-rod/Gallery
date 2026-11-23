@@ -1,6 +1,6 @@
 # 03 — View model: fall back to the Offline feed
 
-Status: ready-for-agent
+Status: done
 Blocked by: none (UI only; uses closures, not Core's store)
 
 ## Files

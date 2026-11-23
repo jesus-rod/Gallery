@@ -41,6 +41,7 @@ enum CompositionRoot {
         }
         return GalleryViewModel(
             loadFeed: { try await feedStream.firstPage() },
+            loadOfflineFeed: { [] },
             search: { query in
                 let searchStream = PhotoStream { page in
                     let request = UnsplashEndpoint.search(query: query, page: page).request(baseURL: baseURL)
