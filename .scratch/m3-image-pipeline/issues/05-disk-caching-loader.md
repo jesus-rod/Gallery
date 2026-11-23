@@ -1,6 +1,6 @@
 # 05 — Disk-caching image data loader
 
-Status: ready-for-agent
+Status: done
 Blocked by: 04 (protocol only)
 
 `DiskCachingImageDataLoader(decoratee:store:)`.
