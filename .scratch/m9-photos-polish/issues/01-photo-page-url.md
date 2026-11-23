@@ -1,6 +1,6 @@
 # 01 — Photo gains its Unsplash page URL
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 Share (ticket 02) needs the Photo's Unsplash page, `links.html` in the API response.

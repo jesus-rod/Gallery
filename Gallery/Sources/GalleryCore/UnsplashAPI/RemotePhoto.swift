@@ -9,6 +9,7 @@ struct RemotePhoto: Decodable {
     let altDescription: String?
     let urls: URLs
     let user: User
+    let links: Links
 
     struct URLs: Decodable {
         let raw: URL
@@ -34,7 +35,8 @@ struct RemotePhoto: Decodable {
             description: description,
             altDescription: altDescription,
             renditions: Photo.Renditions(raw: urls.raw, small: urls.small, regular: urls.regular),
-            photographer: Photo.Photographer(name: user.name, profileURL: user.links.html)
+            photographer: Photo.Photographer(name: user.name, profileURL: user.links.html),
+            pageURL: links.html
         )
     }
 }

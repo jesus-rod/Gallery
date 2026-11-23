@@ -9,6 +9,7 @@ public struct Photo: Hashable, Sendable {
     public let altDescription: String?
     public let renditions: Renditions
     public let photographer: Photographer
+    public let pageURL: URL
 
     public init(
         id: String,
@@ -18,7 +19,8 @@ public struct Photo: Hashable, Sendable {
         description: String?,
         altDescription: String?,
         renditions: Renditions,
-        photographer: Photographer
+        photographer: Photographer,
+        pageURL: URL
     ) {
         self.id = id
         self.width = width
@@ -28,6 +30,7 @@ public struct Photo: Hashable, Sendable {
         self.altDescription = altDescription
         self.renditions = renditions
         self.photographer = photographer
+        self.pageURL = pageURL
     }
 }
 

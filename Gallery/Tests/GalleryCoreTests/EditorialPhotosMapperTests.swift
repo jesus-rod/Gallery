@@ -64,6 +64,15 @@ struct EditorialPhotosMapperTests {
         #expect(page == PhotoPage(photos: [item1.model, item2.model], totalPages: nil))
     }
 
+    @Test func map_throwsInvalidDataOn200ResponseWithAPhotoMissingItsPageURL() {
+        var item = makePhoto(id: "a-id").json
+        item["links"] = nil
+
+        #expect(throws: UnsplashAPIError.invalidData) {
+            try EditorialPhotosMapper.map(makeJSON([item]), from: HTTPURLResponse(statusCode: 200))
+        }
+    }
+
     private func makeJSON(_ items: [[String: Any]]) -> Data {
         try! JSONSerialization.data(withJSONObject: items)
     }

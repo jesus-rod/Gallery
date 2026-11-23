@@ -22,7 +22,8 @@ func makePhoto(
         photographer: Photo.Photographer(
             name: "A photographer",
             profileURL: URL(string: "https://unsplash.com/@photographer-\(id)")!
-        )
+        ),
+        pageURL: URL(string: "https://unsplash.com/photos/\(id)")!
     )
     let json: [String: Any?] = [
         "id": id,
@@ -42,6 +43,7 @@ func makePhoto(
             "name": model.photographer.name,
             "links": ["html": model.photographer.profileURL.absoluteString],
         ],
+        "links": ["html": model.pageURL.absoluteString],
     ]
     return (model, json.compactMapValues { $0 })
 }

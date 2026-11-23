@@ -181,7 +181,8 @@ struct UnsplashRenditionTests {
         return Photo(
             id: "1", width: width, height: height, blurHash: nil, description: nil, altDescription: nil,
             renditions: Photo.Renditions(raw: url, small: url, regular: url),
-            photographer: Photo.Photographer(name: "A", profileURL: url)
+            photographer: Photo.Photographer(name: "A", profileURL: url),
+            pageURL: url
         )
     }
 

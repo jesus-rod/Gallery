@@ -118,3 +118,8 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - The full-screen Close button and Caption-and-credit overlay are separate views with value inputs only (the Close layer reads `dismiss` from the environment rather than taking a closure), so SwiftUI skips them on the per-frame state changes of pinch, pan and drag.
 - GalleryUI no longer declares a package dependency on GalleryImageLoading: it never imported it, since images reach the UI only through the `PhotoImages` closures built in the composition root. The package graph now matches the code: GalleryUI → GalleryCore, and only the app target sees all three modules.
 - Design tokens (`Design.Spacing`, `.Size`, `.Opacity`, `.Motion`), a `Scrim` view and a `.bannerStyle()` modifier live in `GalleryUI/DesignSystem/`, replacing literals repeated across views. Not a separate module: with one feature it would be speculative; it moves out when a second feature or app needs it. The two banners now share one chip, and both caption scrims use 0.6.
+
+## M9 — Photos-style polish
+
+- `Photo` carries its Unsplash page URL (`links.html`), required like the profile URL, for Share. Sharing the page instead of the image costs no request and is not a download under Unsplash's guidelines.
+- The offline store goes to version 2. A version 1 store (no page URLs) reads as empty instead of failing to decode, and the network refills it on the next load.

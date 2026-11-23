@@ -17,7 +17,8 @@
                     description: nil,
                     altDescription: "Preview photo \(index)",
                     renditions: Photo.Renditions(raw: url, small: url, regular: url),
-                    photographer: Photo.Photographer(name: "A photographer", profileURL: url)
+                    photographer: Photo.Photographer(name: "A photographer", profileURL: url),
+                    pageURL: url
                 )
             }
         }

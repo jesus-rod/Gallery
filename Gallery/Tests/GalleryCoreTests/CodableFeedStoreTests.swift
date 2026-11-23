@@ -49,10 +49,23 @@ final class CodableFeedStoreTests {
         let sut = makeSUT()
         try await sut.save([makeFullPhoto(id: "1")])
         let saved = try String(contentsOf: fileURL, encoding: .utf8)
-        try writeFile(Data(saved.replacing(#""version":1"#, with: #""version":2"#).utf8))
+        try writeFile(Data(saved.replacing(#""version":2"#, with: #""version":3"#).utf8))
 
         #expect(try await sut.retrieve() == [])
     }
+
+    @Test func retrieve_deliversNothingForAStoreSavedWithoutPageURLs() async throws {
+        let sut = makeSUT()
+        try writeFile(Data(Self.versionOneStore.utf8))
+
+        #expect(try await sut.retrieve() == [])
+    }
+
+    private static let versionOneStore = """
+        {"version":1,"photos":[{"id":"1","width":1,"height":1,\
+        "renditions":{"raw":"https://a.com/r","small":"https://a.com/s","regular":"https://a.com/g"},\
+        "photographer":{"name":"A","profileURL":"https://a.com/p"}}]}
+        """
 
     @Test func retrieve_failsOnCorruptData() async throws {
         let sut = makeSUT()

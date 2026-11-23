@@ -20,7 +20,8 @@ func makePhoto(
             small: URL(string: "https://images.unsplash.com/\(id)/small")!,
             regular: URL(string: "https://images.unsplash.com/\(id)/regular")!
         ),
-        photographer: Photo.Photographer(name: "A photographer", profileURL: URL(string: "https://unsplash.com/@a")!)
+        photographer: Photo.Photographer(name: "A photographer", profileURL: URL(string: "https://unsplash.com/@a")!),
+        pageURL: URL(string: "https://unsplash.com/photos/\(id)")!
     )
 }
 

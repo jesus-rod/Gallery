@@ -28,7 +28,7 @@ private struct Header: Decodable {
 }
 
 private struct Envelope: Codable {
-    static let currentVersion = 1
+    static let currentVersion = 2
 
     let version: Int
     let photos: [LocalPhoto]
@@ -43,6 +43,7 @@ private struct LocalPhoto: Codable {
     let altDescription: String?
     let renditions: LocalRenditions
     let photographer: LocalPhotographer
+    let pageURL: URL
 
     init(_ photo: Photo) {
         id = photo.id
@@ -53,6 +54,7 @@ private struct LocalPhoto: Codable {
         altDescription = photo.altDescription
         renditions = LocalRenditions(photo.renditions)
         photographer = LocalPhotographer(photo.photographer)
+        pageURL = photo.pageURL
     }
 
     var model: Photo {
@@ -64,7 +66,8 @@ private struct LocalPhoto: Codable {
             description: description,
             altDescription: altDescription,
             renditions: renditions.model,
-            photographer: photographer.model
+            photographer: photographer.model,
+            pageURL: pageURL
         )
     }
 }
