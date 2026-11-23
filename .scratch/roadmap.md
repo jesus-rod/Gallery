@@ -23,7 +23,7 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M5 | Full-screen view + transition (`.scratch/m5-full-screen/`) | done (device check and Instruments in ticket 07's human part) |
 | M6 | Offline feed (`.scratch/m6-offline-feed/`) | done, merged |
 | M7 | Polish: UX states, accessibility (`.scratch/m7-polish/`) | done, merged (VoiceOver and Accessibility Inspector check left for M8) |
-| M8 | Review sweep, Instruments, dependency diagram, README, Loom | next: write spec |
+| M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | agent part done; ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
 
 ## Carried into M6
 
