@@ -96,7 +96,7 @@ struct PhotoCell: View {
         route = FullScreenRoute(photo: photo, gridSize: size, sourceID: "\(streamID)-\(photo.id)")
         self.zoomNamespace = zoomNamespace
         self.onOpen = onOpen
-        _model = State(initialValue: PhotoImageModel(photo: photo, images: images))
+        _model = State(initialValue: PhotoImageModel(photo: photo, images: images, size: size))
     }
 
     var body: some View {
@@ -105,7 +105,7 @@ struct PhotoCell: View {
             .aspectRatio(1, contentMode: .fit)
             .overlay {
                 ZStack {
-                    if let preview = model.preview {
+                    if !model.wasCachedOnAppear, let preview = model.preview {
                         Image(decorative: preview, scale: 1)
                             .resizable()
                             .scaledToFill()
@@ -117,7 +117,7 @@ struct PhotoCell: View {
                             .transition(.opacity)
                     }
                 }
-                .animation(.easeOut(duration: 0.25), value: model.isLoaded)
+                .animation(model.wasCachedOnAppear ? nil : .easeOut(duration: 0.25), value: model.isLoaded)
             }
             .clipped()
             .task(id: route.gridSize) {

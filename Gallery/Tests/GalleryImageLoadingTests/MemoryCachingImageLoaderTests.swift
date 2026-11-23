@@ -52,6 +52,39 @@ struct MemoryCachingImageLoaderTests {
         #expect(loader.requests.count == 2)
     }
 
+    @Test func cachedImage_isNilBeforeAnyLoad() {
+        let (sut, _) = makeSUT()
+
+        #expect(sut.cachedImage(from: anyURL, maxPixelSize: 10) == nil)
+    }
+
+    @Test func cachedImage_returnsTheImageAfterALoadOfTheSameURLAndSize() async throws {
+        let image = makeImage(width: 4, height: 2)
+        let (sut, _) = makeSUT(result: .success(image))
+
+        _ = try await sut.loadImage(from: anyURL, maxPixelSize: 10)
+
+        #expect(sut.cachedImage(from: anyURL, maxPixelSize: 10) === image)
+        #expect(sut.cachedImage(from: anyURL, maxPixelSize: 20) == nil)
+    }
+
+    @Test func cachedImage_isNilAfterRemoveAll() async throws {
+        let (sut, _) = makeSUT()
+        _ = try await sut.loadImage(from: anyURL, maxPixelSize: 10)
+
+        sut.removeAll()
+
+        #expect(sut.cachedImage(from: anyURL, maxPixelSize: 10) == nil)
+    }
+
+    @Test func cachedImage_neverCallsTheDecoratee() async throws {
+        let (sut, loader) = makeSUT()
+
+        _ = sut.cachedImage(from: anyURL, maxPixelSize: 10)
+
+        #expect(loader.requests.isEmpty)
+    }
+
     private func makeSUT(
         result: Result<CGImage, Error> = .success(makeImage(width: 1, height: 1)),
         sourceLocation: SourceLocation = #_sourceLocation

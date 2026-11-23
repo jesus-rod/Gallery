@@ -87,3 +87,5 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - Both mappers share one `requireDecodable` check (rate limit, 401, require 200, decode or `invalidData`), closing the duplication noted in M1.
 - Search results get pull to refresh, sharing the feed's brief refresh error, which now shows over Search results too. A refresh that finishes after its Query was replaced or cancelled is ignored, so it cannot show a stale error.
 - The hidden feed may still finish an in-flight load more while searching: accepted, it costs at most one request the user already triggered.
+- Images already in the memory cache are read synchronously (`NSCache` is thread safe) through a `PhotoImages.cachedImage` closure, so a cell scrolled back into view or a reopened Photo shows its image on the first frame, with no Preview and no fade.
+- The cell decides "no fade" from the model's memoized first lookup (`wasCachedOnAppear`) rather than a view flag set after appearing, which would race the first frame; `PhotoImageModel` now takes its grid size at init so that lookup is possible.

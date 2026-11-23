@@ -159,6 +159,33 @@ struct FullScreenImageModelTests {
         #expect(sut.isFullImageShown == true)
     }
 
+    @Test func state_startsAsTheGridImageWhenItIsCached() {
+        let cached = makeImage(width: 3)
+        let (sut, images) = makeSUT(photo: makePhoto(id: "a"), cached: cached)
+
+        #expect(sut.state == .gridImage(cached))
+        #expect(images.cachedImageRequests == [PhotoImagesSpy.Request(photoID: "a", size: gridSize)])
+    }
+
+    @Test func init_doesNotLookUpTheCachedImage() {
+        let (_, images) = makeSUT(cached: makeImage())
+
+        #expect(images.cachedImageRequests.isEmpty)
+    }
+
+    @Test func load_requestsOnlyTheFullImageWhenTheGridImageIsCached() async {
+        let cached = makeImage()
+        let full = makeImage(width: 2)
+        let (sut, images) = makeSUT(photo: makePhoto(id: "a"), cached: cached)
+        images.stubFullScreen(.success(full))
+
+        await sut.load(fitting: fitting)
+
+        #expect(images.requests.isEmpty)
+        #expect(images.fullScreenRequests == [PhotoImagesSpy.FullScreenRequest(photoID: "a", size: fitting)])
+        #expect(sut.state == .fullImage(full))
+    }
+
     private func untilState(_ expected: FullScreenImageModel.State, of sut: FullScreenImageModel) async {
         for _ in 0..<500 where sut.state != expected {
             await Task.yield()
@@ -168,9 +195,10 @@ struct FullScreenImageModelTests {
     private func makeSUT(
         photo: Photo = makePhoto(),
         preview: CGImage? = nil,
+        cached: CGImage? = nil,
         sourceLocation: SourceLocation = #_sourceLocation
     ) -> (FullScreenImageModel, PhotoImagesSpy) {
-        let spy = PhotoImagesSpy(preview: preview)
+        let spy = PhotoImagesSpy(preview: preview, cached: cached)
         let sut = FullScreenImageModel(photo: photo, images: spy.images, gridSize: gridSize)
         trackForMemoryLeaks(sut, sourceLocation: sourceLocation)
         trackForMemoryLeaks(spy, sourceLocation: sourceLocation)

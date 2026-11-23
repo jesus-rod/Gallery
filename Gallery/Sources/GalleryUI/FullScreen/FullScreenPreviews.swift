@@ -12,6 +12,7 @@
 
     private let failingImages = PhotoImages(
         preview: PreviewData.images.preview,
+        cachedImage: { _, _ in nil },
         image: { _, _ in throw URLError(.notConnectedToInternet) },
         fullScreenImage: { _, _ in throw URLError(.notConnectedToInternet) },
         prefetch: { _, _ in }

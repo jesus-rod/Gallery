@@ -28,6 +28,10 @@ public final class MemoryCachingImageLoader: ImageLoader, @unchecked Sendable {
         return image
     }
 
+    public func cachedImage(from url: URL, maxPixelSize: Int) -> CGImage? {
+        cache.object(forKey: Self.key(url, maxPixelSize))?.image
+    }
+
     public func removeAll() {
         cache.removeAllObjects()
     }

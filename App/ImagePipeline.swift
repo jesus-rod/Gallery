@@ -25,6 +25,10 @@ final class ImagePipeline: Sendable {
     var photoImages: PhotoImages {
         PhotoImages(
             preview: { [previews] photo in photo.blurHash.flatMap(previews.preview(for:)) },
+            cachedImage: { [memoryCache, configuration] photo, size in
+                let rendition = Self.rendition(for: photo, size: size, configuration: configuration)
+                return memoryCache.cachedImage(from: rendition.url, maxPixelSize: rendition.maxPixelSize)
+            },
             image: { [memoryCache, configuration] photo, size in
                 let rendition = Self.rendition(for: photo, size: size, configuration: configuration)
                 return try await memoryCache.loadImage(from: rendition.url, maxPixelSize: rendition.maxPixelSize)

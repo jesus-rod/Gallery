@@ -1,6 +1,6 @@
 # 03 — Images already in memory show on the first frame
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 ## Files
@@ -37,3 +37,7 @@ The cell keeps the Preview + fade only when the image arrives after the cell fir
 ## Commit
 
 `perf(ui): show images already in memory on the first frame`
+
+## Comments
+
+- `PhotoImageModel.init` gained a `size` parameter (the lookup needs the grid size before `load`). The fade is driven by `PhotoImageModel.wasCachedOnAppear` (memoized first lookup) instead of a `didLoadAfterAppear` view flag; the cell also skips the Preview layer when the image was cached.

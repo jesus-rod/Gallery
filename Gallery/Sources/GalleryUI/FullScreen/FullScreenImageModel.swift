@@ -17,7 +17,8 @@ final class FullScreenImageModel {
     }
 
     @ObservationIgnored private var previewStorage: CGImage??
-    private(set) var state: State
+    @ObservationIgnored private var cachedGridStorage: CGImage??
+    private var loadedState: State?
     private let photo: Photo
     private let images: PhotoImages
     private let gridSize: ImageSize
@@ -26,7 +27,6 @@ final class FullScreenImageModel {
         self.photo = photo
         self.images = images
         self.gridSize = gridSize
-        self.state = .preview
     }
 
     var preview: CGImage? {
@@ -36,13 +36,19 @@ final class FullScreenImageModel {
         return preview
     }
 
+    var state: State {
+        if let loadedState { return loadedState }
+        if let cached = cachedGridImage { return .gridImage(cached) }
+        return .preview
+    }
+
     var isFullImageShown: Bool {
         if case .fullImage = state { return true }
         return false
     }
 
     func load(fitting size: FittingSize) async {
-        let needsGridImage = !isFullImageShown
+        let needsGridImage = state == .preview
         await withTaskGroup(of: Loaded?.self) { group in
             if needsGridImage {
                 group.addTask { [images, photo, gridSize] in
@@ -61,11 +67,18 @@ final class FullScreenImageModel {
     private func apply(_ loaded: Loaded?) {
         switch loaded {
         case .gridImage(let image)?:
-            if case .preview = state { state = .gridImage(image) }
+            if case .preview = state { loadedState = .gridImage(image) }
         case .fullImage(let image)?:
-            state = .fullImage(image)
+            loadedState = .fullImage(image)
         case nil:
             break
         }
+    }
+
+    private var cachedGridImage: CGImage? {
+        if let cachedGridStorage { return cachedGridStorage }
+        let cached = images.cachedImage(photo, gridSize)
+        cachedGridStorage = .some(cached)
+        return cached
     }
 }

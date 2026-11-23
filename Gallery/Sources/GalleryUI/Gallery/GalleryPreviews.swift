@@ -24,6 +24,7 @@
 
         static let images = PhotoImages(
             preview: { photo in solidImage(hue: hue(of: photo), brightness: 0.5) },
+            cachedImage: { _, _ in nil },
             image: { photo, _ in try await loadedImage(of: photo) },
             fullScreenImage: { photo, _ in try await loadedImage(of: photo) },
             prefetch: { _, _ in }
