@@ -184,7 +184,8 @@ How the fixes were checked: each one started from a trace, not a guess (a first 
 
 ## Testing
 
-- **280 unit tests** in Swift Testing, in three targets: Core 73, ImageLoading 50, UI 157, including 14 snapshot tests of the cell and the empty and error states in light and dark. Every class under test goes through `makeSUT` with leak tracking. Logic was built test first, one test at a time.
+- **Unit tests** in Swift Testing, in three targets (Core, ImageLoading, UI), run by `swift test` on macOS. Every class under test goes through `makeSUT` with leak tracking. Logic was built test first, one test at a time.
+- **88 snapshots** on the iOS simulator (`GalleryUITests`: `ScreenSnapshotTests`, `ComponentSnapshotTests`, `DesignSystemSnapshotTests`): 7 screens, 14 components and the design tokens, each in light and dark on four devices (iPhone SE, iPhone 17, iPhone Duo unfolded, iPad portrait). Re-record after a deliberate look change: `cd Gallery && xcodebuild test -scheme Gallery-Package -destination 'id=<an iOS simulator>' -only-testing:GalleryUITests`, then check the new PNGs in `Tests/GalleryUITests/__Snapshots__/`.
 - **4 XCUITests**, one per user journey: browse and page the feed, search and clear back to the feed, open a photo full screen and close it, launch offline with a saved feed. They run on bundled fixtures (`-useStubs`), with no network and no key.
 - **CI** runs `swift test`, then the UI tests on a simulator.
 
@@ -193,7 +194,7 @@ How the fixes were checked: each one started from a trace, not a guess (a first 
 - **The client-side key ships in the app bundle.** That's fine for a demo; production would put a server proxy in front of Unsplash.
 - **iOS 17 gets a standard push**, not the zoom transition: `NavigationStack` has no zoom on iOS 17, and faking one would mean presenting over the stack.
 - **The Offline banner hides on the next successful load**, not when the network comes back (no reachability monitoring).
-- **Snapshot tests render on macOS**: they guard layout, not exact iOS pixels.
+- **Snapshots are recorded on one iOS simulator**: CI skips them, because its runner's iOS runtime renders text differently. They guard layout on the developer's simulator.
 - **Not built**: a sharper rendition when zoomed past 1×, translations (the String Catalog is English only).
 
 ## AI usage

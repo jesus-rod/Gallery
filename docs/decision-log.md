@@ -109,6 +109,7 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 
 ## M8 — Review sweep
 
+- Snapshot tests moved from macOS to the iOS simulator, so they render at real device sizes with iOS fonts, size classes and safe areas. The suite covers 7 screens, 14 components and the design tokens, light and dark, on four device configs in one list (`SnapshotSupport.swift`): iPhone SE, iPhone 17, iPhone Duo (unfolded inner display, 669 × 951 pt from the simulator's device profile) and iPad in portrait (the library's iPad default is landscape). The Duo's safe areas are estimates; confirm them against the device. The suite is skipped when `CI` is set, as before, because the CI runner's iOS runtime differs from the developer's. `swift test` on macOS compiles it out.
 - The refresh error sits in a top safe-area inset of the grids, not an overlay: the grids scroll under the navigation bar, so a top overlay hid the banner behind the title and search field. It stacks above the Offline banner.
 - A refresh now runs as the pager's one in-flight request: it cancels a load more still running (so both are never sent) and can itself be cancelled, so a new Query or Cancel also stops a Search refresh. If it fails after cancelling a load more, the footer returns to idle so paging resumes.
 - Switching between the feed and Search results cross-fades over 0.2 s (none with Reduce Motion), for the brief's seamless transition; the feed keeps its scroll position underneath as before.

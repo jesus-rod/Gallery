@@ -1,6 +1,6 @@
 # 08 — Snapshot matrix on the iOS simulator
 
-Status: ready-for-agent
+Status: done (iPhone Duo included: unfolded display from the simulator profile, safe areas estimated; iPad recorded in portrait)
 
 The user wants snapshots of the design system elements, the main components, and the main screens on several devices, all in light and dark. Device-sized snapshots need iOS (size classes, safe areas, iOS fonts), so the snapshot suite moves from macOS to the iOS simulator (the user chose this). `swift test` on macOS stays the fast logic run.
 
