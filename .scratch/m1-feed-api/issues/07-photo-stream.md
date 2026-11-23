@@ -1,6 +1,6 @@
 # 07 — Paging a Stream
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01
 
 `Paginated<Item>` (items + optional `loadMore`) and `PhotoStream`, which builds it from a page loader `(Int) async throws -> PhotoPage`. `PhotoStream` owns every stopping rule.
