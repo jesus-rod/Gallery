@@ -41,3 +41,7 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - Each cell owns a small `@Observable` `PhotoImageModel` (Preview → image, kept on failure) driven by `.task(id: size)`, so a cell scrolling away cancels its own load. Load more stays on `.onAppear { Task {} }`.
 - The pipeline is composed in the app target (`ImagePipeline`), with every budget in one `ImagePipelineConfiguration`. Disk eviction runs at launch on a background-priority task; memory warnings empty the memory cache.
 - `-useStubs` also stubs image downloads (four bundled gradient JPEGs), so the XCUITests never touch the network.
+
+## M4 — Search
+
+- The paging state machine moved into an internal `StreamPager`, so the Editorial feed and each Query's Search results run the same tested logic. It is tested through `GalleryViewModel` only.

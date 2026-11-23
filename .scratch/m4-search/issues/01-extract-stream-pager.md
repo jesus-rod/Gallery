@@ -1,6 +1,6 @@
 # 01 — Extract `StreamPager` from `GalleryViewModel`
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 Pure refactor, no behaviour change. Move the paging state machine (state, stored `loadMore`, generation guard, load-more threshold) out of `GalleryViewModel` into an internal `@Observable @MainActor final class StreamPager`, so ticket 02 can create one pager per Query. `GalleryViewModel` keeps its exact public API and delegates to a `feedPager`. No new tests: the existing `GalleryViewModelTests` are the safety net and must stay green without edits.
