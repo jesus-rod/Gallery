@@ -1,6 +1,6 @@
 # 02 — Search results mapper
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01
 
 `SearchPhotosMapper` maps `{ total_pages, results }` into a `PhotoPage` carrying `total_pages`. No paging decisions in the mapper.
