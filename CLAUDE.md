@@ -1,3 +1,5 @@
+Resuming work? Read `.scratch/roadmap.md` first: working loop, milestone status and settled decisions.
+
 ## Agent skills
 
 ### Issue tracker
