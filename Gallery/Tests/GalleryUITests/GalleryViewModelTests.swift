@@ -231,9 +231,136 @@ struct GalleryViewModelTests {
         #expect(sut.feed == .loaded(photos: refreshed, footer: .end))
     }
 
+    @Test func init_hasNoSearchResults() {
+        let (sut, loader) = makeSUT()
+
+        #expect(sut.searchResults == nil)
+        #expect(loader.searchQueries.isEmpty)
+    }
+
+    @Test func search_requestsTheFirstPageForTheTrimmedQuery() async {
+        let (sut, loader) = makeSUT()
+        loader.stubSearch(.success(loader.page([], hasMore: false)))
+
+        await sut.search("  cats \n")
+
+        #expect(loader.searchQueries == ["cats"])
+    }
+
+    @Test(arguments: ["", "   ", " \n\t "])
+    func search_withAnEmptyOrWhitespaceQueryDoesNothing(query: String) async {
+        let (sut, loader) = makeSUT()
+
+        await sut.search(query)
+
+        #expect(loader.searchQueries.isEmpty)
+        #expect(sut.searchResults == nil)
+    }
+
+    @Test func search_showsLoadingWithTheQueryWhileTheFirstPageLoads() async {
+        let (sut, loader) = makeSUT()
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page([], hasMore: false)), gate: gate)
+
+        let search = Task { await sut.search("cats") }
+        await gate.untilReached()
+
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loading))
+        gate.open()
+        await search.value
+    }
+
+    @Test func search_deliversTheFirstPageWithAnIdleFooterWhenMoreCanLoad() async {
+        let (sut, loader) = makeSUT()
+        let photos = makePhotos(1...3)
+        loader.stubSearch(.success(loader.page(photos)))
+
+        await sut.search("cats")
+
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: photos, footer: .idle)))
+    }
+
+    @Test func search_deliversTheFirstPageWithAnEndFooterWhenNothingMoreCanLoad() async {
+        let (sut, loader) = makeSUT()
+        let photos = makePhotos(1...3)
+        loader.stubSearch(.success(loader.page(photos, hasMore: false)))
+
+        await sut.search("cats")
+
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: photos, footer: .end)))
+    }
+
+    @Test func search_deliversNoPhotosAsLoadedWithAnEndFooter() async {
+        let (sut, loader) = makeSUT()
+        loader.stubSearch(.success(loader.page([], hasMore: false)))
+
+        await sut.search("cats")
+
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: [], footer: .end)))
+    }
+
+    @Test(arguments: [
+        (UnsplashAPIError.rateLimited as any Error & Sendable, LoadError.rateLimited),
+        (URLError(.notConnectedToInternet), .offline),
+        (AnyError(), .generic),
+    ])
+    func search_failsWithTheMappedError(error: any Error & Sendable, expected: LoadError) async {
+        let (sut, loader) = makeSUT()
+        loader.stubSearch(.failure(error))
+
+        await sut.search("cats")
+
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .failed(expected)))
+    }
+
+    @Test func search_withTheQueryAlreadyShownDoesNotRequestAgain() async {
+        let (sut, loader) = makeSUT()
+        loader.stubSearch(.success(loader.page([], hasMore: false)))
+
+        await sut.search("cats")
+        await sut.search(" cats ")
+
+        #expect(loader.searchQueries == ["cats"])
+    }
+
+    @Test func search_doesNotChangeTheFeed() async {
+        let (sut, loader) = makeSUT()
+        let feedPhotos = makePhotos(1...4)
+        loader.stubFeed(.success(loader.page(feedPhotos, hasMore: false)))
+        loader.stubSearch(.success(loader.page([], hasMore: false)))
+        await sut.load()
+
+        await sut.search("cats")
+
+        #expect(sut.feed == .loaded(photos: feedPhotos, footer: .end))
+        #expect(loader.loadFeedCallCount == 1)
+    }
+
+    @Test func retrySearch_afterAFailedFirstPageRequestsTheSameQueryAgain() async {
+        let (sut, loader) = makeSUT()
+        let photos = makePhotos(1...2)
+        loader.stubSearch(.failure(AnyError()))
+        loader.stubSearch(.success(loader.page(photos, hasMore: false)))
+        await sut.search("cats")
+
+        await sut.retrySearch()
+
+        #expect(loader.searchQueries == ["cats", "cats"])
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: photos, footer: .end)))
+    }
+
+    @Test func retrySearch_withoutASearchDoesNothing() async {
+        let (sut, loader) = makeSUT()
+
+        await sut.retrySearch()
+
+        #expect(loader.searchQueries.isEmpty)
+        #expect(sut.searchResults == nil)
+    }
+
     private func makeSUT(sourceLocation: SourceLocation = #_sourceLocation) -> (GalleryViewModel, FeedLoaderSpy) {
         let loader = FeedLoaderSpy()
-        let sut = GalleryViewModel(loadFeed: loader.loadFeed)
+        let sut = GalleryViewModel(loadFeed: loader.loadFeed, search: loader.search)
         trackForMemoryLeaks(loader, sourceLocation: sourceLocation)
         trackForMemoryLeaks(sut, sourceLocation: sourceLocation)
         return (sut, loader)

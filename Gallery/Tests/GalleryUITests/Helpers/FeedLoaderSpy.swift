@@ -10,11 +10,17 @@ final class FeedLoaderSpy {
 
     private(set) var loadFeedCallCount = 0
     private(set) var loadMoreCallCount = 0
+    private(set) var searchQueries: [String] = []
     private var feedStubs: [Stub] = []
     private var loadMoreStubs: [Stub] = []
+    private var searchStubs: [Stub] = []
 
     func stubFeed(_ result: Result<Paginated<Photo>, Error>, gate: Gate? = nil) {
         feedStubs.append(Stub(result: result, gate: gate))
+    }
+
+    func stubSearch(_ result: Result<Paginated<Photo>, Error>, gate: Gate? = nil) {
+        searchStubs.append(Stub(result: result, gate: gate))
     }
 
     func stubLoadMore(_ result: Result<Paginated<Photo>, Error>, gate: Gate? = nil) {
@@ -29,6 +35,11 @@ final class FeedLoaderSpy {
     func loadFeed() async throws -> Paginated<Photo> {
         loadFeedCallCount += 1
         return try await resolve(next(from: &feedStubs, named: "loadFeed"))
+    }
+
+    func search(_ query: String) async throws -> Paginated<Photo> {
+        searchQueries.append(query)
+        return try await resolve(next(from: &searchStubs, named: "search"))
     }
 
     private func loadMore() async throws -> Paginated<Photo> {

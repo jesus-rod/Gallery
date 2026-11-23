@@ -30,12 +30,22 @@ enum CompositionRoot {
     static func makeGalleryViewModel() -> GalleryViewModel {
         let client = makeAPIClient()
         let baseURL = baseURL
-        let stream = PhotoStream { page in
+        let feedStream = PhotoStream { page in
             let request = UnsplashEndpoint.editorial(page: page).request(baseURL: baseURL)
             let (data, response) = try await client.send(request)
             return try EditorialPhotosMapper.map(data, from: response)
         }
-        return GalleryViewModel(loadFeed: { try await stream.firstPage() })
+        return GalleryViewModel(
+            loadFeed: { try await feedStream.firstPage() },
+            search: { query in
+                let searchStream = PhotoStream { page in
+                    let request = UnsplashEndpoint.search(query: query, page: page).request(baseURL: baseURL)
+                    let (data, response) = try await client.send(request)
+                    return try SearchPhotosMapper.map(data, from: response)
+                }
+                return try await searchStream.firstPage()
+            }
+        )
     }
 
     static func makeImagePipeline() -> ImagePipeline {

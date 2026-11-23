@@ -49,7 +49,7 @@
 
         @MainActor
         static func viewModel(_ load: @escaping GalleryViewModel.LoadFeed) -> GalleryViewModel {
-            GalleryViewModel(loadFeed: load)
+            GalleryViewModel(loadFeed: load, search: { _ in Paginated(items: PreviewData.photos(31...42)) })
         }
     }
 

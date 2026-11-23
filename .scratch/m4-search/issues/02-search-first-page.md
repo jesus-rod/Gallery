@@ -1,6 +1,6 @@
 # 02 — Search: first Page, errors, empty, trimming
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01
 
 `GalleryViewModel` gains a `search` closure and the first half of the search API: `search(_:)`, `retrySearch()` and the `searchResults` state. Each accepted Query gets a new `StreamPager`. Because `init` changes, this ticket also updates the two other callers: the `#Preview` helper and the composition root, which wires the real search Stream.
@@ -115,3 +115,8 @@ Each bullet is one `@Test` in `GalleryViewModelTests`:
 ## Commit
 
 `feat(ui): search the first Page of a Query` with a body covering the closure, trimming and the same-Query rule.
+
+## Comments
+
+- The 11 tests were written together before the code, not one at a time. The red step was a compile failure on the missing `search`, `searchResults` and `SearchResults`, which the ticket accepts.
+- `App/GalleryApp.swift` had an uncommitted local edit that forced `isUsingStubs` to `false`. The commit carries only the search wiring with the original `isUsingStubs` body. The user's working-tree edit is put back after the commit.

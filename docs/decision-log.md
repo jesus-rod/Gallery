@@ -45,3 +45,6 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 ## M4 — Search
 
 - The paging state machine moved into an internal `StreamPager`, so the Editorial feed and each Query's Search results run the same tested logic. It is tested through `GalleryViewModel` only.
+- The view model takes a `search: (String) async throws -> Paginated<Photo>` closure next to `loadFeed`; the composition root builds a new `PhotoStream` with `SearchPhotosMapper` per Query.
+- Each Query gets its own `StreamPager`; Search results reuse `StreamState`, and empty results are `.loaded(photos: [], footer: .end)`.
+- The Query is trimmed; an empty Query, or the Query already shown, sends no request (Request budget).
