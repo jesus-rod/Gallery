@@ -52,6 +52,13 @@ struct FullScreenPhotoView: View {
             .accessibilitySortPriority(3)
         }
         .accessibilityAction(.escape, close)
+        .sheet(isPresented: $isInfoPresented) {
+            PhotoInfoSheet(
+                details: PhotoDetails(route.photo),
+                photographer: route.photo.photographer,
+                appName: referralAppName
+            )
+        }
         .task(id: fittingSize) {
             guard fittingSize.width > 0, fittingSize.height > 0 else { return }
             await model.load(fitting: fittingSize)
@@ -160,7 +167,16 @@ struct FullScreenPhotoView: View {
                 }
             }
             .onEnded { value in
+                let wasZoomed = (panStart ?? transform).isZoomed
                 panStart = nil
+                guard !wasZoomed else { return }
+                if ZoomTransform.shouldShowInfo(
+                    translation: value.translation,
+                    predictedEnd: value.predictedEndTranslation
+                ) {
+                    isInfoPresented = true
+                    return
+                }
                 guard dismissTranslation != .zero else { return }
                 if ZoomTransform.shouldDismiss(
                     translation: value.translation,

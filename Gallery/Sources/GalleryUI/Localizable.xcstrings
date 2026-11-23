@@ -177,6 +177,17 @@
         }
       }
     },
+    "Size %@" : {
+      "comment" : "VoiceOver label of the photo's size in the info sheet. %@ is the size, for example \"6000 × 4000 · 24 MP\".",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Size %@"
+          }
+        }
+      }
+    },
     "Something went wrong" : {
       "comment" : "Title shown for an unexpected loading error.",
       "localizations" : {

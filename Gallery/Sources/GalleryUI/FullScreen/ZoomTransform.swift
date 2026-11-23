@@ -5,6 +5,8 @@ struct ZoomTransform: Equatable {
     static let doubleTapScale = 2.5
     static let dismissDistance = 120.0
     static let dismissFlickDistance = 300.0
+    static let infoDistance = 80.0
+    static let infoFlickDistance = 200.0
 
     private(set) var scale = 1.0
     private(set) var offset = CGSize.zero
@@ -58,6 +60,12 @@ struct ZoomTransform: Equatable {
     static func shouldDismiss(translation: CGSize, predictedEnd: CGSize) -> Bool {
         guard translation.height > 0 else { return false }
         return Double(translation.height) > dismissDistance || Double(predictedEnd.height) > dismissFlickDistance
+    }
+
+    static func shouldShowInfo(translation: CGSize, predictedEnd: CGSize) -> Bool {
+        let up = -Double(translation.height)
+        guard up > 0, up > abs(Double(translation.width)) else { return false }
+        return up > infoDistance || -Double(predictedEnd.height) > infoFlickDistance
     }
 
     private static func relativeToCentre(_ point: CGPoint, in container: CGSize) -> CGSize {

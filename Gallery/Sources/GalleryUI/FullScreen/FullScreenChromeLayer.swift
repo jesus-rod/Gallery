@@ -56,7 +56,6 @@ struct FullScreenChromeLayer: View {
                     .lineLimit(1)
             }
             .foregroundStyle(.white.opacity(Design.Opacity.secondaryText))
-            .accessibilityIdentifier("photo-credit")
         }
         .multilineTextAlignment(.center)
         .frame(minHeight: Design.Size.hitTarget)
@@ -79,6 +78,7 @@ struct FullScreenChromeLayer: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(Text("Info", bundle: .module))
+            .accessibilityIdentifier("full-screen-info")
         }
     }
 

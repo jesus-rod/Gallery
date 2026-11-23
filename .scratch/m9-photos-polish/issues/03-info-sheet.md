@@ -1,6 +1,6 @@
 # 03 — Info sheet, opened by the Info button or a swipe up
 
-Status: ready-for-agent
+Status: done
 Blocked by: 02
 
 ## Files

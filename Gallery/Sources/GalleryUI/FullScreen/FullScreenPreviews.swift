@@ -49,6 +49,17 @@
         .background(LinearGradient(colors: [.white, .yellow], startPoint: .top, endPoint: .bottom))
     }
 
+    #Preview("Info sheet") {
+        Color.black
+            .sheet(isPresented: .constant(true)) {
+                PhotoInfoSheet(
+                    details: PhotoDetails(previewRoute.photo),
+                    photographer: previewRoute.photo.photographer,
+                    appName: PreviewData.referralAppName
+                )
+            }
+    }
+
     #Preview("Full screen, image failed") {
         FullScreenPhotoView(
             route: previewRoute,

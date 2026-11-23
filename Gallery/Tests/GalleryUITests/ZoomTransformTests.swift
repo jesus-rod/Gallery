@@ -117,4 +117,28 @@ struct ZoomTransformTests {
             !ZoomTransform.shouldDismiss(
                 translation: CGSize(width: 0, height: -200), predictedEnd: CGSize(width: 0, height: -400)))
     }
+
+    @Test func shouldShowInfo_whenDraggedUpPastTheDistance() {
+        let translation = CGSize(width: 10, height: -90)
+
+        #expect(ZoomTransform.shouldShowInfo(translation: translation, predictedEnd: translation))
+    }
+
+    @Test func shouldShowInfo_whenFlickedUp() {
+        #expect(
+            ZoomTransform.shouldShowInfo(
+                translation: CGSize(width: 0, height: -20), predictedEnd: CGSize(width: 0, height: -250)))
+    }
+
+    @Test func shouldShowInfo_neverForAShortSidewaysOrDownwardDrag() {
+        #expect(
+            !ZoomTransform.shouldShowInfo(
+                translation: CGSize(width: 0, height: -30), predictedEnd: CGSize(width: 0, height: -40)))
+        #expect(
+            !ZoomTransform.shouldShowInfo(
+                translation: CGSize(width: -200, height: -100), predictedEnd: CGSize(width: -400, height: -200)))
+        #expect(
+            !ZoomTransform.shouldShowInfo(
+                translation: CGSize(width: 0, height: 200), predictedEnd: CGSize(width: 0, height: 400)))
+    }
 }
