@@ -4,6 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "Gallery",
+    defaultLocalization: "en",
     platforms: [.iOS(.v17), .macOS(.v14)],
     products: [
         .library(name: "GalleryCore", targets: ["GalleryCore"]),
@@ -17,7 +18,11 @@ let package = Package(
         .target(name: "GalleryImageLoading"),
         .testTarget(name: "GalleryImageLoadingTests", dependencies: ["GalleryImageLoading"]),
 
-        .target(name: "GalleryUI", dependencies: ["GalleryCore", "GalleryImageLoading"]),
-        .testTarget(name: "GalleryUITests", dependencies: ["GalleryUI"]),
+        .target(
+            name: "GalleryUI",
+            dependencies: ["GalleryCore", "GalleryImageLoading"],
+            resources: [.process("Localizable.xcstrings")]
+        ),
+        .testTarget(name: "GalleryUITests", dependencies: ["GalleryUI", "GalleryCore"]),
     ]
 )

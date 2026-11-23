@@ -1,0 +1,17 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Untitled photo" : {
+      "comment" : "Caption for a photo that has neither an alt description nor a description.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untitled photo"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
