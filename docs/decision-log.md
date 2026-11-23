@@ -31,3 +31,4 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - Disk store file names are the SHA-256 of the URL (CryptoKit, a system framework with no UI). The last-used time is the file's modification date, so LRU eviction needs no index file. The clock is injected, so tests don't depend on real time.
 - Store errors never fail a load: a failed read counts as a miss and a failed write is ignored.
 - The grid Rendition sets only the width (`w`, plus `dpr`, `q` and `fm=jpg`), not a height or a crop, so M5 can show the cached grid image under the full-screen one.
+- Decoding uses an ImageIO thumbnail (`CreateThumbnailFromImageAlways`, `ShouldCacheImmediately`, no source cache), never `UIImage(data:)`. Only the downsampled bitmap is ever in memory, and it's decoded inside the loader, not on the main thread during rendering. The loader is a nonisolated `async` function, so under the Swift 6.0 language mode it runs off the main actor.

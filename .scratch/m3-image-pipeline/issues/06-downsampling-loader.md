@@ -1,6 +1,6 @@
 # 06 — Downsampling image loader
 
-Status: ready-for-agent
+Status: done
 
 `DownsamplingImageLoader(dataLoader:)` conforming to `ImageLoader`: ImageIO `CGImageSourceCreateThumbnailAtIndex` with `kCGImageSourceThumbnailMaxPixelSize`, `CreateThumbnailFromImageAlways`, `CreateThumbnailWithTransform`, `ShouldCacheImmediately`, and `ShouldCache: false` on the source.
 
