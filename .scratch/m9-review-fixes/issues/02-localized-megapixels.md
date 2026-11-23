@@ -1,6 +1,6 @@
 # 02 — Format megapixels with the user's locale
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01
 
 `PhotoDetails.megapixels` builds its decimal with `String(format: "%.1f", …)`. That's a C-style format (swiftui-pro rule) and ignores the locale, so a French user reads "2.5 MP" instead of "2,5 MP". The size line is shown in `PhotoInfoSheet`.

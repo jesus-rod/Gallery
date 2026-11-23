@@ -21,14 +21,24 @@ struct PhotoDetailsTests {
     }
 
     @Test func describesTheSizeInPixelsAndWholeMegapixelsFromTen() {
-        let details = PhotoDetails(makePhoto(width: 6000, height: 4000))
+        let details = PhotoDetails(makePhoto(width: 6000, height: 4000), locale: .enUS)
 
         #expect(details.size == "6000 × 4000 · 24 MP")
     }
 
     @Test func describesSmallPhotosWithOneDecimalMegapixel() {
-        #expect(PhotoDetails(makePhoto(width: 640, height: 480)).size == "640 × 480 · 0.3 MP")
-        #expect(PhotoDetails(makePhoto(width: 3000, height: 2000)).size == "3000 × 2000 · 6 MP")
-        #expect(PhotoDetails(makePhoto(width: 2500, height: 1700)).size == "2500 × 1700 · 4.3 MP")
+        #expect(PhotoDetails(makePhoto(width: 640, height: 480), locale: .enUS).size == "640 × 480 · 0.3 MP")
+        #expect(PhotoDetails(makePhoto(width: 3000, height: 2000), locale: .enUS).size == "3000 × 2000 · 6 MP")
+        #expect(PhotoDetails(makePhoto(width: 2500, height: 1700), locale: .enUS).size == "2500 × 1700 · 4.3 MP")
     }
+
+    @Test func describesMegapixelsWithTheLocalesDecimalSeparator() {
+        let details = PhotoDetails(makePhoto(width: 2500, height: 1700), locale: Locale(identifier: "fr_FR"))
+
+        #expect(details.size == "2500 × 1700 · 4,3 MP")
+    }
+}
+
+extension Locale {
+    fileprivate static let enUS = Locale(identifier: "en_US")
 }

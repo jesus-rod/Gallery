@@ -149,3 +149,4 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 ## Review fixes (M9)
 
 - An active search keeps an empty navigation bar over full screen even though full screen hides it, which pushed the back button and title down by the bar's height. The chrome now lays out against the window's top inset, measured on the `NavigationStack`, instead of its own safe area. Rejected: `.searchPresentationToolbarBehavior(.avoidHidingContent)` (fixes full screen but shows a ghost large title and loses the feed's scroll position when the Query is cleared), dismissing the search before the push (clears the Query), forcing an inline title (no effect).
+- Megapixels in Photo info use `FormatStyle` with the user's locale (injected for tests) instead of `String(format:)`, so the decimal separator follows the locale.
