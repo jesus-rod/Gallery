@@ -15,8 +15,17 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | # | Milestone | State |
 |---|---|---|
 | M0 | Scaffold: package, app target, key config, CI, README skeleton | done |
-| M1 | Feed API + paging (`.scratch/m1-feed-api/`) | in progress |
-| M2 | Grid UI with fixtures, `-useStubs` launch path, XCUITest target | |
+| M1 | Feed API + paging (`.scratch/m1-feed-api/`) | done |
+| M2 | Grid UI with fixtures, `-useStubs` launch path, XCUITest target | next: write spec |
+
+## Carried into M2
+
+From the M1 review. Fold these into the M2 spec.
+- The view model maps loader errors (`URLError`, `UnsplashAPIError`, `URLSessionHTTPClient.UnexpectedResponse`) to its own states (offline, rate limited, generic); no Foundation or API error reaches a view.
+- `@MainActor` view models get memory-leak tests, the first class-based systems under test.
+- `PhotoStream.firstPage()` / `Paginated.loadMore` is the API the view model drives. Retrying a failed `loadMore` means calling the same closure again.
+- Optional cleanup: both mappers repeat "rate limit, require 200, decode or `invalidData`"; extract a shared internal decode helper when a third mapper appears.
+- Course rule EF-97 (`case let .x(a, b)`) conflicts with swift-format's `UseLetInEveryBoundCaseVariable`; the linter wins.
 | M3 | Image pipeline | |
 | M4 | Search | |
 | M5 | Full-screen view + transition | |

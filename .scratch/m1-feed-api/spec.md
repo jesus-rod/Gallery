@@ -1,6 +1,6 @@
 # M1 — Feed API and paging
 
-Status: ready-for-agent
+Status: done
 
 ## Goal
 
