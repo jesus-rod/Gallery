@@ -15,24 +15,40 @@ public struct ImageSize: Hashable, Sendable {
     }
 }
 
+public struct FittingSize: Hashable, Sendable {
+    public let width: Double
+    public let height: Double
+    public let scale: Double
+
+    public init(width: Double, height: Double, scale: Double) {
+        self.width = width
+        self.height = height
+        self.scale = scale
+    }
+}
+
 public struct PhotoImages: Sendable {
     public typealias Preview = @Sendable (Photo) -> CGImage?
     public typealias LoadImage = @Sendable (Photo, ImageSize) async throws -> CGImage
+    public typealias LoadFullScreenImage = @Sendable (Photo, FittingSize) async throws -> CGImage
     public typealias Prefetch = @Sendable ([Photo], ImageSize) -> Void
 
     let preview: Preview
     let image: LoadImage
+    let fullScreenImage: LoadFullScreenImage
     let prefetch: Prefetch
     let prefetchDistance: Int
 
     public init(
         preview: @escaping Preview,
         image: @escaping LoadImage,
+        fullScreenImage: @escaping LoadFullScreenImage,
         prefetch: @escaping Prefetch,
         prefetchDistance: Int = 9
     ) {
         self.preview = preview
         self.image = image
+        self.fullScreenImage = fullScreenImage
         self.prefetch = prefetch
         self.prefetchDistance = prefetchDistance
     }

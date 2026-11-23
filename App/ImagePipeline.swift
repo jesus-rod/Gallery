@@ -29,6 +29,12 @@ final class ImagePipeline: Sendable {
                 let rendition = Self.rendition(for: photo, size: size, configuration: configuration)
                 return try await memoryCache.loadImage(from: rendition.url, maxPixelSize: rendition.maxPixelSize)
             },
+            fullScreenImage: { [memoryCache, configuration] photo, size in
+                let rendition = UnsplashRendition.fullScreen(
+                    for: photo, fitting: size.width, height: size.height, scale: size.scale,
+                    quality: configuration.fullScreenRenditionQuality)
+                return try await memoryCache.loadImage(from: rendition.url, maxPixelSize: rendition.maxPixelSize)
+            },
             prefetch: { [prefetcher, configuration] photos, size in
                 prefetcher.prefetch(
                     photos.map { photo in

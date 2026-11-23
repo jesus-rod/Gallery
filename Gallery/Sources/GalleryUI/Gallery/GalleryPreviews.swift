@@ -22,13 +22,16 @@
 
         static let images = PhotoImages(
             preview: { photo in solidImage(hue: hue(of: photo), brightness: 0.5) },
-            image: { photo, _ in
-                try await Task.sleep(for: .milliseconds(Int.random(in: 300...1500)))
-                guard let image = solidImage(hue: hue(of: photo), brightness: 0.85) else { throw URLError(.unknown) }
-                return image
-            },
+            image: { photo, _ in try await loadedImage(of: photo) },
+            fullScreenImage: { photo, _ in try await loadedImage(of: photo) },
             prefetch: { _, _ in }
         )
+
+        private static func loadedImage(of photo: Photo) async throws -> CGImage {
+            try await Task.sleep(for: .milliseconds(Int.random(in: 300...1500)))
+            guard let image = solidImage(hue: hue(of: photo), brightness: 0.85) else { throw URLError(.unknown) }
+            return image
+        }
 
         private static func hue(of photo: Photo) -> CGFloat {
             CGFloat((Int(photo.id) ?? 0) % 12) / 12

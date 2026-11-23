@@ -93,6 +93,11 @@ final class PhotoImagesSpy: @unchecked Sendable {
         let size: ImageSize
     }
 
+    struct FullScreenRequest: Equatable {
+        let photoID: String
+        let size: FittingSize
+    }
+
     struct Prefetch: Equatable {
         let photoIDs: [String]
         let size: ImageSize
@@ -101,28 +106,53 @@ final class PhotoImagesSpy: @unchecked Sendable {
     private let lock = NSLock()
     private let preview: CGImage?
     private var result: Result<CGImage, Error> = .failure(AnyError())
+    private var resultGate: Gate?
+    private var fullScreenResult: Result<CGImage, Error> = .failure(AnyError())
+    private var fullScreenGate: Gate?
     private var _requests: [Request] = []
+    private var _fullScreenRequests: [FullScreenRequest] = []
     private var _prefetches: [Prefetch] = []
 
     var requests: [Request] { lock.withLock { _requests } }
+    var fullScreenRequests: [FullScreenRequest] { lock.withLock { _fullScreenRequests } }
     var prefetches: [Prefetch] { lock.withLock { _prefetches } }
 
     init(preview: CGImage? = nil) {
         self.preview = preview
     }
 
-    func stub(_ result: Result<CGImage, Error>) {
-        lock.withLock { self.result = result }
+    func stub(_ result: Result<CGImage, Error>, gate: Gate? = nil) {
+        lock.withLock {
+            self.result = result
+            resultGate = gate
+        }
+    }
+
+    func stubFullScreen(_ result: Result<CGImage, Error>, gate: Gate? = nil) {
+        lock.withLock {
+            fullScreenResult = result
+            fullScreenGate = gate
+        }
     }
 
     var images: PhotoImages {
         PhotoImages(
             preview: { [preview] _ in preview },
             image: { [self] photo, size in
-                try lock.withLock {
+                let (result, gate) = lock.withLock {
                     _requests.append(Request(photoID: photo.id, size: size))
-                    return try result.get()
+                    return (self.result, resultGate)
                 }
+                await gate?.pass()
+                return try result.get()
+            },
+            fullScreenImage: { [self] photo, size in
+                let (result, gate) = lock.withLock {
+                    _fullScreenRequests.append(FullScreenRequest(photoID: photo.id, size: size))
+                    return (fullScreenResult, fullScreenGate)
+                }
+                await gate?.pass()
+                return try result.get()
             },
             prefetch: { [self] photos, size in
                 lock.withLock { _prefetches.append(Prefetch(photoIDs: photos.map(\.id), size: size)) }
