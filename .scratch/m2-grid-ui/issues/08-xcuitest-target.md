@@ -1,6 +1,6 @@
 # 08 — XCUITest target
 
-Status: ready-for-agent
+Status: done
 Blocked by: 07
 
 Add a `GalleryAppUITests` target to `Gallery.xcodeproj` and to CI. Tests launch with `-useStubs`.

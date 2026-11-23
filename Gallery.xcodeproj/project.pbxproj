@@ -12,7 +12,18 @@
 		F7EE718DA0E079B3AF5FA30D /* GalleryUI in Frameworks */ = {isa = PBXBuildFile; productRef = BB378F1E50E74748ED0EDCE1 /* GalleryUI */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A3B4C5D6E7F8091A2B3C4D5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B753943FF222CCD25F0C3D8E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BD3656691B40CE6B6B9D0B7B;
+			remoteInfo = GalleryApp;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		4D5E6F708192A3B4C5D6E7F8 /* GalleryAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GalleryAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		12872D65AE6A856F35F15064 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		50C1C5A3119DCFD162B49B8F /* GalleryApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GalleryApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D62A9688B183408CB6F030E /* Gallery */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Gallery; path = Gallery; sourceTree = SOURCE_ROOT; };
@@ -38,6 +49,11 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		5E6F708192A3B4C5D6E7F809 /* AppUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AppUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +67,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		708192A3B4C5D6E7F8091A2B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -58,6 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				50C1C5A3119DCFD162B49B8F /* GalleryApp.app */,
+				4D5E6F708192A3B4C5D6E7F8 /* GalleryAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -83,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				716196D4930F4D45E6AC60B9 /* App */,
+				5E6F708192A3B4C5D6E7F809 /* AppUITests */,
 				508EFC1B34B21B28B722D8D4 /* Config */,
 				5D2CBE4E582919774FC56233 /* Packages */,
 				22914B0D254D2FE6163E6A5F /* Products */,
@@ -117,6 +142,27 @@
 			productReference = 50C1C5A3119DCFD162B49B8F /* GalleryApp.app */;
 			productType = "com.apple.product-type.application";
 		};
+		3C4D5E6F708192A3B4C5D6E7 /* GalleryAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B4C5D6E7F8091A2B3C4D5E6F /* Build configuration list for PBXNativeTarget "GalleryAppUITests" */;
+			buildPhases = (
+				6F708192A3B4C5D6E7F8091A /* Sources */,
+				708192A3B4C5D6E7F8091A2B /* Frameworks */,
+				8192A3B4C5D6E7F8091A2B3C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				92A3B4C5D6E7F8091A2B3C4D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				5E6F708192A3B4C5D6E7F809 /* AppUITests */,
+			);
+			name = GalleryAppUITests;
+			productName = GalleryAppUITests;
+			productReference = 4D5E6F708192A3B4C5D6E7F8 /* GalleryAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -128,6 +174,9 @@
 				TargetAttributes = {
 					BD3656691B40CE6B6B9D0B7B = {
 						ProvisioningStyle = Automatic;
+					};
+					3C4D5E6F708192A3B4C5D6E7 = {
+						TestTargetID = BD3656691B40CE6B6B9D0B7B;
 					};
 				};
 			};
@@ -149,12 +198,20 @@
 			projectRoot = "";
 			targets = (
 				BD3656691B40CE6B6B9D0B7B /* GalleryApp */,
+				3C4D5E6F708192A3B4C5D6E7 /* GalleryAppUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		2B3C4D5E6F708192A3B4C5D6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8192A3B4C5D6E7F8091A2B3C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -171,7 +228,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6F708192A3B4C5D6E7F8091A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		92A3B4C5D6E7F8091A2B3C4D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BD3656691B40CE6B6B9D0B7B /* GalleryApp */;
+			targetProxy = A3B4C5D6E7F8091A2B3C4D5E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4BF1E15F670E43853E6209F8 /* Release */ = {
@@ -335,6 +407,30 @@
 			};
 			name = Debug;
 		};
+		C5D6E7F8091A2B3C4D5E6F70 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.gallery.GalleryAppUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GalleryApp;
+			};
+			name = Debug;
+		};
+		D6E7F8091A2B3C4D5E6F7081 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.gallery.GalleryAppUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GalleryApp;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -352,6 +448,15 @@
 			buildConfigurations = (
 				C8B6D8A8E021BBEF72EDBF57 /* Debug */,
 				4D2BFE712BD0DEE58DA73E1F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B4C5D6E7F8091A2B3C4D5E6F /* Build configuration list for PBXNativeTarget "GalleryAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C5D6E7F8091A2B3C4D5E6F70 /* Debug */,
+				D6E7F8091A2B3C4D5E6F7081 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
