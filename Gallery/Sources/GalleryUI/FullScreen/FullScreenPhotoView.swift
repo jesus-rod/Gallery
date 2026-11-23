@@ -93,13 +93,11 @@ struct FullScreenPhotoView: View {
         ZStack {
             if let preview = model.preview {
                 Image(decorative: preview, scale: 1)
-                    .resizable()
-                    .scaledToFill()
+                    .filling()
             }
             if let image = sharperImage {
                 Image(decorative: image, scale: displayScale)
-                    .resizable()
-                    .scaledToFill()
+                    .filling()
                     .transition(.opacity)
             }
         }

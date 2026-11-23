@@ -134,13 +134,11 @@ struct PhotoCell: View {
         ZStack {
             if !model.wasCachedOnAppear, let preview = model.preview {
                 Image(decorative: preview, scale: 1)
-                    .resizable()
-                    .scaledToFill()
+                    .filling()
             }
             if let image = model.image {
                 Image(decorative: image, scale: route.gridSize.scale)
-                    .resizable()
-                    .scaledToFill()
+                    .filling()
                     .transition(.opacity)
             }
         }
