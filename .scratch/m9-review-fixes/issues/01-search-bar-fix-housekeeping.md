@@ -1,6 +1,6 @@
 # 01 — Housekeeping for the full-screen-after-search fix
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 `3760214` fixed the back button and title sitting 54 pt lower when a Photo is opened while a search is active. Cause: an active `searchable` keeps an empty navigation bar over the pushed full-screen view even though it hides its toolbar, so the chrome's top safe area includes the bar. Fix: `GalleryRootView` measures the window's top inset on the `NavigationStack` (`onGeometryChange` of `safeAreaInsets.top`) and passes it to `FullScreenPhotoView`, whose chrome ignores the top container safe area and pads by that inset.

@@ -146,8 +146,6 @@ struct FullScreenPhotoView: View {
 }
 
 extension View {
-    /// An active search keeps an empty navigation bar over full screen even though it's hidden,
-    /// so the chrome lays out against the window's top inset instead of the bar's.
     @ViewBuilder
     fileprivate func topInset(_ inset: CGFloat?) -> some View {
         if let inset {
