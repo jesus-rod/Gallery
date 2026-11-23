@@ -24,7 +24,7 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M6 | Offline feed (`.scratch/m6-offline-feed/`) | done, merged |
 | M7 | Polish: UX states, accessibility (`.scratch/m7-polish/`) | done, merged (VoiceOver and Accessibility Inspector check left for M8) |
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 done; **next: ticket 08** (snapshot matrix on the iOS simulator, ready-for-agent, not started); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
-| M9 | Photos-style polish (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | spec written, seams approved; next: write tickets |
+| M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | spec and tickets 01–08 written, seams approved; **next: ticket 01** (`pageURL`) |
 
 ## Resume here (2026-11-23)
 
