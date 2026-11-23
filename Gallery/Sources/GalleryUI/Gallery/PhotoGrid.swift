@@ -7,6 +7,7 @@ struct PhotoGrid: View {
     let images: PhotoImages
     let streamID: String
     let zoomNamespace: Namespace.ID
+    let focusedPhotoID: String?
     let onPhotoAppear: (Photo) -> Void
     let onOpen: (FullScreenRoute) -> Void
     let onRetry: () -> Void
@@ -14,6 +15,16 @@ struct PhotoGrid: View {
     @Environment(\.displayScale) private var displayScale
 
     var body: some View {
+        ScrollViewReader { proxy in
+            grid
+                .onChange(of: focusedPhotoID) { _, id in
+                    guard let id, photos.contains(where: { $0.id == id }) else { return }
+                    proxy.scrollTo(id, anchor: .center)
+                }
+        }
+    }
+
+    private var grid: some View {
         ScrollView {
             SquareGrid { cellSide in
                 let size = ImageSize(points: cellSide, scale: displayScale)

@@ -86,6 +86,27 @@ public final class GalleryViewModel {
         await activeSearch?.pager.photoAppeared(photo)
     }
 
+    public static let feedStreamID = "feed"
+
+    public static func searchStreamID(for query: String) -> String {
+        "search-\(query)"
+    }
+
+    public func photos(in streamID: String) -> [Photo] {
+        guard let pager = pager(for: streamID), case .loaded(let photos, _) = pager.state else { return [] }
+        return photos
+    }
+
+    public func photoAppeared(_ photo: Photo, in streamID: String) async {
+        await pager(for: streamID)?.photoAppeared(photo)
+    }
+
+    private func pager(for streamID: String) -> StreamPager? {
+        if streamID == Self.feedStreamID { return feedPager }
+        guard let activeSearch, streamID == Self.searchStreamID(for: activeSearch.query) else { return nil }
+        return activeSearch.pager
+    }
+
     public func cancelSearch() {
         activeSearch?.pager.cancel()
         activeSearch = nil

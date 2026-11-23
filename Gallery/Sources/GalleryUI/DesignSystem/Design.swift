@@ -32,6 +32,12 @@ enum Design {
             reduceMotion ? nil : .easeInOut(duration: 0.3)
         }
 
+        static let parallaxFactor: CGFloat = 0.3
+
+        static func pageCrossFade(reduceMotion: Bool) -> Animation? {
+            reduceMotion ? nil : .easeInOut(duration: 0.35)
+        }
+
         static func streamSwitch(reduceMotion: Bool) -> Animation? {
             reduceMotion ? nil : .easeInOut(duration: 0.2)
         }

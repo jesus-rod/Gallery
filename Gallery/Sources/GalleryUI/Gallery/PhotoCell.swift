@@ -17,7 +17,7 @@ struct PhotoCell: View {
         zoomNamespace: Namespace.ID,
         onOpen: @escaping (FullScreenRoute) -> Void
     ) {
-        route = FullScreenRoute(photo: photo, gridSize: size, sourceID: "\(streamID)-\(photo.id)")
+        route = FullScreenRoute(photo: photo, gridSize: size, streamID: streamID)
         caption = GalleryUI.caption(for: photo)
         self.zoomNamespace = zoomNamespace
         self.onOpen = onOpen

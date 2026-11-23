@@ -1,6 +1,6 @@
 # 05 — Swipe between photos with parallax
 
-Status: ready-for-agent
+Status: done
 Blocked by: 03, 04
 
 The biggest ticket: full screen pages through the Stream the photo came from. Write ADR 0007 first.

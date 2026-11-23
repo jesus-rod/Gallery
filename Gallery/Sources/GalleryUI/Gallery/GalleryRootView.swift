@@ -8,6 +8,7 @@ public struct GalleryRootView: View {
     @State private var searchText = ""
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var path: [FullScreenRoute] = []
+    @State private var fullScreenPhotoID = ""
     @Namespace private var zoomNamespace
 
     public init(viewModel: GalleryViewModel, images: PhotoImages, referralAppName: String) {
@@ -46,8 +47,20 @@ public struct GalleryRootView: View {
                 if newValue.isEmpty { viewModel.cancelSearch() }
             }
             .navigationDestination(for: FullScreenRoute.self) { route in
-                FullScreenPhotoView(route: route, images: images, referralAppName: referralAppName)
-                    .zoomTransition(sourceID: route.sourceID, in: zoomNamespace)
+                FullScreenPhotoView(
+                    route: route,
+                    photos: viewModel.photos(in: route.streamID),
+                    images: images,
+                    referralAppName: referralAppName,
+                    currentID: $fullScreenPhotoID,
+                    onPhotoAppear: { photo in
+                        Task { await viewModel.photoAppeared(photo, in: route.streamID) }
+                    }
+                )
+                .zoomTransition(
+                    sourceID: FullScreenRoute.sourceID(streamID: route.streamID, photoID: fullScreenPhotoID),
+                    in: zoomNamespace
+                )
             }
         }
         .task { await viewModel.load() }
@@ -55,7 +68,12 @@ public struct GalleryRootView: View {
 
     private var isShowingSearch: Bool { viewModel.searchResults != nil }
 
+    private func focusedPhotoID(in streamID: String) -> String? {
+        path.last?.streamID == streamID ? fullScreenPhotoID : nil
+    }
+
     private func openFullScreen(_ route: FullScreenRoute) {
+        fullScreenPhotoID = route.photo.id
         path.append(route)
     }
 
@@ -73,8 +91,9 @@ public struct GalleryRootView: View {
                 photos: photos,
                 footer: footer,
                 images: images,
-                streamID: "feed",
+                streamID: GalleryViewModel.feedStreamID,
                 zoomNamespace: zoomNamespace,
+                focusedPhotoID: focusedPhotoID(in: GalleryViewModel.feedStreamID),
                 onPhotoAppear: { photo in Task { await viewModel.photoAppeared(photo) } },
                 onOpen: openFullScreen,
                 onRetry: { Task { await viewModel.retry() } }
@@ -104,8 +123,9 @@ public struct GalleryRootView: View {
                 photos: photos,
                 footer: footer,
                 images: images,
-                streamID: "search-\(results.query)",
+                streamID: GalleryViewModel.searchStreamID(for: results.query),
                 zoomNamespace: zoomNamespace,
+                focusedPhotoID: focusedPhotoID(in: GalleryViewModel.searchStreamID(for: results.query)),
                 onPhotoAppear: { photo in Task { await viewModel.searchPhotoAppeared(photo) } },
                 onOpen: openFullScreen,
                 onRetry: { Task { await viewModel.retrySearch() } }

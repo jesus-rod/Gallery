@@ -4,10 +4,12 @@
     import GalleryCore
     import SwiftUI
 
+    private let previewPhotos = PreviewData.photos(1...12)
+
     private let previewRoute = FullScreenRoute(
-        photo: PreviewData.photos(7...7)[0],
+        photo: previewPhotos[6],
         gridSize: ImageSize(points: 180, scale: 2),
-        sourceID: "feed-7"
+        streamID: "feed"
     )
 
     private let failingImages = PhotoImages(
@@ -19,18 +21,24 @@
     )
 
     #Preview("Full screen") {
+        @Previewable @State var currentID = previewRoute.photo.id
         FullScreenPhotoView(
             route: previewRoute,
+            photos: previewPhotos,
             images: PreviewData.images,
-            referralAppName: PreviewData.referralAppName
+            referralAppName: PreviewData.referralAppName,
+            currentID: $currentID
         )
     }
 
     #Preview("Full screen, accessibility XXXL") {
+        @Previewable @State var currentID = previewRoute.photo.id
         FullScreenPhotoView(
             route: previewRoute,
+            photos: previewPhotos,
             images: PreviewData.images,
-            referralAppName: PreviewData.referralAppName
+            referralAppName: PreviewData.referralAppName,
+            currentID: $currentID
         )
         .dynamicTypeSize(.accessibility5)
     }
@@ -61,10 +69,13 @@
     }
 
     #Preview("Full screen, image failed") {
+        @Previewable @State var currentID = previewRoute.photo.id
         FullScreenPhotoView(
             route: previewRoute,
+            photos: previewPhotos,
             images: failingImages,
-            referralAppName: PreviewData.referralAppName
+            referralAppName: PreviewData.referralAppName,
+            currentID: $currentID
         )
     }
 #endif

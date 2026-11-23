@@ -200,6 +200,40 @@ struct GalleryViewModelTests {
         await retry.value
     }
 
+    @Test func photosInAStream_areTheFeedsOrTheCurrentSearchResults() async {
+        let (sut, loader) = makeSUT()
+        let feed = makePhotos(1...3)
+        let cats = makePhotos(10...11)
+        loader.stubFeed(.success(loader.page(feed)))
+        loader.stubSearch(.success(loader.page(cats, hasMore: false)))
+        await sut.load()
+        await sut.search("cats")
+
+        #expect(sut.photos(in: GalleryViewModel.feedStreamID) == feed)
+        #expect(sut.photos(in: GalleryViewModel.searchStreamID(for: "cats")) == cats)
+        #expect(sut.photos(in: GalleryViewModel.searchStreamID(for: "dogs")) == [])
+        #expect(sut.photos(in: "unknown") == [])
+    }
+
+    @Test func photoAppearedInAStream_loadsMoreOfThatStreamOnly() async {
+        let (sut, loader) = makeSUT()
+        let feed = makePhotos(1...10)
+        let cats = makePhotos(20...29)
+        let moreCats = makePhotos(30...31)
+        loader.stubFeed(.success(loader.page(feed)))
+        loader.stubSearch(.success(loader.page(cats)))
+        loader.stubLoadMore(.success(loader.page(cats + moreCats, hasMore: false)))
+        await sut.load()
+        await sut.search("cats")
+
+        await sut.photoAppeared(cats[8], in: GalleryViewModel.searchStreamID(for: "cats"))
+        await sut.photoAppeared(feed[9], in: "unknown")
+
+        #expect(loader.loadMoreCallCount == 1)
+        #expect(sut.photos(in: GalleryViewModel.searchStreamID(for: "cats")) == cats + moreCats)
+        #expect(sut.feed == .loaded(photos: feed, footer: .idle))
+    }
+
     @Test func photoAppeared_withinTheLastSixPhotosLoadsMoreAndAppends() async {
         let (sut, loader) = makeSUT()
         let firstPage = makePhotos(1...10)
