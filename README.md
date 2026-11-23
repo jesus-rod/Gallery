@@ -11,7 +11,7 @@ Requirements: Xcode 16 or later, iOS 17 or later.
    ```sh
    cp Config/Secrets.example.xcconfig Config/Secrets.xcconfig
    ```
-3. Replace `your-unsplash-access-key` in `Config/Secrets.xcconfig` with your key.
+3. Replace `your-unsplash-access-key` in `Config/Secrets.xcconfig` with your key, without quotes: xcconfig keeps quotes as part of the value, and Unsplash then rejects the key with a 401.
 4. Open `Gallery.xcodeproj` and run the `GalleryApp` scheme.
 
 Run the logic tests without a simulator:

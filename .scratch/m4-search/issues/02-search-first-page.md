@@ -119,4 +119,4 @@ Each bullet is one `@Test` in `GalleryViewModelTests`:
 ## Comments
 
 - The 11 tests were written together before the code, not one at a time. The red step was a compile failure on the missing `search`, `searchResults` and `SearchResults`, which the ticket accepts.
-- `App/GalleryApp.swift` had an uncommitted local edit that forced `isUsingStubs` to `false`. The commit carries only the search wiring with the original `isUsingStubs` body. The user's working-tree edit is put back after the commit.
+- `App/GalleryApp.swift` had an uncommitted local edit that forced `isUsingStubs` to `false`. The commit carries only the search wiring with the original `isUsingStubs` body. The user's working-tree edit was not restored; they switch stubs with the scheme's `-useStubs` launch argument instead.
