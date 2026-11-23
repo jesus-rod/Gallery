@@ -1,6 +1,6 @@
 # 05 — Snapshot tests for the cell and state views
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01, 04
 
 ## Files
@@ -29,3 +29,7 @@ Record once (`withSnapshotTesting(record: .missing)` or the `record` trait), com
 ## Commit
 
 `test(ui): snapshot the cell and the empty and error states`
+
+## Comments
+
+- Images are named `<test>-appearance.<name>.png` (the library appends the argument label); 14 images: cell (Preview only, loaded), four error states and the empty search, each light and dark. `Gallery/Package.resolved` is committed so the test-only dependency resolves reproducibly.
