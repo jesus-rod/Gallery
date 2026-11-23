@@ -67,7 +67,8 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - iOS 18+ zooms from the cell (`matchedTransitionSource` / `.zoom`); iOS 17 uses the standard push, because `NavigationStack` has no cross-fade push and faking one would mean presenting over the stack.
 - The transition source ID includes the Stream, because the same Photo can sit in the hidden feed and in Search results at once.
 - The Full-screen image frame is the Photo's aspect ratio fitted to the screen (`ContentFit`), and every image fills that frame, so the 32 × 32 Preview and the grid image (cropped at 3:1 for very tall portraits) keep the Photo's shape until the full image fades in.
-- On iOS 18+ the system zoom gesture dismisses and our drag only pans a zoomed Photo; on iOS 17 our drag dismisses. Whether the system gesture ever wins over panning a zoomed Photo is still to check on device (M5 ticket 07).
+- Our own drag dismisses on every iOS version: drag down at 1× slides the Photo and fades the background, a zoomed Photo pans instead. The iOS 18+ system zoom-dismiss never fired, because our full-screen `DragGesture` takes the touch first; checked on device, where pinch, pan and drag all behave.
+- The gestures sit on a layer under the overlay, not on the whole view, so the Close button and the credit links get their taps. Close is a 44 pt circle on a dark fill, so it shows on light Photos.
 - A Close button and the VoiceOver escape gesture close the view, because drag down is neither discoverable nor available to VoiceOver.
 
 ## Review fixes (M3, M4)

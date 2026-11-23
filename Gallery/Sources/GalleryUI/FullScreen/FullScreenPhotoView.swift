@@ -24,8 +24,14 @@ struct FullScreenPhotoView: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(1 - ZoomTransform.dismissProgress(for: dismissTranslation))
-            photo
+            ZStack {
+                Color.black.opacity(1 - ZoomTransform.dismissProgress(for: dismissTranslation))
+                photo
+            }
+            .contentShape(Rectangle())
+            .gesture(tapGesture)
+            .simultaneousGesture(magnifyGesture)
+            .simultaneousGesture(dragGesture)
             chrome
         }
         .ignoresSafeArea()
@@ -34,10 +40,6 @@ struct FullScreenPhotoView: View {
         } action: {
             container = $0
         }
-        .contentShape(Rectangle())
-        .gesture(tapGesture)
-        .simultaneousGesture(magnifyGesture)
-        .simultaneousGesture(dragGesture)
         .accessibilityAction(.escape) { dismiss() }
         .task(id: fittingSize) {
             guard fittingSize.width > 0, fittingSize.height > 0 else { return }
@@ -59,7 +61,6 @@ struct FullScreenPhotoView: View {
 
     private var photo: some View {
         photoImage
-            .frame(width: content.width, height: content.height)
             .scaleEffect(transform.scale)
             .offset(
                 CGSize(
@@ -82,6 +83,7 @@ struct FullScreenPhotoView: View {
                     .transition(.opacity)
             }
         }
+        .frame(width: content.width, height: content.height)
         .clipped()
         .animation(.easeOut(duration: 0.25), value: model.state)
         .accessibilityElement()
@@ -129,9 +131,10 @@ struct FullScreenPhotoView: View {
             dismiss()
         } label: {
             Image(systemName: "xmark")
-                .font(.headline)
+                .font(.title3.weight(.semibold))
                 .frame(width: 44, height: 44)
-                .contentShape(Rectangle())
+                .background(.black.opacity(0.4), in: .circle)
+                .contentShape(.circle)
         }
         .foregroundStyle(.white)
         .accessibilityLabel(Text("Close", bundle: .module))
@@ -174,7 +177,7 @@ struct FullScreenPhotoView: View {
                 panStart = start
                 if start.isZoomed {
                     transform = start.panned(by: value.translation, container: container, content: content)
-                } else if dismissesOnDrag {
+                } else {
                     dismissTranslation = CGSize(width: 0, height: max(0, value.translation.height))
                 }
             }
@@ -192,17 +195,6 @@ struct FullScreenPhotoView: View {
                     }
                 }
             }
-    }
-
-    private var dismissesOnDrag: Bool {
-        #if os(iOS)
-            if #available(iOS 18, *) {
-                return false
-            }
-            return true
-        #else
-            return true
-        #endif
     }
 
     private func apply(_ next: ZoomTransform) {
