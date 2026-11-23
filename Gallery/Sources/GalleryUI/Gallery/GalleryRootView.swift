@@ -38,6 +38,20 @@ public struct GalleryRootView: View {
             }
             .animation(.default, value: viewModel.refreshError)
             .navigationTitle(Text("Gallery", bundle: .module))
+            #if os(iOS)
+                .toolbarTitleDisplayMode(isHeroUnderBar ? .inline : .large)
+                .toolbarColorScheme(isHeroUnderBar ? .dark : nil, for: .navigationBar)
+                .toolbarBackground(isHeroUnderBar ? .visible : .automatic, for: .navigationBar)
+                .toolbarBackground(
+                    isHeroUnderBar ? AnyShapeStyle(Color.clear) : AnyShapeStyle(.bar),
+                    for: .navigationBar
+                )
+                .toolbar {
+                    if isHeroUnderBar {
+                        floatingTitle
+                    }
+                }
+            #endif
             .searchField(text: $searchText)
             .onSubmit(of: .search) {
                 let query = searchText
@@ -67,6 +81,35 @@ public struct GalleryRootView: View {
     }
 
     private var isShowingSearch: Bool { viewModel.searchResults != nil }
+
+    private var isHeroUnderBar: Bool {
+        guard !isShowingSearch, case .loaded(let photos, _) = viewModel.feed else { return false }
+        return !photos.isEmpty
+    }
+
+    #if os(iOS)
+        @ToolbarContentBuilder
+        private var floatingTitle: some ToolbarContent {
+            if #available(iOS 26, *) {
+                ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1) }
+                    .sharedBackgroundVisibility(.hidden)
+                ToolbarItem(placement: .topBarLeading) { floatingTitleText }
+                    .sharedBackgroundVisibility(.hidden)
+            } else {
+                ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1) }
+                ToolbarItem(placement: .topBarLeading) { floatingTitleText }
+            }
+        }
+
+        private var floatingTitleText: some View {
+            Text("Gallery", bundle: .module)
+                .font(.largeTitle.bold())
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.3), radius: 8)
+                .fixedSize()
+                .accessibilityAddTraits(.isHeader)
+        }
+    #endif
 
     private func focusedPhotoID(in streamID: String) -> String? {
         path.last?.streamID == streamID ? fullScreenPhotoID : nil

@@ -20,6 +20,7 @@ struct PhotoGrid: View {
 
     @Environment(\.displayScale) private var displayScale
     @State private var container = CGSize.zero
+    @State private var safeArea = EdgeInsets()
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -50,6 +51,13 @@ struct PhotoGrid: View {
         } action: {
             container = $0
         }
+        .ignoresSafeArea(.container, edges: hero == nil ? .horizontal : [.horizontal, .top])
+        .softTopEdgeEffect()
+        .onGeometryChange(for: EdgeInsets.self) {
+            $0.safeAreaInsets
+        } action: {
+            safeArea = $0
+        }
         .accessibilityIdentifier("photo-grid")
     }
 
@@ -65,6 +73,7 @@ struct PhotoGrid: View {
             gridSize: gridSize,
             imageSize: ImageSize(points: max(container.width, height), scale: displayScale),
             height: height,
+            safeArea: safeArea,
             streamID: streamID,
             appName: hero.appName,
             zoomNamespace: zoomNamespace,
@@ -96,5 +105,16 @@ struct PhotoGrid: View {
         guard size.pixels > 0 else { return }
         let window = prefetchWindow(after: photo, in: photos, distance: images.prefetchDistance)
         images.prefetch(Array(window), size)
+    }
+}
+
+extension View {
+    @ViewBuilder
+    fileprivate func softTopEdgeEffect() -> some View {
+        if #available(iOS 26, macOS 26, *) {
+            scrollEdgeEffectStyle(.soft, for: .top)
+        } else {
+            self
+        }
     }
 }

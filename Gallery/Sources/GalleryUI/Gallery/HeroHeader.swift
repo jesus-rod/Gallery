@@ -6,6 +6,7 @@ struct HeroHeader: View {
     let caption: String
     let imageSize: ImageSize
     let height: CGFloat
+    let safeArea: EdgeInsets
     let appName: String
     let zoomNamespace: Namespace.ID
     let onOpen: (FullScreenRoute) -> Void
@@ -19,6 +20,7 @@ struct HeroHeader: View {
         gridSize: ImageSize,
         imageSize: ImageSize,
         height: CGFloat,
+        safeArea: EdgeInsets,
         streamID: String,
         appName: String,
         zoomNamespace: Namespace.ID,
@@ -28,6 +30,7 @@ struct HeroHeader: View {
         caption = GalleryUI.caption(for: photo)
         self.imageSize = imageSize
         self.height = height
+        self.safeArea = safeArea
         self.appName = appName
         self.zoomNamespace = zoomNamespace
         self.onOpen = onOpen
@@ -100,7 +103,8 @@ struct HeroHeader: View {
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, Design.Spacing.medium)
+        .padding(.leading, Design.Spacing.medium + safeArea.leading)
+        .padding(.trailing, Design.Spacing.medium + safeArea.trailing)
         .padding(.top, Design.Spacing.medium * 3)
         .padding(.bottom, Design.Spacing.medium)
         .background(Scrim())
