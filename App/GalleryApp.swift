@@ -29,29 +29,38 @@ struct GalleryApp: App {
 
 @MainActor
 enum CompositionRoot {
-    private static let baseURL = URL(string: "https://api.unsplash.com")!
+    private nonisolated static let baseURL = URL(string: "https://api.unsplash.com")!
 
     static func makeGalleryViewModel() -> GalleryViewModel {
         let client = makeAPIClient()
-        let baseURL = baseURL
-        let feedStream = PhotoStream { page in
-            let request = UnsplashEndpoint.editorial(page: page).request(baseURL: baseURL)
-            let (data, response) = try await client.send(request)
-            return try EditorialPhotosMapper.map(data, from: response)
+        let feedStream = makeStream(client: client) { page in
+            (UnsplashEndpoint.editorial(page: page), EditorialPhotosMapper.map)
         }
         let store = CodableFeedStore(fileURL: makeFeedStoreURL())
         return GalleryViewModel(
             loadFeed: OfflineFeed.saving({ try await feedStream.firstPage() }, to: store),
             loadOfflineFeed: { (try? await store.retrieve()) ?? [] },
             search: { query in
-                let searchStream = PhotoStream { page in
-                    let request = UnsplashEndpoint.search(query: query, page: page).request(baseURL: baseURL)
-                    let (data, response) = try await client.send(request)
-                    return try SearchPhotosMapper.map(data, from: response)
+                try await makeStream(client: client) { page in
+                    (UnsplashEndpoint.search(query: query, page: page), SearchPhotosMapper.map)
                 }
-                return try await searchStream.firstPage()
+                .firstPage()
             }
         )
+    }
+
+    private typealias PageMapper = @Sendable (Data, HTTPURLResponse) throws -> PhotoPage
+
+    private nonisolated static func makeStream(
+        client: HTTPClient,
+        page: @escaping @Sendable (Int) -> (UnsplashEndpoint, PageMapper)
+    ) -> PhotoStream {
+        let baseURL = baseURL
+        return PhotoStream { number in
+            let (endpoint, map) = page(number)
+            let (data, response) = try await client.send(endpoint.request(baseURL: baseURL))
+            return try map(data, response)
+        }
     }
 
     static func makeImagePipeline() -> ImagePipeline {
