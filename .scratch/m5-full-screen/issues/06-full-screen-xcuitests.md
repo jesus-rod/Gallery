@@ -1,9 +1,11 @@
-# 06 — XCUITests for the Full-screen view
+# 06 — XCUITest for the Full-screen view journey
 
 Status: ready-for-agent
 Blocked by: 05
 
-End-to-end checks on fixtures (`-useStubs`). The stub image client routes on the URL's last path component, so the full-screen Rendition (built from `raw` with `w`, `dpr`, `q`, `fm`) is answered without any change. No production code should change; if a test needs one, note why in the Comments.
+One end-to-end journey on fixtures (`-useStubs`), not one test per detail. The project keeps one XCUITest per user journey (roadmap: "2–3 XCUITest acceptance tests"); each one relaunches the app and costs seconds, while the details are already unit tested (`FullScreenImageModel` covers which image shows when, `ZoomTransform` the gestures maths, `UnsplashAttribution` the links). Opening from Search results goes through the same route code as the feed, so it gets no separate UI test.
+
+The stub image client routes on the URL's last path component, so the full-screen Rendition (built from `raw` with `w`, `dpr`, `q`, `fm`) is answered without any change. No production code should change; if the test needs one, note why in the Comments.
 
 ## Files
 
@@ -12,25 +14,22 @@ End-to-end checks on fixtures (`-useStubs`). The stub image client routes on the
 ## Fixture facts
 
 - First Editorial Photo: Caption "Fixture photo 1", Photographer "Fixture Photographer 2" (read from `App/Stubs/Fixtures/editorial-page-1.json`; check again before asserting).
-- First "cats" Photo: Caption "Cat fixture photo 1".
 
-## Tests
+## Test
 
-- `test_tappingAPhoto_opensItFullScreenWithItsCaptionAndCredit`: tap `app.images["Fixture photo 1"]` → `app.images["full-screen-photo"]` exists with label "Fixture photo 1"; the element `photo-credit` contains "Fixture Photographer 2".
-- `test_theFullScreenView_loadsTheFullImage`: after opening, the `full-screen-photo` value becomes empty (same predicate as `test_launch_loadsTheImagesOfTheFirstCells`).
-- `test_closingTheFullScreenView_returnsToTheGridAtTheSameScrollPosition`: scroll until "Fixture photo 31" exists, tap it, tap `full-screen-close` (tap the photo first if the overlay is hidden), then "Fixture photo 31" exists and is hittable and `full-screen-photo` is gone.
-- `test_tappingASearchResult_opensItFullScreen`: submit "cats", tap "Cat fixture photo 1" → `full-screen-photo` label "Cat fixture photo 1".
-
-Add a small `openFullScreen(_ caption:in:)` helper next to `submitSearch`.
+`test_openingAPhoto_showsItFullScreenWithItsCreditAndClosesBackToTheGrid`:
+1. Launch with stubs; wait for `app.images["Fixture photo 1"]`.
+2. Tap it → `app.images["full-screen-photo"]` exists with label "Fixture photo 1"; the element `photo-credit` contains "Fixture Photographer 2".
+3. Tap `full-screen-close` (tap the photo first if the overlay is hidden) → `full-screen-photo` is gone and "Fixture photo 1" exists and is hittable.
 
 ## Acceptance
 
-- `xcodebuild test … -only-testing:GalleryAppUITests`: 10 tests, 0 failures. Lint clean.
+- `xcodebuild test … -only-testing:GalleryAppUITests`: every UI test passes, one more than before. Lint clean.
 
 ## Decision log
 
-Nothing new.
+- The Full-screen view gets one XCUITest for the whole journey (open, credit, close); loading order, zoom maths and links are unit tested.
 
 ## Commit
 
-`test(app): cover opening, loading and closing the Full-screen view`
+`test(app): cover opening and closing the Full-screen view`

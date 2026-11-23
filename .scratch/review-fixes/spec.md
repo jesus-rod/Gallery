@@ -17,6 +17,7 @@ Fix the bugs that the M3 + M4 code review (standards and spec axes, range `c2852
 | 5 | M3 ticket 10's "Cancelled load leaves the state unchanged" has no test. | 03 |
 | 6 | Portrait Photos taller than 3:1 decode narrower than the cell (the 3:1 cap also limits `maxPixelSize`), so they are upscaled. | 04 |
 | 7 | `FileImageDataStore.retrieve` throws when updating the last-used date fails, after reading the data, so a disk hit becomes a network fetch. | 05 |
+| 8 | Six XCUITests where the roadmap settles on 2–3; each relaunches the app. Added by the user after the review (testing pyramid). | 06 |
 
 ## Rules for the implementer
 

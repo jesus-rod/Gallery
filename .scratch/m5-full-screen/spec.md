@@ -32,7 +32,7 @@ Tapping a Photo in either Stream opens its Full-screen view: the Photo fitted to
 - The image is one element labelled with the Caption, with the `.isImage` trait. The credit is readable and its links are actionable. Dynamic Type for the overlay text. Close has a label.
 
 **Run on fixtures**
-- With `-useStubs`, the full-screen Rendition is answered by `StubImageHTTPClient` (it routes on the last path component, so any query works). The XCUITests open a Photo from the feed and from Search results and close it.
+- With `-useStubs`, the full-screen Rendition is answered by `StubImageHTTPClient` (it routes on the last path component, so any query works). One XCUITest opens a Photo from the feed and closes it.
 
 ## Seams under test
 
@@ -43,7 +43,7 @@ Tapping a Photo in either Stream opens its Full-screen view: the Photo fitted to
 | `FullScreenImageModel(photo:images:gridSize:)` | `state` after `load(fitting:)`, given stubbed `PhotoImages` closures that complete in a chosen order or fail |
 | `ZoomTransform` (pure value) | `scale`, `offset`, `shouldDismiss`, `dismissProgress` after magnify, double tap, pan and drag inputs |
 | `FullScreenImageModel` lifetime | Deallocated after every test (`.trackingLeaks`) |
-| App end to end | XCUITest with `-useStubs`: tap a feed cell → Full-screen view with Caption and credit → Close → same cell still on screen; same from Search results |
+| App end to end | One XCUITest journey with `-useStubs`: tap a feed cell → Full-screen view with Caption and credit → Close → same cell still on screen. Opening from Search results uses the same route code and gets no separate UI test. |
 
 `FullScreenPhotoView`, the overlay and the transition stay logic-free (they read `FullScreenImageModel.state` and `ZoomTransform`) and are covered by `#Preview`s and the XCUITests. Gesture feel is checked by hand on device in ticket 07.
 
@@ -131,7 +131,7 @@ The functions return a new value from a starting one: the view keeps the transfo
 
 ## Tickets (in order)
 
-01 `Photo: Hashable`, rename `Grid` → `Sized`, `UnsplashRendition.fullScreen` (Core, TDD) · 02 `UnsplashAttribution.referralURL` (Core, TDD) · 03 `FittingSize`, `PhotoImages.fullScreenImage`, `FullScreenImageModel`, composition root wiring (UI, TDD) · 04 `ZoomTransform` (UI, TDD) · 05 `FullScreenPhotoView`, overlay, navigation from both grids, zoom transition, gestures, previews, strings · 06 XCUITests · 07 review, docs, roadmap, device check (gesture feel, rotation, memory with ~20 full-screen opens in Instruments).
+01 `Photo: Hashable`, rename `Grid` → `Sized`, `UnsplashRendition.fullScreen` (Core, TDD) · 02 `UnsplashAttribution.referralURL` (Core, TDD) · 03 `FittingSize`, `PhotoImages.fullScreenImage`, `FullScreenImageModel`, composition root wiring (UI, TDD) · 04 `ZoomTransform` (UI, TDD) · 05 `FullScreenPhotoView`, overlay, navigation from both grids, zoom transition, gestures, previews, strings · 06 one XCUITest journey · 07 review, docs, roadmap, device check (gesture feel, rotation, memory with ~20 full-screen opens in Instruments).
 
 ## Out of scope
 
