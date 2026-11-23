@@ -1,6 +1,6 @@
 # M5 — Full-screen view
 
-Status: spec agreed on decisions; seams and tickets next
+Status: done
 
 ## Goal
 
@@ -146,6 +146,19 @@ Swiping left and right between Photos in the Full-screen view, loading a bigger 
 - Mapper helper: still no third mapper, not extracted.
 - EF-97 vs swift-format: the linter wins.
 - Lint all three folders: `swift format lint -r Gallery App AppUITests`.
+
+## Review notes
+
+Quick essential-feed review of `d01f619..` (M5 tickets 01–06).
+
+- Dependencies hold. GalleryUI asks for images only through the `PhotoImages` closures. `UnsplashRendition` is used only in the composition root (`App/ImagePipeline.swift`), and `UnsplashAttribution` only in `PhotoCreditView`, with the app name injected from the composition root. GalleryUI imports GalleryCore, never GalleryImageLoading.
+- Logic sits in types testable on macOS: `FullScreenImageModel` (class: `makeSUT` with leak tracking), and `ZoomTransform`, `ContentFit`, `UnsplashAttribution` (pure values and functions, so no `makeSUT` or leak tracking needed). Views only forward gestures and render.
+- iOS 18 APIs (`matchedTransitionSource`, `.navigationTransition(.zoom)`) only behind `#available` in `View+ZoomTransition.swift`, and behind `#if os(iOS)` for the macOS test build. `onGeometryChange` is back-deployed and `MagnifyGesture` is iOS 17. No code comments.
+- Device check changed decision 3: our drag dismisses on every version, because the iOS 18+ system zoom-dismiss never fires while our `DragGesture` covers the view. Close did not respond until the gestures moved to a layer under the overlay; the journey XCUITest now covers Close.
+- Carried to M7: VoiceOver frames are larger than what is on screen. The grid cell reports 300 × 300 pt for a 200 pt cell and the full-screen image is wider than the screen, because the `scaledToFill` images overflow before `.clipped()`, and clipping does not shrink the accessibility frame. Fix: give the element an explicit frame, or put the images in an `overlay` of the sized shape.
+- Carried to M7: `PhotoCreditView` finds `%1$@` and `%2$@` in the localized format and replaces them with linked runs. That is fine for English; a translation must keep both placeholders literally.
+- Carried to M8: `FullScreenPhotoView` is about 200 lines, mostly gesture state. Extract a zoom-gesture modifier if it grows.
+- Open, needs Instruments (ticket 07 human part): whether full-screen images evict visible grid images from the shared memory cache.
 
 ## Pattern notes
 

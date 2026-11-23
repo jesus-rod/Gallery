@@ -1,6 +1,6 @@
 # 07 — Review, docs, roadmap and device check
 
-Status: ready-for-agent (the device check part is ready-for-human)
+Status: agent part done; human part ready-for-human
 Blocked by: 06
 
 Close M5.
@@ -16,7 +16,7 @@ Close M5.
 ## Human part (the user, on device or simulator)
 
 Record the results in this ticket's Comments.
-- Step 0 of ticket 05 (still open): on iOS 18+, does the system zoom-dismiss gesture ever win over panning a zoomed Photo? If it does, our drag dismisses on both versions and the decision log changes.
+- ~~Step 0 of ticket 05~~ done on device: our drag dismisses on both versions (see ticket 05 Comments).
 - Gesture feel on iOS 18+: pinch, double tap, pan when zoomed, swipe down to close, zoom transition back into the right cell (feed and Search results).
 - iOS 17 simulator, if a runtime is installed: standard push, our drag to dismiss.
 - Rotate while full screen: the image stays, then sharpens.
@@ -32,3 +32,5 @@ Only what the review or device check changes.
 `docs(scratch): mark M5 done and carry review notes into M6`
 
 ## Comments
+
+- Agent part done: review notes in `spec.md` (no code changes needed; two M7 items and one M8 item carried), spec `Status: done`, roadmap updated (M5 done, M6 next, Settled decisions, "Carried into M6"), M3/12 comment added. `CONTEXT.md` unchanged: no new domain words (`ZoomTransform`, `ContentFit` and `FullScreenRoute` are implementation names; "Full-screen view" already exists).
