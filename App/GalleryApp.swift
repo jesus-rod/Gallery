@@ -30,6 +30,11 @@ enum CompositionRoot {
     }
 
     private static func makeAPIClient() -> HTTPClient {
+        #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("-useStubs") {
+                return StubHTTPClient()
+            }
+        #endif
         let accessKey = Bundle.main.object(forInfoDictionaryKey: "UnsplashAccessKey") as? String ?? ""
         return AuthorizingHTTPClient(
             decoratee: URLSessionHTTPClient(session: URLSession(configuration: .default)),

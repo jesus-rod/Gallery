@@ -8,19 +8,37 @@
 
 /* Begin PBXBuildFile section */
 		0C6AD7D6B91AB18D71C88375 /* GalleryImageLoading in Frameworks */ = {isa = PBXBuildFile; productRef = 7EB721DFA9F1FA01F78C3D04 /* GalleryImageLoading */; };
-		3AFE5CC8BB3E420885D5F2FE /* GalleryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64C1AED7AB9EB906D9CF9BF /* GalleryApp.swift */; };
 		5011A354B1C3901625CDB668 /* GalleryCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1E04472DA32A2669742D5003 /* GalleryCore */; };
 		F7EE718DA0E079B3AF5FA30D /* GalleryUI in Frameworks */ = {isa = PBXBuildFile; productRef = BB378F1E50E74748ED0EDCE1 /* GalleryUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		12872D65AE6A856F35F15064 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
-		5029881922FD2F1484009C5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		50C1C5A3119DCFD162B49B8F /* GalleryApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GalleryApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D62A9688B183408CB6F030E /* Gallery */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Gallery; path = Gallery; sourceTree = SOURCE_ROOT; };
-		A64C1AED7AB9EB906D9CF9BF /* GalleryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryApp.swift; sourceTree = "<group>"; };
 		EA3EF1410A5E16F71F51F518 /* Secrets.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.example.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1A2B3C4D5E6F708192A3B4C5 /* Exceptions for "App" folder in "GalleryApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = BD3656691B40CE6B6B9D0B7B /* GalleryApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		716196D4930F4D45E6AC60B9 /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1A2B3C4D5E6F708192A3B4C5 /* Exceptions for "App" folder in "GalleryApp" target */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		009DE026BF48544F16929B41 /* Frameworks */ = {
@@ -71,15 +89,6 @@
 			);
 			sourceTree = "<group>";
 		};
-		716196D4930F4D45E6AC60B9 /* App */ = {
-			isa = PBXGroup;
-			children = (
-				A64C1AED7AB9EB906D9CF9BF /* GalleryApp.swift */,
-				5029881922FD2F1484009C5C /* Info.plist */,
-			);
-			path = App;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -89,10 +98,14 @@
 			buildPhases = (
 				871130B41E3037710459D36F /* Sources */,
 				009DE026BF48544F16929B41 /* Frameworks */,
+				2B3C4D5E6F708192A3B4C5D6 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				716196D4930F4D45E6AC60B9 /* App */,
 			);
 			name = GalleryApp;
 			packageProductDependencies = (
@@ -140,12 +153,21 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		2B3C4D5E6F708192A3B4C5D6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		871130B41E3037710459D36F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3AFE5CC8BB3E420885D5F2FE /* GalleryApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
