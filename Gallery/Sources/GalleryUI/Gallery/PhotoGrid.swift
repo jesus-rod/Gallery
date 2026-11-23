@@ -119,6 +119,10 @@ struct PhotoCell: View {
                 images
                     .accessibilityHidden(true)
             }
+            .overlay(alignment: .bottom) {
+                captionLabel
+                    .accessibilityHidden(true)
+            }
             .clipped()
             .task(id: route.gridSize) {
                 guard route.gridSize.pixels > 0 else { return }
@@ -143,6 +147,19 @@ struct PhotoCell: View {
             }
         }
         .animation(fadeAnimation, value: model.isLoaded)
+    }
+
+    private var captionLabel: some View {
+        Text(verbatim: caption(for: route.photo))
+            .font(.caption)
+            .lineLimit(1)
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 8)
+            .padding(.top, 16)
+            .padding(.bottom, 6)
+            .background(LinearGradient(colors: [.clear, .black.opacity(0.55)], startPoint: .top, endPoint: .bottom))
     }
 
     private var fadeAnimation: Animation? {

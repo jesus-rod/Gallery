@@ -66,7 +66,7 @@ Recorded in ADRs: own image pipeline (0001), SPM modules testable on macOS (0002
 - One `GalleryViewModel` holding two independent paging states, Editorial feed and Search results. Cancelling search restores the feed with no request and the same scroll position; a new Query cancels the old one.
 - One shared `PhotoGrid` view. 2 columns compact, 3 regular.
 - States: skeleton first load; spinner footer while paging; inline retry footer on page failure; full-screen error with retry on first-page failure; rate-limited message; empty search with the Query echoed; pull to refresh on the feed; image fade-in over the Preview.
-- Accessibility: captions as VoiceOver labels, Dynamic Type, dark mode, English String Catalog.
+- Accessibility: Caption shown on each cell (one line over a gradient) and as its VoiceOver label, Dynamic Type, dark mode, English String Catalog.
 - Full screen: push in the `NavigationStack`, nav bar hidden, `.navigationTransition(.zoom)` on iOS 18+, standard push on iOS 17. Pinch and double-tap zoom; our drag down dismisses on every version (the iOS 18+ system zoom-dismiss never fires under our gesture); Close button and VoiceOver escape; overlay with Caption and Photographer credit (referral links).
 
 **Offline (M6)**: up to about 300 Editorial feed Photos in a versioned JSON `FeedStore`; network first, fall back to the store, save each loaded page. No expiry; a successful first Page replaces it. Search results never stored. Offline banner; pull to refresh while offline keeps the Offline feed and shows a brief error. The same Photo in both Streams shares cached Renditions; dedup is per Stream.
