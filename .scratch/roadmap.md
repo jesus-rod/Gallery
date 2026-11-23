@@ -26,11 +26,16 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 done; **next: ticket 08** (snapshot matrix on the iOS simulator, ready-for-agent, not started); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
 | M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | spec and tickets 01–08 written, seams approved; **next: ticket 01** (`pageURL`) |
 
-## Resume here (2026-11-23)
+## Resume here (2026-11-23, later)
 
-- Ticket 08 (`.scratch/m8-ship/issues/08-snapshot-matrix.md`): the user chose to move all snapshots to the iOS simulator (pinned iPhone 17 Pro). Devices iPhone SE, iPhone 17, iPad; the user also wants a new "iPhone Duo", which has no simulator in this Xcode, so ask the user for its point size and safe areas and add it as one line in the device list. Launch it as one agent (Sonnet), then look at every recorded image before merging.
+- **Next: M9 ticket 01** (`.scratch/m9-photos-polish/issues/01-photo-page-url.md`), then 02–07 in order via `/tdd`; 08 is the user's Instruments recording plus the write-up. Read `.scratch/m9-photos-polish/spec.md` first.
+- Direction (user's choice): Apple Photos (iOS 26) structure plus three wow pieces: ambient glow from the BlurHash Preview, swiping between photos with parallax (ADR 0007, ticket 05), stretchy hero on the feed. The user is open to bolder design; keep the brief's grid with captions.
+- M8 ticket 08 (snapshot matrix) waits until M9 is done so it records the final look. When it runs: devices iPhone SE, iPhone 17, iPad; ask the user for the "iPhone Duo" point size and safe areas; one Sonnet agent, check every image before merging.
+- Repo is public at `github.com/jesus-rod/Gallery` (`origin`). Push after each approved commit.
+- Simulators trimmed to: iPhone 17 Pro `B24D2789-AEFD-4872-BECA-40CCEBED0913` (pinned), iPhone SE 3rd gen, iPad Pro 11-inch M5, iPad mini A17 Pro on iOS 26.0; iPhone 17 on iOS 27.0. No iOS 17/18 runtime, so fallback paths can't run locally. Build into your own DerivedData in the scratchpad; launch with `-useStubs`.
 - Design system: small, in `GalleryUI/DesignSystem/` (tokens, `Scrim`, `.bannerStyle()`), deliberately not a module.
 - No agents or worktrees are running; only `main` exists. Never stage `project.pbxproj`, the scheme, or `Gallery.xcodeproj/project.xcworkspace/xcshareddata/` (Xcode rewrites).
+- README diagrams were fixed blind (mermaid-cli download was blocked); if the user reports the flowchart still failing on GitHub, simplify its `<br/>` labels.
 
 ## Carried into M6
 
