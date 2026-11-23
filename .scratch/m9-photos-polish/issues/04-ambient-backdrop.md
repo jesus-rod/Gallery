@@ -1,6 +1,6 @@
 # 04 — Ambient glow behind the full-screen photo
 
-Status: ready-for-agent
+Status: done
 Blocked by: 02
 
 ## Files

@@ -8,6 +8,7 @@ Blocked by: 01–07
 1. SwiftUI + Animation Hitches templates: swipe through 50 photos in full screen; dismiss with a drag; pull and scroll the hero.
 2. Allocations: memory after swiping through 200 photos stays flat (only ±1 pages hold full-size images).
 3. Time Profiler: the ambient blur during the dismiss drag.
+4. Animation Hitches: hitches during the dismiss drag with the ambient backdrop on (blur radius 60 on the 32×32 Preview), and when the chrome toggles (glow fade). If it hitches, try `.drawingGroup()` on the backdrop and compare.
 
 ## Agent part
 

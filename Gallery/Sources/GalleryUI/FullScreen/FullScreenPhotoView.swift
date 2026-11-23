@@ -17,6 +17,7 @@ struct FullScreenPhotoView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.displayScale) private var displayScale
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     init(route: FullScreenRoute, images: PhotoImages, referralAppName: String) {
         self.route = route
@@ -28,6 +29,15 @@ struct FullScreenPhotoView: View {
         ZStack {
             ZStack {
                 Color.black.opacity(1 - ZoomTransform.dismissProgress(for: dismissTranslation))
+                AmbientBackdrop(
+                    preview: model.preview,
+                    opacity: AmbientBackdrop.opacity(
+                        isChromeVisible: isChromeVisible,
+                        dismissProgress: ZoomTransform.dismissProgress(for: dismissTranslation),
+                        reduceTransparency: reduceTransparency
+                    )
+                )
+                .animation(Design.Motion.chromeToggle(reduceMotion: reduceMotion), value: isChromeVisible)
                 photo
             }
             .contentShape(Rectangle())

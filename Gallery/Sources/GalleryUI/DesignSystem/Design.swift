@@ -18,9 +18,18 @@ enum Design {
         static let secondaryText = 0.75
     }
 
+    enum Ambient {
+        static let blurRadius: CGFloat = 60
+        static let dim = 0.3
+    }
+
     enum Motion {
         static func imageFade(reduceMotion: Bool) -> Animation? {
             reduceMotion ? nil : .easeOut(duration: 0.25)
+        }
+
+        static func chromeToggle(reduceMotion: Bool) -> Animation? {
+            reduceMotion ? nil : .easeInOut(duration: 0.3)
         }
 
         static func streamSwitch(reduceMotion: Bool) -> Animation? {
