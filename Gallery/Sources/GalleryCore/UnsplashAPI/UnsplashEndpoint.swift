@@ -22,11 +22,14 @@ public enum UnsplashEndpoint {
     }
 
     private func makeRequest(baseURL: URL, path: String, queryItems: [URLQueryItem]) -> URLRequest {
-        let url = baseURL.appending(path: path)
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        components.queryItems = queryItems
+        let url = baseURL.appending(path: path).appending(queryItems: queryItems)
+        return URLRequest(url: encodingPlusSigns(in: url))
+    }
+
+    private func encodingPlusSigns(in url: URL) -> URL {
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return url }
         let encodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         components.percentEncodedQuery = encodedQuery
-        return URLRequest(url: components.url!)
+        return components.url ?? url
     }
 }
