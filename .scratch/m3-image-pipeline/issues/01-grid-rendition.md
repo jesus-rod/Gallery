@@ -1,6 +1,6 @@
 # 01 — Grid Rendition URL
 
-Status: ready-for-agent
+Status: done
 
 `UnsplashRendition.gridURL(raw:pointWidth:scale:quality:)` in `GalleryCore/UnsplashAPI`.
 
