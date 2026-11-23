@@ -1,6 +1,6 @@
 # 02 — Pull to refresh on Search results
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 ## Files

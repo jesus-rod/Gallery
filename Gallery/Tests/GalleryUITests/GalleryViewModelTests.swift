@@ -532,6 +532,60 @@ struct GalleryViewModelTests {
         #expect(sut.searchResults == SearchResults(query: "dogs", state: .loaded(photos: dogs, footer: .end)))
     }
 
+    @Test func refreshSearch_requestsTheActiveQueryAgainAndShowsTheNewPhotos() async {
+        let (sut, loader) = makeSUT()
+        let refreshed = makePhotos(20...21)
+        loader.stubSearch(.success(loader.page(makePhotos(1...10))))
+        loader.stubSearch(.success(loader.page(refreshed, hasMore: false)))
+        await sut.search("cats")
+
+        await sut.refreshSearch()
+
+        #expect(loader.searchQueries == ["cats", "cats"])
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: refreshed, footer: .end)))
+    }
+
+    @Test func refreshSearch_failureKeepsTheResultsAndExposesTheError() async {
+        let (sut, loader) = makeSUT()
+        let photos = makePhotos(1...10)
+        loader.stubSearch(.success(loader.page(photos)))
+        loader.stubSearch(.failure(URLError(.notConnectedToInternet)))
+        await sut.search("cats")
+
+        await sut.refreshSearch()
+
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: photos, footer: .idle)))
+        #expect(sut.refreshError == .offline)
+    }
+
+    @Test func refreshSearch_withoutAnActiveSearchRequestsNothing() async {
+        let (sut, loader) = makeSUT()
+
+        await sut.refreshSearch()
+
+        #expect(loader.searchQueries.isEmpty)
+        #expect(sut.refreshError == nil)
+    }
+
+    @Test func refreshSearch_doesNotOverwriteTheResultsOfAReplacedQuery() async {
+        let (sut, loader) = makeSUT()
+        let dogs = makePhotos(21...22)
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page(makePhotos(1...3), hasMore: false)))
+        loader.stubSearch(.failure(URLError(.notConnectedToInternet)), gate: gate)
+        loader.stubSearch(.success(loader.page(dogs, hasMore: false)))
+        await sut.search("cats")
+
+        let refresh = Task { await sut.refreshSearch() }
+        await gate.untilReached()
+        await sut.search("dogs")
+        gate.open()
+        await refresh.value
+
+        #expect(sut.searchResults == SearchResults(query: "dogs", state: .loaded(photos: dogs, footer: .end)))
+        #expect(sut.refreshError == nil)
+    }
+
     @Test func search_sameQueryWhileItLoadsDoesNotCancelIt() async {
         let (sut, loader) = makeSUT()
         let gate = Gate()

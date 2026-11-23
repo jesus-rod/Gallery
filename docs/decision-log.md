@@ -85,3 +85,5 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 
 - A 401 gets its own state ("Access key not accepted"), because a wrong key is the most likely first-run failure for someone setting the project up; the message names the config file.
 - Both mappers share one `requireDecodable` check (rate limit, 401, require 200, decode or `invalidData`), closing the duplication noted in M1.
+- Search results get pull to refresh, sharing the feed's brief refresh error, which now shows over Search results too. A refresh that finishes after its Query was replaced or cancelled is ignored, so it cannot show a stale error.
+- The hidden feed may still finish an in-flight load more while searching: accepted, it costs at most one request the user already triggered.
