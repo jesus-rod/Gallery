@@ -1,6 +1,6 @@
 # M4 — Search
 
-Status: spec written
+Status: done
 
 ## Goal
 
@@ -126,3 +126,12 @@ The view model still depends on closures, not on `PhotoStream` (narrowest depend
 - `App/` and `AppUITests/` are synchronized folder groups: new files there need no `project.pbxproj` edits, and files in `App/Stubs/Fixtures/` are bundled automatically.
 - Each notable decision goes into `docs/decision-log.md` under a `## M4 — Search` heading (create it in ticket 01), in the same commit as the code. Each ticket lists its log lines.
 - One commit per ticket, conventional style like the existing log (`refactor(ui): ...`, `feat(ui): ...`, `feat(app): ...`, `test(app): ...`, `docs(scratch): ...`) with a 2–4 line body. Set the ticket's `Status: done` in that commit. Commits are authored by the user with plain `git commit`; never add a `Co-Authored-By` or any Claude attribution line. Propose the commit message and wait for the user's approval before committing.
+
+## Review notes
+
+Quick essential-feed pass over the M4 diff (`540efd8~1..HEAD`) at the end of M4.
+- The view model depends only on the `loadFeed` and `search` closures. `PhotoStream`, endpoints and mappers appear only in the composition root (`App/GalleryApp.swift`), and no Foundation or API error reaches a view: `LoadError` maps them, and the views do not import Foundation. The view model imports Foundation only to trim the Query.
+- `StreamPager` is internal and tested only through `GalleryViewModel`. Every view model SUT goes through `makeSUT`, which calls `trackForMemoryLeaks`. Swift sources have no code comments.
+- Known edge: search never cancels the feed, so the feed's in-flight load more can still land while Search results are shown. It only appends to the hidden feed pager, so nothing visible changes.
+- Known edge: the feed's refresh banner is an overlay on the feed, so it is hidden while Search results show, and Search results have no pull to refresh (out of scope).
+- Known edge: a 401 for a search shows the generic error, as the feed does (see M3/12).

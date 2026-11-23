@@ -19,24 +19,22 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M1 | Feed API + paging (`.scratch/m1-feed-api/`) | done |
 | M2 | Grid UI with fixtures, `-useStubs` launch path, XCUITest target (`.scratch/m2-grid-ui/`) | done |
 | M3 | Image pipeline (`.scratch/m3-image-pipeline/`) | done (ticket 12, the live-key run, is waiting on the user) |
-| M4 | Search (`.scratch/m4-search/`) | spec written, tickets ready |
-| M5 | Full-screen view + transition | |
+| M4 | Search (`.scratch/m4-search/`) | done (`.scratch/m4-search/`) |
+| M5 | Full-screen view + transition | next: write spec |
 | M6 | Offline feed | |
 | M7 | Polish: UX states, accessibility | |
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom | |
 
-## Carried into M4
+## Carried into M5
 
-From M1–M3. Fold these into the M4 spec.
-- Ticket M3/12: run the live feed and images once with a real key in `Config/Secrets.xcconfig`; never verified.
-- Load more uses `.onAppear { Task {} }`; image loads use `.task(id:)`. Keep the distinction for search results.
-- `PhotoGrid` is shared: Search results reuse it with the same `PhotoImages`, so cached Renditions are shared between Streams.
-- `-useStubs` fixtures cover the Editorial feed only; M4 needs search fixtures in `StubHTTPClient` for XCUITests.
+From M1–M4. Fold these into the M5 spec.
+- Ticket M3/12: run the live feed and images once with a real key in `Config/Secrets.xcconfig`, and submit one Query with its second Page as well (each search Page costs one request); never verified.
+- Search edges from M4 review: the feed's refresh banner is hidden during search; Search results have no pull to refresh; the hidden feed can still finish an in-flight load more.
 - Carried to M7: skip the Preview frame and fade for images already in memory (synchronous memory-cache lookup); snapshot tests for cell and empty/error states.
 - Optional cleanup: both mappers repeat "rate limit, require 200, decode or `invalidData`"; extract a shared helper when a third mapper appears.
 - Course rule EF-97 (`case let .x(a, b)`) conflicts with swift-format's `UseLetInEveryBoundCaseVariable`; the linter wins.
 - Project file: `App/` and `AppUITests/` are synchronized folder groups, so new files there need no `project.pbxproj` edits. CI runs `swift test` then the XCUITests on the first available iPhone simulator.
-- Lint `App` and `AppUITests` too: `swift format lint -r Gallery App AppUITests`.
+- Lint all three folders: `swift format lint -r Gallery App AppUITests`.
 
 ## Settled decisions
 

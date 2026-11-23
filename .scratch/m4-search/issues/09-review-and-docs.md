@@ -1,6 +1,6 @@
 # 09 — Review, docs and roadmap
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01–08
 
 Close M4: quick essential-feed review, check the decision log, update the roadmap and spec. Docs only, unless the review finds a bug (then a separate fix commit first, proposed to the user).
