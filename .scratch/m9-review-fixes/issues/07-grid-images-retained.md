@@ -1,6 +1,6 @@
 # 07 — Grid cells keep their decoded images after scrolling away
 
-Status: code written, NOT committed (278 tests green, lint clean); verification pending, see "Next"
+Status: code done (278 tests green, lint clean), commit proposed; the user's Run B re-record and the write-up are still to do, see "Next". The optional simulator probe (step 1) was skipped: the device re-record answers the same question.
 Blocked by: none
 
 ## Finding (Instruments Run B, `allocations-intruments.trace`, iPhone 15 Plus, Release, 2026-11-23 20:55)

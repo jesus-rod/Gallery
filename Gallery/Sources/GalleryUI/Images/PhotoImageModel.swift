@@ -46,6 +46,11 @@ final class PhotoImageModel {
         loadedImage = loaded
     }
 
+    func release() {
+        loadedImage = nil
+        cachedStorage = nil
+    }
+
     private var cachedImage: CGImage? {
         if let cachedStorage { return cachedStorage }
         let cached = images.cachedImage(photo, size)

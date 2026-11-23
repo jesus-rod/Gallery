@@ -158,6 +158,28 @@ struct PhotoImageModelTests {
         #expect(lateSUT.wasCachedOnAppear == false)
     }
 
+    @Test func release_dropsTheLoadedImage() async {
+        let (sut, images) = makeSUT()
+        images.stub(.success(makeImage()))
+        await sut.load(size: size)
+
+        sut.release()
+
+        #expect(sut.image == nil)
+        #expect(!sut.isLoaded)
+    }
+
+    @Test func release_asksTheCacheAgainOnTheNextRead() {
+        let cached = makeImage()
+        let (sut, images) = makeSUT(cached: cached)
+        _ = sut.image
+
+        sut.release()
+
+        #expect(sut.image == cached)
+        #expect(images.cachedImageRequests.count == 2)
+    }
+
     private func makeSUT(
         photo: Photo = makePhoto(),
         preview: CGImage? = nil,

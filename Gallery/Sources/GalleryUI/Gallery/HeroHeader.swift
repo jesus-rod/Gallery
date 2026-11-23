@@ -56,6 +56,7 @@ struct HeroHeader: View {
                 guard imageSize.pixels > 0 else { return }
                 await model.load(size: imageSize)
             }
+            .onDisappear(perform: model.release)
     }
 
     private var stretchingImage: some View {

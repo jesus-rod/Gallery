@@ -53,6 +53,7 @@ struct PhotoCell: View {
                 guard route.gridSize.pixels > 0 else { return }
                 await model.load(size: route.gridSize)
             }
+            .onDisappear(perform: model.release)
             .onTapGesture {
                 onOpen(route)
             }
