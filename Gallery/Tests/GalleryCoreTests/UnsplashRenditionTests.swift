@@ -80,6 +80,33 @@ struct UnsplashRenditionTests {
         #expect(tower.maxPixelSize == 600)
     }
 
+    @Test func grid_cropsAPortraitTallerThanTheCapToTheCap() throws {
+        let rendition = UnsplashRendition.grid(for: photo(width: 1000, height: 4000), side: 100, scale: 3, quality: 75)
+
+        #expect(try width(of: rendition.url) == "100")
+        #expect(try value("h", of: rendition.url) == "300")
+        #expect(try value("fit", of: rendition.url) == "crop")
+        #expect(rendition.maxPixelSize == 900)
+    }
+
+    @Test func grid_doesNotCropAPortraitWithinTheCap() throws {
+        let rendition = UnsplashRendition.grid(for: photo(width: 1000, height: 2000), side: 100, scale: 3, quality: 75)
+
+        #expect(try value("h", of: rendition.url) == nil)
+        #expect(try value("fit", of: rendition.url) == nil)
+        #expect(rendition.maxPixelSize == 600)
+    }
+
+    @Test func grid_replacesExistingHeightAndFitItems() throws {
+        let raw = "https://images.unsplash.com/photo-1?ixid=abc&h=50&fit=max"
+        let rendition = UnsplashRendition.grid(
+            for: photo(width: 1000, height: 4000, raw: raw), side: 100, scale: 3, quality: 75)
+
+        let components = try components(of: rendition.url)
+        #expect(components.queryItems?.filter { $0.name == "h" } == [URLQueryItem(name: "h", value: "300")])
+        #expect(components.queryItems?.filter { $0.name == "fit" } == [URLQueryItem(name: "fit", value: "crop")])
+    }
+
     @Test func grid_toleratesMissingDimensions() throws {
         let rendition = UnsplashRendition.grid(for: photo(width: 0, height: 0), side: 100, scale: 2, quality: 75)
 
@@ -149,13 +176,17 @@ struct UnsplashRenditionTests {
         try components(of: url).queryItems?.first { $0.name == "dpr" }?.value
     }
 
-    private func photo(width: Int, height: Int) -> Photo {
-        let url = URL(string: "https://images.unsplash.com/photo-1?ixid=abc")!
+    private func photo(width: Int, height: Int, raw: String = "https://images.unsplash.com/photo-1?ixid=abc") -> Photo {
+        let url = URL(string: raw)!
         return Photo(
             id: "1", width: width, height: height, blurHash: nil, description: nil, altDescription: nil,
             renditions: Photo.Renditions(raw: url, small: url, regular: url),
             photographer: Photo.Photographer(name: "A", profileURL: url)
         )
+    }
+
+    private func value(_ name: String, of url: URL) throws -> String? {
+        try components(of: url).queryItems?.first { $0.name == name }?.value
     }
 
     private func width(of url: URL) throws -> String? {

@@ -70,3 +70,4 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - Re-submitting the shown Query is still a no-op, except after its first Page failed: then it searches again, like Retry.
 - Image models do no work in `init`: SwiftUI rebuilds a view's `State(initialValue:)` argument on every parent redraw and keeps only the first, so the Preview is looked up lazily on first read and memoized.
 - The Preview stays underneath and the image fades in on top, instead of cross-fading the two, which showed the grey cell fill mid-fade.
+- Portrait Photos taller than 3:1 get a CDN centre crop at 3:1 in the grid (`h`, `fit=crop`), so they fill the cell at full sharpness with bounded memory. The earlier rule capped the decode size too, which made them narrower than the cell. The full-screen Rendition never crops.

@@ -1,6 +1,6 @@
 # 04 — Tall portrait Photos fill the cell at full sharpness
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 `UnsplashRendition.grid` caps the aspect factor at 3:1 for both the landscape `w` widening and `maxPixelSize`. For a portrait Photo taller than 3:1, `w` is the cell side (correct) but `maxPixelSize` is capped, so ImageIO decodes it narrower than the cell and the cell upscales it. Example: aspect 0.25, side 100 pt, scale 3 → CDN returns 300 × 1200 px, decoded to 225 × 900, cell is 300 px wide.
@@ -36,3 +36,9 @@ Removing the cap for portraits would let a 10:1 Photo decode at 300 × 3000 px (
 ## Commit
 
 `fix(core): crop very tall portraits at 3:1 so they fill the cell sharply`
+
+## Comments
+
+- `grid_replacesExistingHeightAndFitItems` passed on its first run: `sizedURL` already replaces every sizing name, so `h` and `fit` were added to that set in the step that made the crop test pass.
+- `maxPixelSize` was already 900 for the example, so the crop test went red only on `h` and `fit`.
+- The `photo(width:height:raw:)` helper gained a `raw` parameter (default unchanged) for the replace test.

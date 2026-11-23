@@ -10,8 +10,15 @@ public enum UnsplashRendition {
         let aspectRatio = photo.width > 0 && photo.height > 0 ? Double(photo.width) / Double(photo.height) : 1
         let widthFactor = min(max(aspectRatio, 1), maximumAspectRatio)
         let longestSideFactor = min(max(aspectRatio, 1 / aspectRatio), maximumAspectRatio)
+        let isTallerThanCap = aspectRatio < 1 / maximumAspectRatio
         return Sized(
-            url: sizedURL(raw: photo.renditions.raw, pointWidth: side * widthFactor, scale: scale, quality: quality),
+            url: sizedURL(
+                raw: photo.renditions.raw,
+                pointWidth: side * widthFactor,
+                pointHeight: isTallerThanCap ? side * maximumAspectRatio : nil,
+                scale: scale,
+                quality: quality
+            ),
             maxPixelSize: Int((side * scale * longestSideFactor).rounded(.up))
         )
     }
@@ -29,19 +36,30 @@ public enum UnsplashRendition {
     }
 
     private static let maximumAspectRatio = 3.0
-    public static func sizedURL(raw: URL, pointWidth: Double, scale: Double, quality: Int) -> URL {
+    public static func sizedURL(
+        raw: URL,
+        pointWidth: Double,
+        pointHeight: Double? = nil,
+        scale: Double,
+        quality: Int
+    ) -> URL {
         guard var components = URLComponents(url: raw, resolvingAgainstBaseURL: false) else { return raw }
-        let sizing = [
+        var sizing = [
             URLQueryItem(name: "w", value: String(Int(pointWidth.rounded(.up)))),
             URLQueryItem(name: "dpr", value: format(scale)),
             URLQueryItem(name: "q", value: String(quality)),
             URLQueryItem(name: "fm", value: "jpg"),
         ]
-        let sizingNames = Set(sizing.map(\.name))
+        if let pointHeight {
+            sizing.append(URLQueryItem(name: "h", value: String(Int(pointHeight.rounded(.up)))))
+            sizing.append(URLQueryItem(name: "fit", value: "crop"))
+        }
         let kept = (components.queryItems ?? []).filter { !sizingNames.contains($0.name) }
         components.queryItems = kept + sizing
         return components.url ?? raw
     }
+
+    private static let sizingNames: Set<String> = ["w", "h", "dpr", "q", "fm", "fit"]
 
     private static func format(_ scale: Double) -> String {
         scale == scale.rounded() ? String(Int(scale)) : String(scale)
