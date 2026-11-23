@@ -27,11 +27,12 @@ public struct GalleryRootView: View {
                         .id(results.query)
                 }
             }
-            .overlay(alignment: .top) {
+            .safeAreaInset(edge: .top, spacing: 0) {
                 if let error = viewModel.refreshError {
                     RefreshErrorBanner(error: error, onDismiss: viewModel.dismissRefreshError)
                 }
             }
+            .animation(.default, value: viewModel.refreshError)
             .navigationTitle(Text("Gallery", bundle: .module))
             .searchField(text: $searchText)
             .onSubmit(of: .search) {

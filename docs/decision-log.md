@@ -106,3 +106,7 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - The full-screen overlay is split into a Close layer and a Caption layer around the gesture layer (raised with `zIndex`), so VoiceOver reads Close, image, Caption, credit by tree order. At large Dynamic Type sizes the Caption block scrolls inside 40% of the screen height (`ViewThatFits`), and the credit never truncates.
 - The Close layer is `.accessibilityElement(children: .contain)`: a full-screen layer holding a single Button otherwise merged into it and reported the whole screen as its frame, so the UI test tapped the screen centre instead of the button.
 - Snapshot tests (swift-snapshot-testing, test-only) render on macOS inside `swift test`, light and dark at a fixed size: fast and simulator-free, guarding layout regressions rather than exact iOS pixels. The hosted views get an explicit `windowBackgroundColor` background, because an off-screen host has none and dark-mode text would render white on white.
+
+## M8 — Review sweep
+
+- The refresh error sits in a top safe-area inset of the grids, not an overlay: the grids scroll under the navigation bar, so a top overlay hid the banner behind the title and search field. It stacks above the Offline banner.
