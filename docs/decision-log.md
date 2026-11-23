@@ -85,3 +85,4 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 
 - The Offline feed is one versioned JSON file (`version: 1`) read and written whole by an actor; an unknown version reads as empty rather than failing, so a future format change just starts fresh.
 - It lives in Application Support, not Caches, so the system doesn't purge it exactly when the user is offline.
+- Saving is a decorator around the feed's first-Page closure in Core (`OfflineFeed.saving`): every loaded Page re-saves the first 300 Photos, so the Offline feed is always the latest feed prefix; a save failure never breaks browsing.
