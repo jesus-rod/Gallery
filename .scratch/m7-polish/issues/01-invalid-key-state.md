@@ -1,6 +1,6 @@
 # 01 — 401 shows an "invalid key" state
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 ## Files

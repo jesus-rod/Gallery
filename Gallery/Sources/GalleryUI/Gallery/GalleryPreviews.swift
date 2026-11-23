@@ -87,6 +87,12 @@
             referralAppName: PreviewData.referralAppName)
     }
 
+    #Preview("Invalid key") {
+        GalleryRootView(
+            viewModel: PreviewData.viewModel { throw UnsplashAPIError.unauthorized }, images: PreviewData.images,
+            referralAppName: PreviewData.referralAppName)
+    }
+
     #Preview("Search results") {
         let viewModel = PreviewData.viewModel { Paginated(items: PreviewData.photos(1...30)) }
         GalleryRootView(viewModel: viewModel, images: PreviewData.images, referralAppName: PreviewData.referralAppName)

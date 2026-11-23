@@ -12,6 +12,12 @@ struct SearchPhotosMapperTests {
         }
     }
 
+    @Test func map_throwsUnauthorizedOn401Response() {
+        #expect(throws: UnsplashAPIError.unauthorized) {
+            try SearchPhotosMapper.map(makeJSON(totalPages: 0, results: []), from: HTTPURLResponse(statusCode: 401))
+        }
+    }
+
     @Test func map_throwsRateLimitedOn403ResponseWithNoRemainingRequests() {
         let response = HTTPURLResponse(statusCode: 403, headers: ["X-Ratelimit-Remaining": "0"])
 

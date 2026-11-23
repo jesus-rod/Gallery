@@ -80,3 +80,8 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - Portrait Photos taller than 3:1 get a CDN centre crop at 3:1 in the grid (`h`, `fit=crop`), so they fill the cell at full sharpness with bounded memory. The earlier rule capped the decode size too, which made them narrower than the cell. The full-screen Rendition never crops.
 - Updating a cached file's last-used date is best effort: if it fails, the read still counts as a hit.
 - One XCUITest per user journey (feed, search, full screen), with each step asserted. Details live in unit tests, because every XCUITest relaunches the app and costs seconds. The six M2–M4 UI tests became two.
+
+## M7 — Polish
+
+- A 401 gets its own state ("Access key not accepted"), because a wrong key is the most likely first-run failure for someone setting the project up; the message names the config file.
+- Both mappers share one `requireDecodable` check (rate limit, 401, require 200, decode or `invalidData`), closing the duplication noted in M1.

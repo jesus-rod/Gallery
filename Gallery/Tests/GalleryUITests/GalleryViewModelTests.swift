@@ -37,6 +37,7 @@ struct GalleryViewModelTests {
 
     @Test(arguments: [
         (UnsplashAPIError.rateLimited as any Error & Sendable, LoadError.rateLimited),
+        (UnsplashAPIError.unauthorized, .invalidKey),
         (URLError(.notConnectedToInternet), .offline),
         (URLError(.networkConnectionLost), .offline),
         (URLError(.dataNotAllowed), .offline),
@@ -301,6 +302,7 @@ struct GalleryViewModelTests {
 
     @Test(arguments: [
         (UnsplashAPIError.rateLimited as any Error & Sendable, LoadError.rateLimited),
+        (UnsplashAPIError.unauthorized, .invalidKey),
         (URLError(.notConnectedToInternet), .offline),
         (AnyError(), .generic),
     ])
