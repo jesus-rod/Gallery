@@ -23,7 +23,7 @@ let package = Package(
 
         .target(
             name: "GalleryUI",
-            dependencies: ["GalleryCore", "GalleryImageLoading"],
+            dependencies: ["GalleryCore"],
             resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
