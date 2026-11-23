@@ -26,11 +26,15 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 done; **next: ticket 08** (snapshot matrix on the iOS simulator, ready-for-agent, not started); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
 | M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | tickets 01–07 done; journeys, app icon, README Design section and screenshots pushed; review fixes (`.scratch/m9-review-fixes/`) done; **next: ticket 08** (user records Instruments, agent writes the numbers up) |
 
-## Resume here (2026-11-23, review fixes done)
+## Resume here (2026-11-23, late evening: Instruments pass)
 
-- **`.scratch/m9-review-fixes/` is done and pushed**: `cfda3f4` (decision log for the full-screen-after-search fix), `3c83454` (megapixels formatted with the locale), `b5bde4f` (refresh banner follows Reduce Motion and is announced; offline journey passed), and the `LoadFailure` commit (load errors classified in `GalleryCore`, new glossary term "Load failure"). The spec's "Not in this cut" list still holds the deferred findings.
-- **Next: M9 ticket 08** (below): the user records Instruments, the agent writes the numbers up.
-- XCUITest target is `GalleryAppUITests` (`-only-testing:GalleryAppUITests/GalleryAppUITests/<test>`), not `AppUITests` (that's only the folder).
+- **Next: `.scratch/m9-review-fixes/issues/07-grid-images-retained.md`.** Run B (Allocations) found 1.17 GB persistent, 1.135 GB of it decoded grid images kept by cells after scrolling. The fix (`PhotoImageModel.release()` on `onDisappear` in `PhotoCell` and `HeroHeader`, 2 new tests) is **in the working tree, uncommitted**; 278 tests green, lint clean. Ticket 07 "Next" lists the steps: optional simulator check, commit, user re-records Run B, write-up.
+- Done this session and pushed: review fixes 01–04 (`cfda3f4`, `3c83454`, `b5bde4f`, `4bb3c45`); README time log dropped and test counts (`e4482fd`, `02b3815`); ticket 05 pager cost (`29e524e`) and ticket 06 glow without live blur (`645ecad`), with re-records (`a3c7a60`, `6e667d1`). Full-screen swipe: 20.7 → 15.9 → 8.1 ms/s hitch time, GPU hitches 19 → 1, no hang.
+- Instruments results and method: `.scratch/m9-photos-polish/instruments-run-a.md`; runbook for Claude Desktop: `.scratch/m9-photos-polish/instruments-runbook.md`. The user records with Claude Desktop on an iPhone 15 Plus (iOS 27.0.1) and saves traces in the repo root (`*.trace/` is in `.git/info/exclude`, never commit them; ~2 GB there now, deletable once written up). Not in `App/` (synchronized folder).
+- Reading traces: `xctrace export --toc`, then tables by schema (`hitches`, `potential-hangs`, `time-profile`); never export `swiftui-updates` (12.8 GB). New builds need `xctrace symbolicate --dsym ~/Library/Developer/Xcode/DerivedData/Gallery-*/Build/Products/Release-iphoneos/GalleryApp.app.dSYM`. Parsing scripts `xt.py`/`tp.py` were in the old scratchpad (gone after a reboot; easy to rewrite: resolve `id`/`ref` attributes).
+- **Simulators: use iOS 27.2** (user's call), e.g. iPhone 18 Pro `B10B1694-EFCC-400C-B18F-C68362951E0D`. The booted iOS 27.2 iPhone 17 and iPhone Duo may be the user's own; don't drive them.
+- Still open after 07: README Performance table and decision-log numbers (M9 ticket 08 agent part), then M9 done and M8 ticket 08 (snapshot matrix). The user hasn't confirmed the new glow look on device yet.
+- XCUITest target is `GalleryAppUITests` (`-only-testing:GalleryAppUITests/GalleryAppUITests/<test>`).
 
 ## Earlier notes (2026-11-23, late night)
 

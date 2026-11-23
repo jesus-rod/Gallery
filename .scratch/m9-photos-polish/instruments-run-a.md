@@ -44,3 +44,7 @@ Same phone, Release, step 3 only (swipe ~50 photos, 5–46 s of a 46 s recording
 
 - GPU hitches are gone. Four "expensive render" frames remain with 23–30 offscreen passes; the glow no longer has a filter, so these are likely the chrome's glass buttons.
 - What's left is spread over SwiftUI and Core Animation commits; our code is the visible pages' `ZoomablePhotoPage.body` (~80 ms) and the grid cells behind (~64 ms).
+
+## Run B (Allocations), 20:55
+
+See `.scratch/m9-review-fixes/issues/07-grid-images-retained.md`: 1.17 GB persistent at the end, 1.135 GB of it decoded grid images created while scrolling. Fix written, not yet committed or re-recorded.
