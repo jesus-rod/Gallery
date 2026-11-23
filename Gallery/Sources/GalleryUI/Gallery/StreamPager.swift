@@ -7,14 +7,20 @@ final class StreamPager {
     typealias LoadFirstPage = @Sendable () async throws -> Paginated<Photo>
 
     private(set) var state: StreamState = .loading
+    private(set) var offlineReason: LoadError?
 
     @ObservationIgnored private let loadFirstPage: LoadFirstPage
+    @ObservationIgnored private let loadOfflineFeed: (@Sendable () async -> [Photo])?
     @ObservationIgnored private var loadMore: Paginated<Photo>.LoadMore?
     @ObservationIgnored private var generation = 0
     @ObservationIgnored private var inFlight: Task<Void, Never>?
 
-    init(loadFirstPage: @escaping LoadFirstPage) {
+    init(
+        loadFirstPage: @escaping LoadFirstPage,
+        loadOfflineFeed: (@Sendable () async -> [Photo])? = nil
+    ) {
         self.loadFirstPage = loadFirstPage
+        self.loadOfflineFeed = loadOfflineFeed
     }
 
     func load() async {
@@ -22,7 +28,7 @@ final class StreamPager {
             do {
                 self.showFirstPage(try await self.loadFirstPage())
             } catch {
-                self.state = .failed(LoadError(error))
+                await self.showOfflineFeedOrFail(with: LoadError(error))
             }
         }
     }
@@ -81,8 +87,20 @@ final class StreamPager {
         }
     }
 
+    private func showOfflineFeedOrFail(with error: LoadError) async {
+        guard let saved = await loadOfflineFeed?(), !saved.isEmpty else {
+            state = .failed(error)
+            return
+        }
+        generation += 1
+        loadMore = nil
+        offlineReason = error
+        state = .loaded(photos: saved, footer: .end)
+    }
+
     private func showFirstPage(_ page: Paginated<Photo>) {
         generation += 1
+        offlineReason = nil
         show(page)
     }
 

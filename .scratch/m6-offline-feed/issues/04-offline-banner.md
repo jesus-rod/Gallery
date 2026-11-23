@@ -1,6 +1,6 @@
 # 04 — Offline banner
 
-Status: ready-for-agent
+Status: done
 Blocked by: 03
 
 No unit tests: logic-free view. `#Preview` and the ticket 06 journey cover it.

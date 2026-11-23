@@ -78,6 +78,30 @@ final class GalleryAppUITests: XCTestCase {
     }
 
     @MainActor
+    func test_launchingOffline_showsTheSavedFeedWithABannerAndKeepsItOnFailedRefresh() {
+        let online = launchWithStubs(extraArguments: ["-resetOfflineFeed"])
+        XCTAssertTrue(
+            online.images["Fixture photo 1"].waitForExistence(timeout: 5),
+            "The online launch should load and save the feed")
+        online.terminate()
+
+        let offline = launchWithStubs(extraArguments: ["-stubOffline"])
+        let firstCell = offline.images["Fixture photo 1"]
+        XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "The saved feed should show when launching offline")
+        XCTAssertTrue(
+            offline.descendants(matching: .any).matching(identifier: "offline-banner").firstMatch
+                .waitForExistence(timeout: 5),
+            "The Offline banner should label the saved feed")
+
+        let banner = offline.descendants(matching: .any).matching(identifier: "offline-banner").firstMatch
+        let pullStart = banner.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        pullStart.press(forDuration: 0.05, thenDragTo: pullStart.withOffset(CGVector(dx: 0, dy: 400)))
+
+        XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "A failed refresh should keep the saved Photos")
+        XCTAssertTrue(banner.exists, "A failed refresh should keep the Offline banner")
+    }
+
+    @MainActor
     private func scrollUntil(_ element: XCUIElement, in grid: XCUIElement) {
         for _ in 0..<20 where !element.exists {
             grid.swipeUp(velocity: .fast)
@@ -93,9 +117,9 @@ final class GalleryAppUITests: XCTestCase {
     }
 
     @MainActor
-    private func launchWithStubs() -> XCUIApplication {
+    private func launchWithStubs(extraArguments: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-useStubs"]
+        app.launchArguments = ["-useStubs"] + extraArguments
         app.launch()
         return app
     }

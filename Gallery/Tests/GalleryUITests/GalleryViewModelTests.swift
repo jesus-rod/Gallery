@@ -14,6 +14,123 @@ struct GalleryViewModelTests {
         #expect(loader.loadFeedCallCount == 0)
     }
 
+    @Test func load_succeedingNeverLoadsTheOfflineFeed() async {
+        let (sut, loader) = makeSUT()
+        loader.stubOfflineFeed(makePhotos(90...91))
+        loader.stubFeed(.success(loader.page(makePhotos(1...3))))
+
+        await sut.load()
+
+        #expect(loader.loadOfflineFeedCallCount == 0)
+        #expect(sut.offlineFeedReason == nil)
+    }
+
+    @Test(arguments: [
+        (URLError(.notConnectedToInternet) as any Error & Sendable, LoadError.offline),
+        (UnsplashAPIError.rateLimited, .rateLimited),
+        (AnyError(), .generic),
+    ])
+    func load_failingWithSavedPhotosShowsTheOfflineFeed(error: any Error & Sendable, expected: LoadError) async {
+        let (sut, loader) = makeSUT()
+        let saved = makePhotos(1...3)
+        loader.stubOfflineFeed(saved)
+        loader.stubFeed(.failure(error))
+
+        await sut.load()
+
+        #expect(sut.feed == .loaded(photos: saved, footer: .end))
+        #expect(sut.offlineFeedReason == expected)
+    }
+
+    @Test func load_failingWithNothingSavedFailsAndHasNoOfflineReason() async {
+        let (sut, loader) = makeSUT()
+        loader.stubFeed(.failure(URLError(.notConnectedToInternet)))
+
+        await sut.load()
+
+        #expect(loader.loadOfflineFeedCallCount == 1)
+        #expect(sut.feed == .failed(.offline))
+        #expect(sut.offlineFeedReason == nil)
+    }
+
+    @Test func retry_appliesTheOfflineFallbackWhenPhotosWereSavedMeanwhile() async {
+        let (sut, loader) = makeSUT()
+        let saved = makePhotos(1...3)
+        loader.stubFeed(.failure(URLError(.notConnectedToInternet)))
+        loader.stubFeed(.failure(URLError(.notConnectedToInternet)))
+        await sut.load()
+        loader.stubOfflineFeed(saved)
+
+        await sut.retry()
+
+        #expect(sut.feed == .loaded(photos: saved, footer: .end))
+        #expect(sut.offlineFeedReason == .offline)
+    }
+
+    @Test func refresh_succeedingWhileShowingTheOfflineFeedShowsTheLiveFeed() async {
+        let (sut, loader) = makeSUT()
+        let live = makePhotos(20...22)
+        loader.stubOfflineFeed(makePhotos(1...3))
+        loader.stubFeed(.failure(URLError(.notConnectedToInternet)))
+        loader.stubFeed(.success(loader.page(live, hasMore: false)))
+        await sut.load()
+
+        await sut.refresh()
+
+        #expect(sut.feed == .loaded(photos: live, footer: .end))
+        #expect(sut.offlineFeedReason == nil)
+        #expect(sut.refreshError == nil)
+    }
+
+    @Test func refresh_failingWhileShowingTheOfflineFeedKeepsItAndExposesTheError() async {
+        let (sut, loader) = makeSUT()
+        let saved = makePhotos(1...3)
+        loader.stubOfflineFeed(saved)
+        loader.stubFeed(.failure(UnsplashAPIError.rateLimited))
+        loader.stubFeed(.failure(URLError(.notConnectedToInternet)))
+        await sut.load()
+
+        await sut.refresh()
+
+        #expect(sut.feed == .loaded(photos: saved, footer: .end))
+        #expect(sut.offlineFeedReason == .rateLimited)
+        #expect(sut.refreshError == .offline)
+        #expect(loader.loadOfflineFeedCallCount == 1)
+    }
+
+    @Test func photoAppeared_onTheLastSavedPhotoRequestsNothingMore() async {
+        let (sut, loader) = makeSUT()
+        let saved = makePhotos(1...3)
+        loader.stubOfflineFeed(saved)
+        loader.stubFeed(.failure(URLError(.notConnectedToInternet)))
+        await sut.load()
+
+        await sut.photoAppeared(saved[2])
+
+        #expect(loader.loadMoreCallCount == 0)
+        #expect(sut.feed == .loaded(photos: saved, footer: .end))
+    }
+
+    @Test func search_whileShowingTheOfflineFeedLeavesItUntouchedAndCancelReturnsToIt() async {
+        let (sut, loader) = makeSUT()
+        let saved = makePhotos(1...3)
+        loader.stubOfflineFeed(saved)
+        loader.stubFeed(.failure(URLError(.notConnectedToInternet)))
+        loader.stubSearch(.success(loader.page(makePhotos(10...11), hasMore: false)))
+        await sut.load()
+
+        await sut.search("cats")
+
+        #expect(sut.feed == .loaded(photos: saved, footer: .end))
+        #expect(sut.offlineFeedReason == .offline)
+        #expect(loader.loadOfflineFeedCallCount == 1)
+
+        sut.cancelSearch()
+
+        #expect(sut.searchResults == nil)
+        #expect(sut.feed == .loaded(photos: saved, footer: .end))
+    }
+
     @Test func load_deliversTheFirstPageWithAnIdleFooterWhenMoreCanLoad() async {
         let (sut, loader) = makeSUT()
         let photos = makePhotos(1...3)
@@ -781,7 +898,8 @@ struct GalleryViewModelTests {
 
     private func makeSUT(sourceLocation: SourceLocation = #_sourceLocation) -> (GalleryViewModel, FeedLoaderSpy) {
         let loader = FeedLoaderSpy()
-        let sut = GalleryViewModel(loadFeed: loader.loadFeed, search: loader.search)
+        let sut = GalleryViewModel(
+            loadFeed: loader.loadFeed, loadOfflineFeed: loader.loadOfflineFeed, search: loader.search)
         trackForMemoryLeaks(loader, sourceLocation: sourceLocation)
         trackForMemoryLeaks(sut, sourceLocation: sourceLocation)
         return (sut, loader)

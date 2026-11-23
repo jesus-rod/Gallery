@@ -81,6 +81,18 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - Updating a cached file's last-used date is best effort: if it fails, the read still counts as a hit.
 - One XCUITest per user journey (feed, search, full screen), with each step asserted. Details live in unit tests, because every XCUITest relaunches the app and costs seconds. The six M2–M4 UI tests became two.
 
+## M6 — Offline feed
+
+- The Offline feed is one versioned JSON file (`version: 1`) read and written whole by an actor; an unknown version reads as empty rather than failing, so a future format change just starts fresh.
+- It lives in Application Support, not Caches, so the system doesn't purge it exactly when the user is offline.
+- Saving is a decorator around the feed's first-Page closure in Core (`OfflineFeed.saving`): every loaded Page re-saves the first 300 Photos, so the Offline feed is always the latest feed prefix; a save failure never breaks browsing.
+- The view model falls back to the Offline feed on any first-Page error, not only offline, because a rate-limited or failing API also leaves nothing to show; `offlineFeedReason` keeps the error so the banner can say why.
+- The Offline feed has no load more: paging needs the network, and the saved Photos are a prefix of the feed.
+- The fallback lives in `StreamPager` (one place, used by first load, retry and refresh); Search pagers get no offline closure, so Search results are never replaced by saved Photos.
+- The Offline banner is persistent (not auto-dismissed) and sits in a top safe-area inset of the feed grid, so it pushes Photos down instead of covering them and hides with the feed during search; the refresh error banner stays an overlay above it.
+- `-stubOffline` and `-resetOfflineFeed` launch arguments let the XCUITests drive the offline path with a store separate from the real one (`OfflineFeed-stubs` in the temporary directory); both live inside `#if DEBUG`.
+- The offline XCUITest checks that a failed pull to refresh keeps the saved Photos and the Offline banner, not the brief refresh error: XCUITest waits for the app to be idle, and the app is not idle while that banner shows, so the banner is gone before the test can query it. The unit tests cover the error.
+
 ## M7 — Polish
 
 - A 401 gets its own state ("Access key not accepted"), because a wrong key is the most likely first-run failure for someone setting the project up; the message names the config file.

@@ -6,9 +6,11 @@ import Observation
 @Observable
 public final class GalleryViewModel {
     public typealias LoadFeed = @Sendable () async throws -> Paginated<Photo>
+    public typealias LoadOfflineFeed = @Sendable () async -> [Photo]
     public typealias Search = @Sendable (String) async throws -> Paginated<Photo>
 
     public var feed: StreamState { feedPager.state }
+    public var offlineFeedReason: LoadError? { feedPager.offlineReason }
     public private(set) var refreshError: LoadError?
 
     public var searchResults: SearchResults? {
@@ -24,8 +26,12 @@ public final class GalleryViewModel {
         let pager: StreamPager
     }
 
-    public init(loadFeed: @escaping LoadFeed, search: @escaping Search) {
-        feedPager = StreamPager(loadFirstPage: loadFeed)
+    public init(
+        loadFeed: @escaping LoadFeed,
+        loadOfflineFeed: @escaping LoadOfflineFeed,
+        search: @escaping Search
+    ) {
+        feedPager = StreamPager(loadFirstPage: loadFeed, loadOfflineFeed: loadOfflineFeed)
         searchPhotos = search
     }
 

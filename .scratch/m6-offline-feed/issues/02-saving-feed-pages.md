@@ -1,6 +1,6 @@
 # 02 — `OfflineFeed.saving`: save each loaded Page
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01
 
 ## Files

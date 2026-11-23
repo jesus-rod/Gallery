@@ -3,9 +3,16 @@
     import GalleryCore
 
     struct StubHTTPClient: HTTPClient {
+        let isOffline: Bool
+
         private static let noSearchResults = Data(#"{"total":0,"total_pages":0,"results":[]}"#.utf8)
 
+        init(isOffline: Bool = false) {
+            self.isOffline = isOffline
+        }
+
         func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+            if isOffline { throw URLError(.notConnectedToInternet) }
             guard let url = request.url,
                 let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
             else { throw URLError(.badURL) }
