@@ -1,6 +1,6 @@
 # 08 — BlurHash Preview
 
-Status: ready-for-agent
+Status: done
 
 Own decoder `BlurHash.decode(_:width:height:) -> CGImage?` (base83, sRGB ↔ linear, DCT sum) and `PreviewCache` caching decoded Previews by hash at `previewSize`.
 
