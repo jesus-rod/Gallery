@@ -51,6 +51,30 @@ final class GalleryAppUITests: XCTestCase {
     }
 
     @MainActor
+    func test_openingAPhoto_showsItFullScreenWithItsCreditAndClosesBackToTheGrid() {
+        let app = launchWithStubs()
+        let firstCell = app.images["Fixture photo 1"]
+        XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "The first feed cell should appear")
+
+        firstCell.tap()
+
+        let fullScreenPhoto = app.images.matching(identifier: "full-screen-photo").firstMatch
+        XCTAssertTrue(fullScreenPhoto.waitForExistence(timeout: 5), "Tapping a cell should open its Photo full screen")
+        XCTAssertEqual(
+            fullScreenPhoto.label, "Fixture photo 1", "The full-screen Photo should be labelled with its Caption")
+
+        let credit = app.descendants(matching: .any).matching(identifier: "photo-credit").firstMatch
+        XCTAssertTrue(credit.waitForExistence(timeout: 5), "The full-screen view should show the Photographer credit")
+        XCTAssertTrue(credit.label.contains("Fixture Photographer 2"), "The credit should name the Photographer")
+
+        app.buttons.matching(identifier: "full-screen-close").firstMatch.tap()
+
+        XCTAssertTrue(fullScreenPhoto.waitForNonExistence(timeout: 5), "Close should leave the Photo full screen")
+        XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "Closing should return to the grid")
+        XCTAssertTrue(firstCell.isHittable, "The grid cell should be back on screen after closing")
+    }
+
+    @MainActor
     private func scrollUntil(_ element: XCUIElement, in grid: XCUIElement) {
         for _ in 0..<20 where !element.exists {
             grid.swipeUp(velocity: .fast)
