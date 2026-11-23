@@ -35,7 +35,7 @@ cd Gallery && swift test
 
 The structure follows Apple Photos on iOS 26, with three additions that cost no extra requests:
 
-- **Ambient glow**: the full screen glows with the photo's colours. The glow is its BlurHash Preview, already decoded at 32 × 32 for the placeholder, blurred and dimmed behind the photo. It needs no download or decode of its own. It fades to black when the controls hide, and Reduce Transparency turns it off.
+- **Ambient glow**: the full screen glows with the photo's colours. The glow is its BlurHash Preview, already decoded at 32 × 32 for the placeholder, scaled up smoothly and dimmed behind the photo. It needs no download, decode or blur filter of its own: a live blur over the full screen showed up as GPU hitches in Instruments, and the upscaled BlurHash looks almost the same. It fades to black when the controls hide, and Reduce Transparency turns it off.
 - **Swipe between photos**: full screen pages through the Stream it was opened from (feed or Search results), with parallax, and loads more near the end through the grid's own paging path (ADR 0007). Only the current photo and its neighbours hold full-size images.
 - **Stretchy hero**: the feed opens with its first photo full width. Pulling down stretches it from the top, scrolling moves it at half speed. Both are computed in `.visualEffect`, so scrolling writes no state.
 - **Glass chrome**: Back, Share and Info are glass circles (material before iOS 26). The title holds the caption and "Photo by Name", so the photo stays unobstructed and the credit stays on screen. Info opens a sheet with the full credit, description and size.

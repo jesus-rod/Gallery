@@ -20,7 +20,6 @@ enum Design {
     }
 
     enum Ambient {
-        static let blurRadius: CGFloat = 60
         static let dim = 0.3
     }
 

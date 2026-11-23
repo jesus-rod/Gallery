@@ -13,8 +13,8 @@ struct AmbientBackdrop: View {
     var body: some View {
         if let preview {
             Image(decorative: preview, scale: 1)
+                .interpolation(.high)
                 .filling()
-                .blur(radius: Design.Ambient.blurRadius, opaque: true)
                 .overlay(Color.black.opacity(Design.Ambient.dim))
                 .opacity(opacity)
                 .accessibilityHidden(true)
