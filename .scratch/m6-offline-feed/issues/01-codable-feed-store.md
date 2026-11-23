@@ -1,6 +1,6 @@
 # 01 — `FeedStore` and `CodableFeedStore`
 
-Status: ready-for-agent
+Status: done
 Blocked by: none
 
 ## Files
