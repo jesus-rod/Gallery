@@ -1,6 +1,6 @@
 # 08 — XCUITests: search end to end
 
-Status: ready-for-agent
+Status: done
 Blocked by: 07
 
 Three acceptance tests in the existing `GalleryAppUITests`, launched with `-useStubs` (fixtures from ticket 06). No production code changes, unless a test exposes a bug; then fix it in this ticket and say so in the commit body.
