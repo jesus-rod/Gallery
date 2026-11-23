@@ -1,0 +1,11 @@
+.DS_Store
+
+xcuserdata/
+*.xcuserstate
+DerivedData/
+*.xcresult
+
+.build/
+.swiftpm/
+
+Config/Secrets.xcconfig
