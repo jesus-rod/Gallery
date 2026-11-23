@@ -13,7 +13,7 @@ final class StreamPager {
     @ObservationIgnored private let loadOfflineFeed: (@Sendable () async -> [Photo])?
     @ObservationIgnored private var loadMore: Paginated<Photo>.LoadMore?
     @ObservationIgnored private var generation = 0
-    @ObservationIgnored private var inFlight: Task<Void, Never>?
+    @ObservationIgnored private var cancelInFlight: (() -> Void)?
 
     init(
         loadFirstPage: @escaping LoadFirstPage,
@@ -34,17 +34,27 @@ final class StreamPager {
     }
 
     func cancel() {
-        inFlight?.cancel()
-        inFlight = nil
+        cancelInFlight?()
+        cancelInFlight = nil
         generation += 1
     }
 
     func refresh() async -> LoadError? {
-        do {
-            showFirstPage(try await loadFirstPage())
-            return nil
-        } catch {
-            return LoadError(error)
+        cancel()
+        if case .loaded(let photos, .loading) = state {
+            state = .loaded(photos: photos, footer: .idle)
+        }
+        let generation = generation
+        return await run {
+            do {
+                let page = try await self.loadFirstPage()
+                guard generation == self.generation else { return nil }
+                self.showFirstPage(page)
+                return nil
+            } catch {
+                guard generation == self.generation else { return nil }
+                return LoadError(error)
+            }
         }
     }
 
@@ -67,10 +77,13 @@ final class StreamPager {
         await run { await self.loadMore(after: photos) }
     }
 
-    private func run(_ operation: @escaping @MainActor @Sendable () async -> Void) async {
+    @discardableResult
+    private func run<Result: Sendable>(
+        _ operation: @escaping @MainActor @Sendable () async -> Result
+    ) async -> Result {
         let task = Task { await operation() }
-        inFlight = task
-        await task.value
+        cancelInFlight = { task.cancel() }
+        return await task.value
     }
 
     private func loadMore(after photos: [Photo]) async {

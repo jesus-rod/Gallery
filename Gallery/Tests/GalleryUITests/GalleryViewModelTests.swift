@@ -349,6 +349,43 @@ struct GalleryViewModelTests {
         #expect(sut.feed == .loaded(photos: refreshed, footer: .end))
     }
 
+    @Test func refresh_cancelsAnInFlightLoadMore() async {
+        let (sut, loader) = makeSUT()
+        let firstPage = makePhotos(1...10)
+        let gate = Gate()
+        loader.stubFeed(.success(loader.page(firstPage)))
+        loader.stubLoadMore(.success(loader.page(firstPage + makePhotos(11...12))), gate: gate)
+        loader.stubFeed(.success(loader.page(makePhotos(20...21), hasMore: false)))
+        await sut.load()
+
+        let lateLoadMore = Task { await sut.photoAppeared(firstPage[9]) }
+        await gate.untilReached()
+        await sut.refresh()
+        gate.open()
+        await lateLoadMore.value
+
+        #expect(loader.cancelledLoadMoreCount == 1)
+    }
+
+    @Test func refresh_failingAfterCancellingALoadMoreLetsPagingResume() async {
+        let (sut, loader) = makeSUT()
+        let firstPage = makePhotos(1...10)
+        let gate = Gate()
+        loader.stubFeed(.success(loader.page(firstPage)))
+        loader.stubLoadMore(.success(loader.page(firstPage + makePhotos(11...12))), gate: gate)
+        loader.stubFeed(.failure(URLError(.notConnectedToInternet)))
+        await sut.load()
+
+        let lateLoadMore = Task { await sut.photoAppeared(firstPage[9]) }
+        await gate.untilReached()
+        await sut.refresh()
+        gate.open()
+        await lateLoadMore.value
+
+        #expect(sut.feed == .loaded(photos: firstPage, footer: .idle))
+        #expect(sut.refreshError == .offline)
+    }
+
     @Test func init_hasNoSearchResults() {
         let (sut, loader) = makeSUT()
 
@@ -843,6 +880,23 @@ struct GalleryViewModelTests {
         await loadMore.value
 
         #expect(loader.cancelledLoadMoreCount == 1)
+        #expect(sut.searchResults == nil)
+    }
+
+    @Test func cancelSearch_cancelsAnInFlightSearchRefresh() async {
+        let (sut, loader) = makeSUT()
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page(makePhotos(1...3), hasMore: false)))
+        loader.stubSearch(.success(loader.page(makePhotos(4...6), hasMore: false)), gate: gate)
+        await sut.search("cats")
+
+        let refresh = Task { await sut.refreshSearch() }
+        await gate.untilReached()
+        sut.cancelSearch()
+        gate.open()
+        await refresh.value
+
+        #expect(loader.cancelledSearchQueries == ["cats"])
         #expect(sut.searchResults == nil)
     }
 
