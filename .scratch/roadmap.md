@@ -23,12 +23,19 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M5 | Full-screen view + transition (`.scratch/m5-full-screen/`) | done (device check and Instruments in ticket 07's human part) |
 | M6 | Offline feed (`.scratch/m6-offline-feed/`) | done, merged |
 | M7 | Polish: UX states, accessibility (`.scratch/m7-polish/`) | done, merged (VoiceOver and Accessibility Inspector check left for M8) |
-| M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 done; **next: ticket 08** (snapshot matrix on the iOS simulator, ready-for-agent, not started); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
+| M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 and 08 done (snapshot matrix on the iOS simulator, 88 references, pushed as `45fd66c`); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
 | M9 | Photos-style polish with ambient glow, swipe between photos, stretchy hero (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | done. Tickets 01–08 and review fixes (`.scratch/m9-review-fixes/`) done. Open: full-screen memory retention (see decision log, M9) |
+
+## Resume here (2026-11-23, after full-screen release fix)
+
+- **Pushed:** `61f6828` releases full-screen images when pages scroll away (`FullScreenImageModel.release()`), plus the Instruments write-up. 280 tests green.
+- **Waiting on the device:** full Allocations run (grid scroll, then full-screen swipe), with step times written down. Checklist in `.scratch/m9-review-fixes/issues/08-full-screen-images-retained.md`. Also check grid cells are not evicted by full-screen images (M5 open question).
+- **Open question asked:** architecture review. Notes so far: `GalleryUI` is 45 files / ~2500 lines; `FullScreen/` holds 18 of them; `PhotoImageModel` and `FullScreenImageModel` repeat the same memoised-cache and `release()` pattern (candidate for one shared type); `PhotoImages` is a bag of closures passed to every view; `GalleryViewModel` holds two `StreamPager`s. Not yet reviewed: `CompositionRoot` in `App/GalleryApp.swift`, `GalleryRootView`. Nothing is decided.
+- **Simulator:** not for memory numbers (see the note below).
 
 ## Resume here (2026-11-23, Instruments write-up)
 
-- **Next: M8 ticket 08** (snapshot matrix, `.scratch/m8-ship/issues/08-snapshot-matrix.md`) is unblocked. Ask the user for the "iPhone Duo" point size and safe areas first.
+- **M8 ticket 08 done** (`.scratch/m8-ship/issues/08-snapshot-matrix.md`, commit `45fd66c`, pushed): 88 iOS snapshots on four devices (iPhone SE, iPhone 17, iPhone Duo unfolded, iPad portrait), light and dark. Duo safe areas are estimates; confirm them on the device. Next: ticket 07 is the user's.
 - M9 is done. The Instruments numbers and the glow approval are in the decision log (M9 section). The one open item is full-screen memory: a swipe-only Allocations trace ended with 306 MB persistent, 285 MB of it decoded images, still arriving through the swipe. The full-run after-fix Run B is still to be recorded.
 - The `allocations-intruments-2.trace` in the repo root was overwritten with the swipe-only run; the earlier 145 s run is gone. `allocations-intruments.trace` is the before-fix Run B (1.17 GB persistent). Traces are excluded from git.
 - Checked in the simulator (iPhone 18 Pro, iOS 27.2) with the Xcode MCP and a temporary probe: RSS was identical before and after the fix, because the app's baseline (~390 MB) dominates and the stub images are small. Don't use the simulator for memory numbers.
