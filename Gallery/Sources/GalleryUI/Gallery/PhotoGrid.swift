@@ -99,31 +99,12 @@ struct PhotoCell: View {
         _model = State(initialValue: PhotoImageModel(photo: photo, images: images, size: size))
     }
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         Rectangle()
             .fill(.quaternary)
             .aspectRatio(1, contentMode: .fit)
-            .overlay {
-                ZStack {
-                    if !model.wasCachedOnAppear, let preview = model.preview {
-                        Image(decorative: preview, scale: 1)
-                            .resizable()
-                            .scaledToFill()
-                    }
-                    if let image = model.image {
-                        Image(decorative: image, scale: route.gridSize.scale)
-                            .resizable()
-                            .scaledToFill()
-                            .transition(.opacity)
-                    }
-                }
-                .animation(model.wasCachedOnAppear ? nil : .easeOut(duration: 0.25), value: model.isLoaded)
-            }
-            .clipped()
-            .task(id: route.gridSize) {
-                guard route.gridSize.pixels > 0 else { return }
-                await model.load(size: route.gridSize)
-            }
             .accessibilityElement()
             .accessibilityLabel(caption(for: route.photo))
             .accessibilityValue(model.isLoaded ? Text(verbatim: "") : Text("Loading", bundle: .module))
@@ -133,11 +114,41 @@ struct PhotoCell: View {
             .accessibilityAction(.default) {
                 onOpen(route)
             }
+            .accessibilityRemoveTraits(.isButton)
+            .overlay {
+                images
+                    .accessibilityHidden(true)
+            }
+            .clipped()
+            .task(id: route.gridSize) {
+                guard route.gridSize.pixels > 0 else { return }
+                await model.load(size: route.gridSize)
+            }
             .onTapGesture {
                 onOpen(route)
             }
-            .accessibilityRemoveTraits(.isButton)
             .zoomTransitionSource(id: route.sourceID, in: zoomNamespace)
+    }
+
+    private var images: some View {
+        ZStack {
+            if !model.wasCachedOnAppear, let preview = model.preview {
+                Image(decorative: preview, scale: 1)
+                    .resizable()
+                    .scaledToFill()
+            }
+            if let image = model.image {
+                Image(decorative: image, scale: route.gridSize.scale)
+                    .resizable()
+                    .scaledToFill()
+                    .transition(.opacity)
+            }
+        }
+        .animation(fadeAnimation, value: model.isLoaded)
+    }
+
+    private var fadeAnimation: Animation? {
+        model.wasCachedOnAppear || reduceMotion ? nil : .easeOut(duration: 0.25)
     }
 }
 

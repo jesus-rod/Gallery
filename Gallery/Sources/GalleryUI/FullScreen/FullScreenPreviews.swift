@@ -26,6 +26,15 @@
         )
     }
 
+    #Preview("Full screen, accessibility XXXL") {
+        FullScreenPhotoView(
+            route: previewRoute,
+            images: PreviewData.images,
+            referralAppName: PreviewData.referralAppName
+        )
+        .dynamicTypeSize(.accessibility5)
+    }
+
     #Preview("Full screen, image failed") {
         FullScreenPhotoView(
             route: previewRoute,

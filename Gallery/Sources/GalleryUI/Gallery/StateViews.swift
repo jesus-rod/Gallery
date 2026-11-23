@@ -58,9 +58,11 @@ struct RefreshErrorBanner: View {
     var body: some View {
         Text(error.title)
             .font(.subheadline)
+            .multilineTextAlignment(.center)
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
-            .background(.thinMaterial, in: Capsule())
+            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 20))
+            .padding(.horizontal, 16)
             .padding(.top, 8)
             .transition(.move(edge: .top).combined(with: .opacity))
             .task {

@@ -94,6 +94,14 @@
             referralAppName: PreviewData.referralAppName)
     }
 
+    #Preview("Offline, accessibility XXXL") {
+        GalleryRootView(
+            viewModel: PreviewData.viewModel { throw URLError(.notConnectedToInternet) }, images: PreviewData.images,
+            referralAppName: PreviewData.referralAppName
+        )
+        .dynamicTypeSize(.accessibility5)
+    }
+
     #Preview("Search results") {
         let viewModel = PreviewData.viewModel { Paginated(items: PreviewData.photos(1...30)) }
         GalleryRootView(viewModel: viewModel, images: PreviewData.images, referralAppName: PreviewData.referralAppName)

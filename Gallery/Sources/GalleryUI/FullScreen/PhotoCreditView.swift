@@ -9,6 +9,7 @@ struct PhotoCreditView: View {
     var body: some View {
         Text(credit)
             .font(.footnote)
+            .fixedSize(horizontal: false, vertical: true)
             .accessibilityIdentifier("photo-credit")
     }
 
