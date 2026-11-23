@@ -1,6 +1,72 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Check your connection and try again." : {
+      "comment" : "Message shown when the device has no network connection.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check your connection and try again."
+          }
+        }
+      }
+    },
+    "Gallery" : {
+      "comment" : "Navigation title of the photo grid.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gallery"
+          }
+        }
+      }
+    },
+    "Loading photos" : {
+      "comment" : "VoiceOver label for the grid while the first page loads.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading photos"
+          }
+        }
+      }
+    },
+    "Retry" : {
+      "comment" : "Button that retries a failed request.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        }
+      }
+    },
+    "Something went wrong" : {
+      "comment" : "Title shown for an unexpected loading error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something went wrong"
+          }
+        }
+      }
+    },
+    "Taking a short break" : {
+      "comment" : "Title shown when the hourly request limit is reached.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taking a short break"
+          }
+        }
+      }
+    },
     "Untitled photo" : {
       "comment" : "Caption for a photo that has neither an alt description nor a description.",
       "localizations" : {
@@ -8,6 +74,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Untitled photo"
+          }
+        }
+      }
+    },
+    "We couldn't load photos. Please try again." : {
+      "comment" : "Message shown for an unexpected loading error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We couldn't load photos. Please try again."
+          }
+        }
+      }
+    },
+    "We've reached the hourly limit for new photos. Try again in a few minutes." : {
+      "comment" : "Message shown when the hourly request limit is reached.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We've reached the hourly limit for new photos. Try again in a few minutes."
+          }
+        }
+      }
+    },
+    "You're offline" : {
+      "comment" : "Title shown when the device has no network connection.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're offline"
           }
         }
       }
