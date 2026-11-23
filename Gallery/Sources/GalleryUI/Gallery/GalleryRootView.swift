@@ -37,7 +37,7 @@ public struct GalleryRootView: View {
                     RefreshErrorBanner(error: error, onDismiss: viewModel.dismissRefreshError)
                 }
             }
-            .animation(.default, value: viewModel.refreshError)
+            .animation(Design.Motion.banner(reduceMotion: reduceMotion), value: viewModel.refreshError)
             .navigationTitle(Text("Gallery", bundle: .module))
             #if os(iOS)
                 .toolbarTitleDisplayMode(isHeroUnderBar ? .inline : .large)

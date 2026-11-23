@@ -54,5 +54,9 @@ enum Design {
         static func streamSwitch(reduceMotion: Bool) -> Animation? {
             reduceMotion ? nil : .easeInOut(duration: 0.2)
         }
+
+        static func banner(reduceMotion: Bool) -> Animation? {
+            reduceMotion ? nil : .easeInOut(duration: 0.25)
+        }
     }
 }

@@ -1,6 +1,6 @@
 # 03 — Refresh banner respects Reduce Motion and is announced
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01
 
 The refresh-error banner (`RefreshErrorBanner`, shown in `GalleryRootView`'s top `safeAreaInset`) slides in with `.move(edge: .top).combined(with: .opacity)` under `.animation(.default, value: viewModel.refreshError)`. Every other animation goes through `Design.Motion.*(reduceMotion:)`; this one ignores Reduce Motion. It also dismisses itself after 3 s, and VoiceOver users get no announcement, so they may never know the refresh failed.
