@@ -1,6 +1,6 @@
 # 06 — URLSession HTTP client
 
-Status: ready-for-agent
+Status: done
 
 `URLSessionHTTPClient` implements `HTTPClient` over an injected `URLSession`.
 
