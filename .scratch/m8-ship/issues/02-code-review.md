@@ -1,6 +1,6 @@
 # code-review
 
-Status: ready-for-agent
+Status: done
 
 Whole-project /code-review (Standards + Spec) from the first commit; fix confirmed findings, one commit each; list skipped ones with the reason in Comments.
 
@@ -21,4 +21,4 @@ Accepted (judgement calls, not worth the churn now):
 - `.timedOut` mapped to `.offline`: a timeout reads as a connection problem to the user.
 - Four XCUITests: offline is its own journey (logged in M6).
 
-Open, needs the user: the grid shows no visible Caption (VoiceOver label only), which the brief asks for.
+Resolved with the user (option a): each cell now shows its Caption (`ad32690`). While checking it, found and fixed a layout bug where the Preview and image sized against each other and left a band of Preview above the image (`8cf7399`).
