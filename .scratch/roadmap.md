@@ -18,27 +18,29 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M0 | Scaffold: package, app target, key config, CI, README skeleton | done |
 | M1 | Feed API + paging (`.scratch/m1-feed-api/`) | done |
 | M2 | Grid UI with fixtures, `-useStubs` launch path, XCUITest target (`.scratch/m2-grid-ui/`) | done |
-| M3 | Image pipeline (`.scratch/m3-image-pipeline/`) | spec written, seams to agree |
-| M4 | Search | |
+| M3 | Image pipeline (`.scratch/m3-image-pipeline/`) | done (ticket 12, the live-key run, is waiting on the user) |
+| M4 | Search | next: write spec |
 | M5 | Full-screen view + transition | |
 | M6 | Offline feed | |
 | M7 | Polish: UX states, accessibility | |
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom | |
 
-## Carried into M3
+## Carried into M4
 
-From M1 and M2. Fold these into the M3 spec.
-- Cells are a neutral fill (`PhotoCell` in `GalleryUI/Gallery/PhotoGrid.swift`); M3 adds the Preview and Rendition. `-useStubs` will need stubbed image data too (fixture URLs point at `images.unsplash.com/fixture-NN`), or XCUITests hit the network.
-- Load more is triggered from `.onAppear { Task { ... } }`, not `.task`, so a cell scrolling away never cancels a shared `loadMore`. Keep that distinction for image loads, where cancellation is wanted.
-- Run the live feed once with a real key in `Config/Secrets.xcconfig`; never verified.
-- Snapshot tests (cell, empty/error states) deferred to M7.
-- Optional cleanup: both mappers repeat "rate limit, require 200, decode or `invalidData`"; extract a shared helper when a third mapper appears (M4 search reuses the Search mapper, so maybe never).
+From M1–M3. Fold these into the M4 spec.
+- Ticket M3/12: run the live feed and images once with a real key in `Config/Secrets.xcconfig`; never verified.
+- Load more uses `.onAppear { Task {} }`; image loads use `.task(id:)`. Keep the distinction for search results.
+- `PhotoGrid` is shared: Search results reuse it with the same `PhotoImages`, so cached Renditions are shared between Streams.
+- `-useStubs` fixtures cover the Editorial feed only; M4 needs search fixtures in `StubHTTPClient` for XCUITests.
+- Carried to M7: skip the Preview frame and fade for images already in memory (synchronous memory-cache lookup); snapshot tests for cell and empty/error states.
+- Optional cleanup: both mappers repeat "rate limit, require 200, decode or `invalidData`"; extract a shared helper when a third mapper appears.
 - Course rule EF-97 (`case let .x(a, b)`) conflicts with swift-format's `UseLetInEveryBoundCaseVariable`; the linter wins.
 - Project file: `App/` and `AppUITests/` are synchronized folder groups, so new files there need no `project.pbxproj` edits. CI runs `swift test` then the XCUITests on the first available iPhone simulator.
+- Lint `App` and `AppUITests` too: `swift format lint -r Gallery App AppUITests`.
 
 ## Settled decisions
 
-Recorded in ADRs: own image pipeline (0001), SPM modules testable on macOS (0002), search on submit (0003), offline feed JSON store with no expiry (0004), fixed square cells in `LazyVGrid` (0005).
+Recorded in ADRs: own image pipeline (0001), SPM modules testable on macOS (0002), search on submit (0003), offline feed JSON store with no expiry (0004), fixed square cells in `LazyVGrid` (0005), in-flight dedup with per-caller cancellation (0006). Every decision, big or small, is listed in `docs/decision-log.md`.
 
 **Stack**: SwiftUI, Swift Testing (XCUITest only for UI tests), Swift 6 strict concurrency, `@Observable` `@MainActor` view models, iOS 17 minimum, iPhone and iPad, all orientations.
 

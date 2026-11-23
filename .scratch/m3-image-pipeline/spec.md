@@ -1,6 +1,6 @@
 # M3 — Image pipeline
 
-Status: spec, seams to agree
+Status: done except ticket 12 (live run with a real key, needs the user)
 
 ## Goal
 
@@ -105,3 +105,12 @@ Full-screen `regular` Rendition (M5), Offline feed (M6), snapshot tests (M7), In
 
 - Run the live feed once with a real key in `Config/Secrets.xcconfig`: ticket 12, manual.
 - Mapper helper extraction: still not needed.
+
+## Review notes
+
+Quick essential-feed pass at the end of M3.
+- Each concern is one decorator behind `ImageDataLoader` or `ImageLoader`; only the app's `ImagePipeline` knows the order. GalleryUI sees closures it defines itself (`PhotoImages`), and ImageLoading still never imports Core: the remote loader takes a fetch closure.
+- Every decorator is unit tested with a leak check; dedup and prefetch cancellation are tested together (prefetcher over the real dedup layer).
+- Concurrency: the app and the package use Swift 6.0 language mode with no default main-actor isolation, so the `@Sendable async` image closures run off the main actor. The only main-thread image work is the synchronous Preview lookup (one 32×32 decode per hash).
+- Seam changes from the agreed table: `PhotoImageModel` is driven through `PhotoImages` closures; `UnsplashRendition.grid(for:side:scale:quality:)` was added for aspect-aware sizing (ticket 01 comments); in-flight dedup is a lock-guarded class, not an actor (ADR 0006).
+- Known edges, carried to M7: a cell that scrolls back into view gets a fresh model, so it shows its Preview for a frame and replays the fade even when the image is in the memory cache (a synchronous memory-cache lookup would fix this). A size-class or rotation change produces new Rendition URLs, so those images download again.
