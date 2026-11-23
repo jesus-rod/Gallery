@@ -1,6 +1,6 @@
 # M2 — Grid UI with fixtures
 
-Status: in progress
+Status: done
 
 ## Goal
 
@@ -68,4 +68,13 @@ Image loading and Previews (M3: cells show a neutral fill), search (M4), full-sc
 
 ## Pattern notes
 
-The view model takes a closure, not `PhotoStream`, so tests stub paging directly (essential-feed: depend on the narrowest abstraction). Memory-leak checks use a `weak` reference asserted at the end of each test, Swift Testing having no `addTeardownBlock`.
+The view model takes a closure, not `PhotoStream`, so tests stub paging directly (essential-feed: depend on the narrowest abstraction). Swift Testing has no `addTeardownBlock`, so memory-leak checks use a custom `TestScoping` trait that verifies tracked instances after each test returns.
+
+## Review notes
+
+Quick essential-feed pass at the end of M2.
+- The view model depends on a `loadFeed` closure; the composition root alone knows `PhotoStream`, endpoints, mappers and clients. `LoadError` keeps Foundation and API errors out of views.
+- Leak checks run through the `.trackingLeaks` Swift Testing trait (`Tests/GalleryUITests/Helpers/LeakTracking.swift`): `makeSUT` calls `trackForMemoryLeaks`, the trait verifies after the test returns. `Gate` holds a stubbed call mid-flight for ordering tests.
+- `StubHTTPClient` is not unit tested (no app unit test target); the XCUITests cover it. Agreed seam changed, noted in ticket 07.
+- Known edge: a refresh that fails while a `loadMore` is in flight lets the `loadMore` result land. Acceptable.
+- Live feed not yet run with a real key (no `Secrets.xcconfig` on the dev machine); the missing-key path shows the generic error.

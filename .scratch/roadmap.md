@@ -16,22 +16,24 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 |---|---|---|
 | M0 | Scaffold: package, app target, key config, CI, README skeleton | done |
 | M1 | Feed API + paging (`.scratch/m1-feed-api/`) | done |
-| M2 | Grid UI with fixtures, `-useStubs` launch path, XCUITest target (`.scratch/m2-grid-ui/`) | spec written, seams to agree |
-
-## Carried into M2
-
-From the M1 review. Fold these into the M2 spec.
-- The view model maps loader errors (`URLError`, `UnsplashAPIError`, `URLSessionHTTPClient.UnexpectedResponse`) to its own states (offline, rate limited, generic); no Foundation or API error reaches a view.
-- `@MainActor` view models get memory-leak tests, the first class-based systems under test.
-- `PhotoStream.firstPage()` / `Paginated.loadMore` is the API the view model drives. Retrying a failed `loadMore` means calling the same closure again.
-- Optional cleanup: both mappers repeat "rate limit, require 200, decode or `invalidData`"; extract a shared internal decode helper when a third mapper appears.
-- Course rule EF-97 (`case let .x(a, b)`) conflicts with swift-format's `UseLetInEveryBoundCaseVariable`; the linter wins.
-| M3 | Image pipeline | |
+| M2 | Grid UI with fixtures, `-useStubs` launch path, XCUITest target (`.scratch/m2-grid-ui/`) | done |
+| M3 | Image pipeline | next: write spec |
 | M4 | Search | |
 | M5 | Full-screen view + transition | |
 | M6 | Offline feed | |
 | M7 | Polish: UX states, accessibility | |
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom | |
+
+## Carried into M3
+
+From M1 and M2. Fold these into the M3 spec.
+- Cells are a neutral fill (`PhotoCell` in `GalleryUI/Gallery/PhotoGrid.swift`); M3 adds the Preview and Rendition. `-useStubs` will need stubbed image data too (fixture URLs point at `images.unsplash.com/fixture-NN`), or XCUITests hit the network.
+- Load more is triggered from `.onAppear { Task { ... } }`, not `.task`, so a cell scrolling away never cancels a shared `loadMore`. Keep that distinction for image loads, where cancellation is wanted.
+- Run the live feed once with a real key in `Config/Secrets.xcconfig`; never verified.
+- Snapshot tests (cell, empty/error states) deferred to M7.
+- Optional cleanup: both mappers repeat "rate limit, require 200, decode or `invalidData`"; extract a shared helper when a third mapper appears (M4 search reuses the Search mapper, so maybe never).
+- Course rule EF-97 (`case let .x(a, b)`) conflicts with swift-format's `UseLetInEveryBoundCaseVariable`; the linter wins.
+- Project file: `App/` and `AppUITests/` are synchronized folder groups, so new files there need no `project.pbxproj` edits. CI runs `swift test` then the XCUITests on the first available iPhone simulator.
 
 ## Settled decisions
 
