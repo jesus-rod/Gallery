@@ -9,6 +9,10 @@
     @testable import GalleryUI
 
     @MainActor
+    @Suite(
+        .disabled(
+            if: ProcessInfo.processInfo.environment["CI"] != nil,
+            "References are recorded on the developer's macOS; other macOS versions render text differently"))
     struct SnapshotTests {
         private let cellSize = CGSize(width: 180, height: 180)
         private let stateSize = CGSize(width: 390, height: 420)
