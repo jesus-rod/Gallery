@@ -3,16 +3,20 @@ import SwiftUI
 public struct GalleryRootView: View {
     private let viewModel: GalleryViewModel
     private let images: PhotoImages
+    private let referralAppName: String
 
     @State private var searchText = ""
+    @State private var path: [FullScreenRoute] = []
+    @Namespace private var zoomNamespace
 
-    public init(viewModel: GalleryViewModel, images: PhotoImages) {
+    public init(viewModel: GalleryViewModel, images: PhotoImages, referralAppName: String) {
         self.viewModel = viewModel
         self.images = images
+        self.referralAppName = referralAppName
     }
 
     public var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ZStack {
                 feedContent
                     .opacity(isShowingSearch ? 0 : 1)
@@ -32,11 +36,19 @@ public struct GalleryRootView: View {
             .onChange(of: searchText) { _, newValue in
                 if newValue.isEmpty { viewModel.cancelSearch() }
             }
+            .navigationDestination(for: FullScreenRoute.self) { route in
+                FullScreenPhotoView(route: route, images: images, referralAppName: referralAppName)
+                    .zoomTransition(sourceID: route.sourceID, in: zoomNamespace)
+            }
         }
         .task { await viewModel.load() }
     }
 
     private var isShowingSearch: Bool { viewModel.searchResults != nil }
+
+    private func openFullScreen(_ route: FullScreenRoute) {
+        path.append(route)
+    }
 
     @ViewBuilder
     private var feedContent: some View {
@@ -52,7 +64,10 @@ public struct GalleryRootView: View {
                 photos: photos,
                 footer: footer,
                 images: images,
+                streamID: "feed",
+                zoomNamespace: zoomNamespace,
                 onPhotoAppear: { photo in Task { await viewModel.photoAppeared(photo) } },
+                onOpen: openFullScreen,
                 onRetry: { Task { await viewModel.retry() } }
             )
             .refreshable { await viewModel.refresh() }
@@ -80,7 +95,10 @@ public struct GalleryRootView: View {
                 photos: photos,
                 footer: footer,
                 images: images,
+                streamID: "search-\(results.query)",
+                zoomNamespace: zoomNamespace,
                 onPhotoAppear: { photo in Task { await viewModel.searchPhotoAppeared(photo) } },
+                onOpen: openFullScreen,
                 onRetry: { Task { await viewModel.retrySearch() } }
             )
         }

@@ -16,6 +16,7 @@ Close M5.
 ## Human part (the user, on device or simulator)
 
 Record the results in this ticket's Comments.
+- Step 0 of ticket 05 (still open): on iOS 18+, does the system zoom-dismiss gesture ever win over panning a zoomed Photo? If it does, our drag dismisses on both versions and the decision log changes.
 - Gesture feel on iOS 18+: pinch, double tap, pan when zoomed, swipe down to close, zoom transition back into the right cell (feed and Search results).
 - iOS 17 simulator, if a runtime is installed: standard push, our drag to dismiss.
 - Rotate while full screen: the image stays, then sharpens.

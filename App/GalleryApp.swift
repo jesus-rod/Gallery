@@ -12,9 +12,13 @@ struct GalleryApp: App {
 
     var body: some Scene {
         WindowGroup {
-            GalleryRootView(viewModel: viewModel, images: imagePipeline.photoImages)
-                .task { imagePipeline.evictDiskCache() }
-                .onReceive(memoryWarnings) { _ in imagePipeline.clearMemoryCache() }
+            GalleryRootView(
+                viewModel: viewModel,
+                images: imagePipeline.photoImages,
+                referralAppName: "gallery_ios"
+            )
+            .task { imagePipeline.evictDiskCache() }
+            .onReceive(memoryWarnings) { _ in imagePipeline.clearMemoryCache() }
         }
     }
 

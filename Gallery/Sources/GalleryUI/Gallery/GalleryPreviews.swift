@@ -3,7 +3,9 @@
     import GalleryCore
     import SwiftUI
 
-    private enum PreviewData {
+    enum PreviewData {
+        static let referralAppName = "gallery_ios"
+
         static func photos(_ range: ClosedRange<Int>) -> [Photo] {
             range.map { index in
                 let url = URL(filePath: "/preview/\(index)")
@@ -59,7 +61,7 @@
     #Preview("Loaded") {
         GalleryRootView(
             viewModel: PreviewData.viewModel { Paginated(items: PreviewData.photos(1...30)) },
-            images: PreviewData.images)
+            images: PreviewData.images, referralAppName: PreviewData.referralAppName)
     }
 
     #Preview("Loading") {
@@ -68,23 +70,26 @@
                 try await Task.sleep(for: .seconds(3600))
                 return Paginated(items: [])
             },
-            images: PreviewData.images
+            images: PreviewData.images,
+            referralAppName: PreviewData.referralAppName
         )
     }
 
     #Preview("Offline") {
         GalleryRootView(
-            viewModel: PreviewData.viewModel { throw URLError(.notConnectedToInternet) }, images: PreviewData.images)
+            viewModel: PreviewData.viewModel { throw URLError(.notConnectedToInternet) }, images: PreviewData.images,
+            referralAppName: PreviewData.referralAppName)
     }
 
     #Preview("Rate limited") {
         GalleryRootView(
-            viewModel: PreviewData.viewModel { throw UnsplashAPIError.rateLimited }, images: PreviewData.images)
+            viewModel: PreviewData.viewModel { throw UnsplashAPIError.rateLimited }, images: PreviewData.images,
+            referralAppName: PreviewData.referralAppName)
     }
 
     #Preview("Search results") {
         let viewModel = PreviewData.viewModel { Paginated(items: PreviewData.photos(1...30)) }
-        GalleryRootView(viewModel: viewModel, images: PreviewData.images)
+        GalleryRootView(viewModel: viewModel, images: PreviewData.images, referralAppName: PreviewData.referralAppName)
             .task { await viewModel.search("cats") }
     }
 

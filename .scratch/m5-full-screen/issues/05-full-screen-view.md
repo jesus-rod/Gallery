@@ -1,6 +1,6 @@
 # 05 — Full-screen view, navigation and gestures
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01, 02, 03, 04
 
 The view layer. No new unit tests: everything with branches was tested in tickets 01–04. Covered by `#Preview`s here and the XCUITests in ticket 06. **The existing six XCUITests must pass unchanged.**
@@ -72,3 +72,7 @@ Build a rough version (route, push, zoom transition, `MagnifyGesture` + pan `Dra
 `feat(ui): open a Photo full screen with zoom and the Photographer credit`
 
 ## Comments
+- Step 0 device check is still open: there is no device here, so decision 3 is implemented as written (iOS 18+: the system zoom-dismiss gesture, our `DragGesture` only pans when zoomed; iOS 17: our drag dismisses at 1×). Whether the system gesture ever wins over panning a zoomed Photo is not known yet and moves to ticket 07's human part.
+- Added `ContentFit` (the Photo fitted into the container, used as `content` for `ZoomTransform`) with three tests written first, because it has a branch for a Photo with no size.
+- `makePhoto` in the test fixtures takes `width` and `height` (defaults 1), so the content-fit tests can use real sizes.
+- XCUITests: the two journeys from review fix 06 pass unchanged. One run failed the first feed cell lookup right after a fresh build; three later runs passed, so it did not reproduce.

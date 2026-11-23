@@ -5,7 +5,10 @@ struct PhotoGrid: View {
     let photos: [Photo]
     let footer: StreamState.Footer
     let images: PhotoImages
+    let streamID: String
+    let zoomNamespace: Namespace.ID
     let onPhotoAppear: (Photo) -> Void
+    let onOpen: (FullScreenRoute) -> Void
     let onRetry: () -> Void
 
     @Environment(\.displayScale) private var displayScale
@@ -15,11 +18,18 @@ struct PhotoGrid: View {
             SquareGrid { cellSide in
                 let size = ImageSize(points: cellSide, scale: displayScale)
                 ForEach(photos, id: \.id) { photo in
-                    PhotoCell(photo: photo, images: images, size: size)
-                        .onAppear {
-                            onPhotoAppear(photo)
-                            prefetch(after: photo, size: size)
-                        }
+                    PhotoCell(
+                        photo: photo,
+                        images: images,
+                        size: size,
+                        streamID: streamID,
+                        zoomNamespace: zoomNamespace,
+                        onOpen: onOpen
+                    )
+                    .onAppear {
+                        onPhotoAppear(photo)
+                        prefetch(after: photo, size: size)
+                    }
                 }
             }
             FooterView(footer: footer, onRetry: onRetry)
@@ -69,14 +79,23 @@ struct SquareGrid<Content: View>: View {
 private let gridSpacing: CGFloat = 2
 
 struct PhotoCell: View {
-    let photo: Photo
-    let size: ImageSize
+    let route: FullScreenRoute
+    let zoomNamespace: Namespace.ID
+    let onOpen: (FullScreenRoute) -> Void
 
     @State private var model: PhotoImageModel
 
-    init(photo: Photo, images: PhotoImages, size: ImageSize) {
-        self.photo = photo
-        self.size = size
+    init(
+        photo: Photo,
+        images: PhotoImages,
+        size: ImageSize,
+        streamID: String,
+        zoomNamespace: Namespace.ID,
+        onOpen: @escaping (FullScreenRoute) -> Void
+    ) {
+        route = FullScreenRoute(photo: photo, gridSize: size, sourceID: "\(streamID)-\(photo.id)")
+        self.zoomNamespace = zoomNamespace
+        self.onOpen = onOpen
         _model = State(initialValue: PhotoImageModel(photo: photo, images: images))
     }
 
@@ -92,7 +111,7 @@ struct PhotoCell: View {
                             .scaledToFill()
                     }
                     if let image = model.image {
-                        Image(decorative: image, scale: size.scale)
+                        Image(decorative: image, scale: route.gridSize.scale)
                             .resizable()
                             .scaledToFill()
                             .transition(.opacity)
@@ -101,15 +120,24 @@ struct PhotoCell: View {
                 .animation(.easeOut(duration: 0.25), value: model.isLoaded)
             }
             .clipped()
-            .task(id: size) {
-                guard size.pixels > 0 else { return }
-                await model.load(size: size)
+            .task(id: route.gridSize) {
+                guard route.gridSize.pixels > 0 else { return }
+                await model.load(size: route.gridSize)
             }
             .accessibilityElement()
-            .accessibilityLabel(caption(for: photo))
+            .accessibilityLabel(caption(for: route.photo))
             .accessibilityValue(model.isLoaded ? Text(verbatim: "") : Text("Loading", bundle: .module))
             .accessibilityAddTraits(.isImage)
             .accessibilityIdentifier("photo-cell")
+            .accessibilityHint(Text("Opens the photo full screen", bundle: .module))
+            .accessibilityAction(.default) {
+                onOpen(route)
+            }
+            .onTapGesture {
+                onOpen(route)
+            }
+            .accessibilityRemoveTraits(.isButton)
+            .zoomTransitionSource(id: route.sourceID, in: zoomNamespace)
     }
 }
 

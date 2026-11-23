@@ -63,6 +63,12 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - The Full-screen view asks for the grid image (a memory-cache hit, since the cell just showed it) and the full-screen Rendition at the same time, and never steps down: Preview → grid image → full image. A failed full image leaves the grid image; there is no error screen for it.
 - The full-screen Rendition goes through the same pipeline and memory cache as the grid, with its own quality setting (80, grid 75), so reopening a Photo is instant.
 - Zoom and pan maths live in a pure `ZoomTransform` value, tested without views; gestures only feed it numbers. 1× to 4×, double tap toggles 2.5× towards the tapped point, and the image edges never come inside the screen edges.
+- Opening a Photo pushes a `FullScreenRoute` on the existing `NavigationStack`, so the grids and their scroll positions stay alive underneath. The cell opens it with a tap gesture and a default accessibility action instead of a `NavigationLink`; both would make the cell a button for accessibility, so the cell removes `.isButton` and stays an image.
+- iOS 18+ zooms from the cell (`matchedTransitionSource` / `.zoom`); iOS 17 uses the standard push, because `NavigationStack` has no cross-fade push and faking one would mean presenting over the stack.
+- The transition source ID includes the Stream, because the same Photo can sit in the hidden feed and in Search results at once.
+- The Full-screen image frame is the Photo's aspect ratio fitted to the screen (`ContentFit`), and every image fills that frame, so the 32 × 32 Preview and the grid image (cropped at 3:1 for very tall portraits) keep the Photo's shape until the full image fades in.
+- On iOS 18+ the system zoom gesture dismisses and our drag only pans a zoomed Photo; on iOS 17 our drag dismisses. Whether the system gesture ever wins over panning a zoomed Photo is still to check on device (M5 ticket 07).
+- A Close button and the VoiceOver escape gesture close the view, because drag down is neither discoverable nor available to VoiceOver.
 
 ## Review fixes (M3, M4)
 

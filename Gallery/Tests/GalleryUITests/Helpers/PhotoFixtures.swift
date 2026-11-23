@@ -1,11 +1,17 @@
 import Foundation
 import GalleryCore
 
-func makePhoto(id: String = "any-id", description: String? = nil, altDescription: String? = nil) -> Photo {
+func makePhoto(
+    id: String = "any-id",
+    width: Int = 1,
+    height: Int = 1,
+    description: String? = nil,
+    altDescription: String? = nil
+) -> Photo {
     Photo(
         id: id,
-        width: 1,
-        height: 1,
+        width: width,
+        height: height,
         blurHash: nil,
         description: description,
         altDescription: altDescription,
