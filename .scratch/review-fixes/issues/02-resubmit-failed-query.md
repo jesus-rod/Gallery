@@ -1,6 +1,6 @@
 # 02 — Re-submitting a failed Query searches again
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01
 
 `search(_:)` skips a Query equal to the one shown (`query != activeSearch?.query`), which saves the Request budget. It also skips it when that Query's first Page failed, so pressing Search again does nothing and only the Retry button works. Re-submitting should search again when the shown Query's state is `.failed`; it stays a no-op while loading or loaded.
@@ -28,3 +28,7 @@ Blocked by: 01
 ## Commit
 
 `fix(ui): search again when the shown Query failed`
+
+## Comments
+
+- `search_sameQueryWhileLoadingDoesNothing` was not added: the existing `search_sameQueryWhileItLoadsDoesNotCancelIt` already asserts that no second request is sent while the first Page loads.

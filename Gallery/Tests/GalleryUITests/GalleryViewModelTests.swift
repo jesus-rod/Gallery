@@ -710,6 +710,19 @@ struct GalleryViewModelTests {
         #expect(sut.feed == .loaded(photos: feedPhotos + makePhotos(11...12), footer: .end))
     }
 
+    @Test func search_sameQueryAfterAFailedFirstPageSearchesAgain() async {
+        let (sut, loader) = makeSUT()
+        let photos = makePhotos(1...2)
+        loader.stubSearch(.failure(AnyError()))
+        loader.stubSearch(.success(loader.page(photos, hasMore: false)))
+        await sut.search("cats")
+
+        await sut.search("cats")
+
+        #expect(loader.searchQueries == ["cats", "cats"])
+        #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: photos, footer: .end)))
+    }
+
     private func makeSUT(sourceLocation: SourceLocation = #_sourceLocation) -> (GalleryViewModel, FeedLoaderSpy) {
         let loader = FeedLoaderSpy()
         let sut = GalleryViewModel(loadFeed: loader.loadFeed, search: loader.search)

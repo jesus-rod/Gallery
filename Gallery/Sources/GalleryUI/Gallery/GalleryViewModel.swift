@@ -52,12 +52,16 @@ public final class GalleryViewModel {
 
     public func search(_ query: String) async {
         let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty, query != activeSearch?.query else { return }
+        guard !query.isEmpty, query != activeSearch?.query || shownSearchFailed else { return }
         activeSearch?.pager.cancel()
         let searchPhotos = searchPhotos
         let pager = StreamPager(loadFirstPage: { try await searchPhotos(query) })
         activeSearch = ActiveSearch(query: query, pager: pager)
         await pager.load()
+    }
+
+    private var shownSearchFailed: Bool {
+        if case .failed? = activeSearch?.pager.state { true } else { false }
     }
 
     public func retrySearch() async {
