@@ -12,6 +12,23 @@ struct SearchPhotosMapperTests {
         }
     }
 
+    @Test func map_throwsRateLimitedOn403ResponseWithNoRemainingRequests() {
+        let response = HTTPURLResponse(statusCode: 403, headers: ["X-Ratelimit-Remaining": "0"])
+
+        #expect(throws: UnsplashAPIError.rateLimited) {
+            try SearchPhotosMapper.map(Data("Rate Limit Exceeded".utf8), from: response)
+        }
+    }
+
+    @Test(arguments: [[:], ["X-Ratelimit-Remaining": "12"]])
+    func map_throwsInvalidDataOn403ResponseWithRemainingRequests(headers: [String: String]) {
+        let response = HTTPURLResponse(statusCode: 403, headers: headers)
+
+        #expect(throws: UnsplashAPIError.invalidData) {
+            try SearchPhotosMapper.map(Data("Forbidden".utf8), from: response)
+        }
+    }
+
     @Test func map_throwsInvalidDataOn200ResponseWithInvalidJSON() {
         let invalidJSON = Data("invalid json".utf8)
 

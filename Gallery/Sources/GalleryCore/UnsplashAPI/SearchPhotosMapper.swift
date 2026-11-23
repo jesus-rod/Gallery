@@ -7,6 +7,9 @@ public enum SearchPhotosMapper {
     }
 
     public static func map(_ data: Data, from response: HTTPURLResponse) throws -> PhotoPage {
+        if response.hasExhaustedRequestBudget {
+            throw UnsplashAPIError.rateLimited
+        }
         guard response.statusCode == 200, let root = try? JSONDecoder.unsplash.decode(Root.self, from: data) else {
             throw UnsplashAPIError.invalidData
         }
