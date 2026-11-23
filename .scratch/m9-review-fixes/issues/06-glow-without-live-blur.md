@@ -1,6 +1,6 @@
 # 06 — Ambient glow without a live blur
 
-Status: code done; waiting on the user's look check with a live key and the re-record of step 3
+Status: done; re-record: step 3 15.9 → 8.1 ms/s, GPU hitches 17 → 1, no hang (look check on device by the user)
 Blocked by: 05
 
 After ticket 05, the full-screen swipe still ran at 15.9 ms/s hitch time, and GPU-bound hitches were the largest cause (17 of 43 in 45 s, unchanged by 05). The ambient glow blurred (radius 60, opaque edges) a full-screen upscale of the 32×32 Preview, and the 0.35 s page cross-fade stacked two of them; Run A logged frames with 16–31 offscreen passes.

@@ -30,3 +30,17 @@ Same phone and template, Release, steps 3 and 5 only (91 s; step 3 at 15–60 s,
 - `FullScreenPhotoView.body` no longer appears in either step (Run A: ~224 ms in step 3, ~180 ms in step 5). Our code in step 3 is now the visible pages' `ZoomablePhotoPage.body` (~80 ms) and the grid cells behind (~66 ms); the rest is UIKit/Core Animation commit and SwiftUI display-list work.
 - App-update hitches per second halved (0.65 → 0.31). GPU hitches did not change (0.31 → 0.38 per second) and are now the largest cause: the ambient glow (radius-60 blur of a full-screen upscale, two layers during the 0.35 s cross-fade) is the suspect.
 - One 115 ms hang remains, now at the moment full screen opens (`GalleryRootView.openFullScreen`), not mid-swipe.
+
+## Re-record after the glow fix (`645ecad`), 20:48
+
+Same phone, Release, step 3 only (swipe ~50 photos, 5–46 s of a 46 s recording), symbolicated with the matching dSYM.
+
+| Step 3 full-screen swipe | Run A | After pager fix | After glow fix |
+|---|---|---|---|
+| Hitch time ratio | 20.7 ms/s | 15.9 ms/s | **8.1 ms/s** |
+| Hitches per second | 1.23 | 0.96 | 0.48 |
+| GPU-bound hitches | 19 in 62 s | 17 in 45 s | 1 (+1 render with GPU) in 41 s |
+| Hangs | 159 ms mid-swipe | 115 ms on open | none |
+
+- GPU hitches are gone. Four "expensive render" frames remain with 23–30 offscreen passes; the glow no longer has a filter, so these are likely the chrome's glass buttons.
+- What's left is spread over SwiftUI and Core Animation commits; our code is the visible pages' `ZoomablePhotoPage.body` (~80 ms) and the grid cells behind (~64 ms).
