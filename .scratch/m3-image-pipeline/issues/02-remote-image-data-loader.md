@@ -1,6 +1,6 @@
 # 02 — Remote image data loader
 
-Status: ready-for-agent
+Status: done
 
 `RemoteImageDataLoader(fetch:)` in `GalleryImageLoading`; the fetch closure returns `(Data, HTTPURLResponse)`.
 
