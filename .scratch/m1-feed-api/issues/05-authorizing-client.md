@@ -1,6 +1,6 @@
 # 05 — Authorizing HTTP client
 
-Status: ready-for-agent
+Status: done
 
 `AuthorizingHTTPClient` decorates `HTTPClient`, adding `Authorization: Client-ID <key>` and `Accept-Version: v1`.
 
