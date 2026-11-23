@@ -9,6 +9,7 @@ public struct GalleryRootView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var path: [FullScreenRoute] = []
     @State private var fullScreenPhotoID = ""
+    @State private var windowTopInset: CGFloat = 0
     @Namespace private var zoomNamespace
 
     public init(viewModel: GalleryViewModel, images: PhotoImages, referralAppName: String) {
@@ -67,6 +68,7 @@ public struct GalleryRootView: View {
                     images: images,
                     referralAppName: referralAppName,
                     currentID: $fullScreenPhotoID,
+                    windowTopInset: windowTopInset,
                     onPhotoAppear: { photo in
                         Task { await viewModel.photoAppeared(photo, in: route.streamID) }
                     }
@@ -76,6 +78,11 @@ public struct GalleryRootView: View {
                     in: zoomNamespace
                 )
             }
+        }
+        .onGeometryChange(for: CGFloat.self) {
+            $0.safeAreaInsets.top
+        } action: {
+            windowTopInset = $0
         }
         .task { await viewModel.load() }
     }

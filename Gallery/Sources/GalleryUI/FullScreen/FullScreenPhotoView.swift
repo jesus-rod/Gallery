@@ -6,6 +6,7 @@ struct FullScreenPhotoView: View {
     let photos: [Photo]
     let images: PhotoImages
     let referralAppName: String
+    let windowTopInset: CGFloat?
     let onPhotoAppear: (Photo) -> Void
     @Binding var currentID: String
 
@@ -25,12 +26,14 @@ struct FullScreenPhotoView: View {
         images: PhotoImages,
         referralAppName: String,
         currentID: Binding<String>,
+        windowTopInset: CGFloat? = nil,
         onPhotoAppear: @escaping (Photo) -> Void = { _ in }
     ) {
         self.route = route
         self.photos = photos
         self.images = images
         self.referralAppName = referralAppName
+        self.windowTopInset = windowTopInset
         self.onPhotoAppear = onPhotoAppear
         _currentID = currentID
         _scrolledID = State(initialValue: route.photo.id)
@@ -52,6 +55,7 @@ struct FullScreenPhotoView: View {
                 isVisible: isChromeVisible,
                 isInfoPresented: $isInfoPresented
             )
+            .topInset(windowTopInset)
             .accessibilitySortPriority(3)
         }
         .accessibilityAction(.escape, close)
@@ -138,5 +142,18 @@ struct FullScreenPhotoView: View {
 
     private func close() {
         dismiss()
+    }
+}
+
+extension View {
+    /// An active search keeps an empty navigation bar over full screen even though it's hidden,
+    /// so the chrome lays out against the window's top inset instead of the bar's.
+    @ViewBuilder
+    fileprivate func topInset(_ inset: CGFloat?) -> some View {
+        if let inset {
+            padding(.top, inset).ignoresSafeArea(.container, edges: .top)
+        } else {
+            self
+        }
     }
 }
