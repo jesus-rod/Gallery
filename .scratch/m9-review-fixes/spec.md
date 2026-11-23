@@ -1,6 +1,6 @@
 # Review fixes after M9
 
-Status: done
+Status: tickets 01–04 done; 05 (pager cost, from Instruments) code done, re-record pending
 
 ## Goal
 
@@ -13,6 +13,7 @@ Fix what the `/swiftui-pro` and `/ios-skills:essential-feed` reviews of 2026-11-
 | 1 | `3760214` added a doc comment (repo rule: no code comments) and no decision-log line. | roadmap working loop | 01 |
 | 2 | `PhotoDetails` formats megapixels with `String(format: "%.1f")`: C-style and not localized ("2.5 MP" for a French user, should be "2,5 MP"). | swiftui-pro | 02 |
 | 3 | The refresh-error banner slides in with `.move(edge: .top)` under `.animation(.default)`, ignoring Reduce Motion; it auto-dismisses after 3 s without a VoiceOver announcement. | swiftui-pro | 03 |
+| 5 | Instruments Run A: full-screen swipe at 20.7 ms/s hitch time; `FullScreenPhotoView.body` copies the Stream and searches `currentIndex` per page on every update, and re-evaluates on every dismiss-drag frame. | Instruments, swiftui-pro (deferred) | 05 |
 | 4 | GalleryUI classifies transport errors itself (`LoadError.init` switches on `URLError` codes and `UnsplashAPIError`), and the mapping is not triangulated: `.networkConnectionLost`, `.dataNotAllowed`, `.timedOut` and `unauthorized → invalidKey` have no test. | essential-feed EF-14, EF-32 | 04 |
 
 ## Not in this cut (recorded so they aren't lost)

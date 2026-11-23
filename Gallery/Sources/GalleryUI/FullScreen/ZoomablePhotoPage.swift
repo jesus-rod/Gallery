@@ -7,7 +7,7 @@ struct ZoomablePhotoPage: View {
     let loadsFullImage: Bool
     @Binding var isChromeVisible: Bool
     @Binding var isZoomed: Bool
-    @Binding var dismissTranslation: CGSize
+    let dismissDrag: DismissDrag
     @Binding var isInfoPresented: Bool
 
     @State private var model: FullScreenImageModel
@@ -29,7 +29,7 @@ struct ZoomablePhotoPage: View {
         loadsFullImage: Bool,
         isChromeVisible: Binding<Bool>,
         isZoomed: Binding<Bool>,
-        dismissTranslation: Binding<CGSize>,
+        dismissDrag: DismissDrag,
         isInfoPresented: Binding<Bool>
     ) {
         self.photo = photo
@@ -37,7 +37,7 @@ struct ZoomablePhotoPage: View {
         self.loadsFullImage = loadsFullImage
         _isChromeVisible = isChromeVisible
         _isZoomed = isZoomed
-        _dismissTranslation = dismissTranslation
+        self.dismissDrag = dismissDrag
         _isInfoPresented = isInfoPresented
         _model = State(initialValue: FullScreenImageModel(photo: photo, images: images, gridSize: gridSize))
     }
@@ -170,7 +170,7 @@ struct ZoomablePhotoPage: View {
         let axis = dragAxis ?? Self.axis(of: translation)
         dragAxis = axis
         if axis == .vertical {
-            dismissTranslation = CGSize(width: 0, height: max(0, translation.height))
+            dismissDrag.translation = CGSize(width: 0, height: max(0, translation.height))
         }
     }
 
@@ -184,12 +184,12 @@ struct ZoomablePhotoPage: View {
             isInfoPresented = true
             return
         }
-        guard dismissTranslation != .zero else { return }
+        guard dismissDrag.translation != .zero else { return }
         if ZoomTransform.shouldDismiss(translation: pan.translation, predictedEnd: pan.predictedEnd) {
             dismiss()
         } else {
             withAnimation(reduceMotion ? nil : .spring) {
-                dismissTranslation = .zero
+                dismissDrag.translation = .zero
             }
         }
     }

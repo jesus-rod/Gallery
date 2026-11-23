@@ -14,7 +14,7 @@ struct FullScreenPhotoView: View {
     @State private var isChromeVisible = true
     @State private var isInfoPresented = false
     @State private var isZoomed = false
-    @State private var dismissTranslation = CGSize.zero
+    @State private var dismissDrag = DismissDrag()
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -40,11 +40,14 @@ struct FullScreenPhotoView: View {
     }
 
     var body: some View {
+        let pages = self.pages
+        let window = PagerWindow(pages: pages, currentID: currentID, fallback: route.photo)
+        let current = window.current
         ZStack {
-            backdrop
+            backdrop(current)
                 .ignoresSafeArea()
-            pager
-                .offset(y: dismissTranslation.height)
+            pager(pages, window: window)
+                .modifier(DismissOffset(drag: dismissDrag))
                 .ignoresSafeArea()
                 .accessibilitySortPriority(2)
             FullScreenChromeLayer(
@@ -83,28 +86,14 @@ struct FullScreenPhotoView: View {
         photos.contains(where: { $0.id == route.photo.id }) ? photos : [route.photo]
     }
 
-    private var currentIndex: Int {
-        pages.firstIndex(where: { $0.id == currentID }) ?? pages.firstIndex(of: route.photo) ?? 0
-    }
-
-    private var current: Photo {
-        pages[currentIndex]
-    }
-
-    private var dismissProgress: Double {
-        ZoomTransform.dismissProgress(for: dismissTranslation)
-    }
-
-    private var backdrop: some View {
+    private func backdrop(_ current: Photo) -> some View {
         ZStack {
-            Color.black.opacity(1 - dismissProgress)
-            AmbientBackdrop(
+            DismissFadingBlack(drag: dismissDrag)
+            DismissFadingAmbient(
                 preview: images.preview(current),
-                opacity: AmbientBackdrop.opacity(
-                    isChromeVisible: isChromeVisible,
-                    dismissProgress: dismissProgress,
-                    reduceTransparency: reduceTransparency
-                )
+                drag: dismissDrag,
+                isChromeVisible: isChromeVisible,
+                reduceTransparency: reduceTransparency
             )
             .id(current.id)
             .transition(.opacity)
@@ -113,19 +102,19 @@ struct FullScreenPhotoView: View {
         .animation(Design.Motion.pageCrossFade(reduceMotion: reduceMotion), value: current.id)
     }
 
-    private var pager: some View {
+    private func pager(_ pages: [Photo], window: PagerWindow) -> some View {
         ScrollView(.horizontal) {
             LazyHStack(spacing: 0) {
-                ForEach(Array(pages.enumerated()), id: \.element.id) { index, photo in
+                ForEach(pages, id: \.id) { photo in
                     ZoomablePhotoPage(
                         photo: photo,
                         images: images,
                         gridSize: route.gridSize,
-                        isCurrent: index == currentIndex,
-                        loadsFullImage: abs(index - currentIndex) <= 1,
+                        isCurrent: window.isCurrent(photo.id),
+                        loadsFullImage: window.loadsFullImage(photo.id),
                         isChromeVisible: $isChromeVisible,
                         isZoomed: $isZoomed,
-                        dismissTranslation: $dismissTranslation,
+                        dismissDrag: dismissDrag,
                         isInfoPresented: $isInfoPresented
                     )
                     .containerRelativeFrame(.horizontal)
