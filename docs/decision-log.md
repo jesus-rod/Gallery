@@ -48,3 +48,4 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 - The view model takes a `search: (String) async throws -> Paginated<Photo>` closure next to `loadFeed`; the composition root builds a new `PhotoStream` with `SearchPhotosMapper` per Query.
 - Each Query gets its own `StreamPager`; Search results reuse `StreamState`, and empty results are `.loaded(photos: [], footer: .end)`.
 - The Query is trimmed; an empty Query, or the Query already shown, sends no request (Request budget).
+- A new Query cancels the previous search's `Task` (the cancellation reaches `URLSession` through `PhotoStream`), and a late result can never show because it lands on the previous Query's pager, which nothing references any more.

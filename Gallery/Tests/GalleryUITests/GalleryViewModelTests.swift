@@ -478,6 +478,73 @@ struct GalleryViewModelTests {
         #expect(sut.searchResults == SearchResults(query: "cats", state: .loaded(photos: searchPhotos, footer: .idle)))
     }
 
+    @Test func search_newQueryCancelsTheInFlightSearch() async {
+        let (sut, loader) = makeSUT()
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page([], hasMore: false)), gate: gate)
+        loader.stubSearch(.success(loader.page([], hasMore: false)))
+
+        let first = Task { await sut.search("cats") }
+        await gate.untilReached()
+        await sut.search("dogs")
+        gate.open()
+        await first.value
+
+        #expect(loader.cancelledSearchQueries == ["cats"])
+        #expect(loader.searchQueries == ["cats", "dogs"])
+    }
+
+    @Test func search_newQueryDiscardsTheLateFirstPageOfThePreviousQuery() async {
+        let (sut, loader) = makeSUT()
+        let cats = makePhotos(1...3)
+        let dogs = makePhotos(21...22)
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page(cats, hasMore: false)), gate: gate)
+        loader.stubSearch(.success(loader.page(dogs, hasMore: false)))
+
+        let first = Task { await sut.search("cats") }
+        await gate.untilReached()
+        await sut.search("dogs")
+        gate.open()
+        await first.value
+
+        #expect(sut.searchResults == SearchResults(query: "dogs", state: .loaded(photos: dogs, footer: .end)))
+    }
+
+    @Test func search_newQueryDiscardsALateLoadMoreOfThePreviousQuery() async {
+        let (sut, loader) = makeSUT()
+        let cats = makePhotos(1...10)
+        let dogs = makePhotos(21...22)
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page(cats)))
+        loader.stubSearch(.success(loader.page(dogs, hasMore: false)))
+        loader.stubLoadMore(.success(loader.page(cats + makePhotos(11...12), hasMore: false)), gate: gate)
+        await sut.search("cats")
+
+        let lateLoadMore = Task { await sut.searchPhotoAppeared(cats[9]) }
+        await gate.untilReached()
+        await sut.search("dogs")
+        gate.open()
+        await lateLoadMore.value
+
+        #expect(sut.searchResults == SearchResults(query: "dogs", state: .loaded(photos: dogs, footer: .end)))
+    }
+
+    @Test func search_sameQueryWhileItLoadsDoesNotCancelIt() async {
+        let (sut, loader) = makeSUT()
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page([], hasMore: false)), gate: gate)
+
+        let first = Task { await sut.search("cats") }
+        await gate.untilReached()
+        await sut.search("cats")
+
+        #expect(loader.cancelledSearchQueries.isEmpty)
+        #expect(loader.searchQueries == ["cats"])
+        gate.open()
+        await first.value
+    }
+
     private func makeSUT(sourceLocation: SourceLocation = #_sourceLocation) -> (GalleryViewModel, FeedLoaderSpy) {
         let loader = FeedLoaderSpy()
         let sut = GalleryViewModel(loadFeed: loader.loadFeed, search: loader.search)

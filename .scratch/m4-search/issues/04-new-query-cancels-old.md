@@ -1,6 +1,6 @@
 # 04 — A new Query cancels the old one
 
-Status: ready-for-agent
+Status: done
 Blocked by: 03
 
 When a Query is submitted while the previous Query's first Page is still loading, the old request is cancelled and its late result never shows. Discarding already works because the old `StreamPager` is no longer referenced (ticket 02); this ticket adds real cancellation by running the first-page load in a stored `Task`.
@@ -65,3 +65,7 @@ Each bullet is one `@Test`. Pattern: `let gate = Gate()`, stub "cats" with the g
 ## Commit
 
 `feat(ui): cancel the previous Query when a new one is submitted`.
+
+## Comments
+
+- The four tests were written together before the code. The red step was a compile failure on the missing `cancelledSearchQueries`, which the ticket accepts.
