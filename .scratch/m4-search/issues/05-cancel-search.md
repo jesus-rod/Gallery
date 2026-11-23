@@ -1,6 +1,6 @@
 # 05 — Cancel search restores the Editorial feed
 
-Status: ready-for-agent
+Status: done
 Blocked by: 04
 
 `cancelSearch()` drops the active search and cancels its in-flight first-page load. The feed is untouched, so the view shows it again with no request.
@@ -37,3 +37,7 @@ Each bullet is one `@Test`:
 ## Commit
 
 `feat(ui): cancel search and return to the Editorial feed`.
+
+## Comments
+
+- The five tests were written together before the code. The red step was a compile failure on the missing `cancelSearch()`, which the ticket accepts.

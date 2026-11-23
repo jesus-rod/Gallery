@@ -545,6 +545,77 @@ struct GalleryViewModelTests {
         await first.value
     }
 
+    @Test func cancelSearch_showsTheFeedAgainWithoutRequestingIt() async {
+        let (sut, loader) = makeSUT()
+        let feedPhotos = makePhotos(1...4)
+        loader.stubFeed(.success(loader.page(feedPhotos, hasMore: false)))
+        loader.stubSearch(.success(loader.page([], hasMore: false)))
+        await sut.load()
+        await sut.search("cats")
+
+        sut.cancelSearch()
+
+        #expect(sut.searchResults == nil)
+        #expect(sut.feed == .loaded(photos: feedPhotos, footer: .end))
+        #expect(loader.loadFeedCallCount == 1)
+    }
+
+    @Test func cancelSearch_cancelsTheInFlightSearchAndDiscardsItsResult() async {
+        let (sut, loader) = makeSUT()
+        let gate = Gate()
+        loader.stubSearch(.success(loader.page(makePhotos(1...3), hasMore: false)), gate: gate)
+
+        let search = Task { await sut.search("cats") }
+        await gate.untilReached()
+        sut.cancelSearch()
+        gate.open()
+        await search.value
+
+        #expect(loader.cancelledSearchQueries == ["cats"])
+        #expect(sut.searchResults == nil)
+    }
+
+    @Test func cancelSearch_keepsTheFeedLoadMoreRunning() async {
+        let (sut, loader) = makeSUT()
+        let feedPhotos = makePhotos(1...10)
+        let gate = Gate()
+        loader.stubFeed(.success(loader.page(feedPhotos)))
+        loader.stubLoadMore(.success(loader.page(feedPhotos + makePhotos(11...12), hasMore: false)), gate: gate)
+        loader.stubSearch(.success(loader.page([], hasMore: false)))
+        await sut.load()
+
+        let feedLoadMore = Task { await sut.photoAppeared(feedPhotos[9]) }
+        await gate.untilReached()
+        await sut.search("cats")
+        sut.cancelSearch()
+        gate.open()
+        await feedLoadMore.value
+
+        #expect(sut.feed == .loaded(photos: feedPhotos + makePhotos(11...12), footer: .end))
+    }
+
+    @Test func search_afterCancelSearchRequestsTheSameQueryAgain() async {
+        let (sut, loader) = makeSUT()
+        loader.stubSearch(.success(loader.page([], hasMore: false)))
+        loader.stubSearch(.success(loader.page([], hasMore: false)))
+        await sut.search("cats")
+        sut.cancelSearch()
+
+        await sut.search("cats")
+
+        #expect(loader.searchQueries == ["cats", "cats"])
+    }
+
+    @Test func cancelSearch_withoutASearchDoesNothing() {
+        let (sut, loader) = makeSUT()
+
+        sut.cancelSearch()
+
+        #expect(sut.searchResults == nil)
+        #expect(loader.loadFeedCallCount == 0)
+        #expect(loader.searchQueries.isEmpty)
+    }
+
     private func makeSUT(sourceLocation: SourceLocation = #_sourceLocation) -> (GalleryViewModel, FeedLoaderSpy) {
         let loader = FeedLoaderSpy()
         let sut = GalleryViewModel(loadFeed: loader.loadFeed, search: loader.search)

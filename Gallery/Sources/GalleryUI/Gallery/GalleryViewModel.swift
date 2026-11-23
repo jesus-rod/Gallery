@@ -70,4 +70,10 @@ public final class GalleryViewModel {
     public func searchPhotoAppeared(_ photo: Photo) async {
         await activeSearch?.pager.photoAppeared(photo)
     }
+
+    public func cancelSearch() {
+        searchTask?.cancel()
+        searchTask = nil
+        activeSearch = nil
+    }
 }
