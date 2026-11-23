@@ -59,3 +59,4 @@ Every notable decision, newest milestone last, with a one-line why. The big, har
 
 - The full-screen Rendition is sized from `raw` to the screen (aspect fit × display scale), replacing the earlier plan to use `regular`: `regular` is 1080 px wide, softer than an iPhone Pro Max (1320 px) or any iPad, and too big for a landscape Photo on a small phone. It reuses the grid's URL builder, renamed `sizedURL`.
 - `Photo` is `Hashable` so it can be a navigation value; it is still not `Codable`.
+- Links to the Photographer and to Unsplash carry `utm_source=gallery_ios&utm_medium=referral`, as the API guidelines require. `UnsplashAttribution` builds them in Core; the app name comes from the composition root.
