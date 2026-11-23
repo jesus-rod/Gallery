@@ -23,7 +23,13 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M5 | Full-screen view + transition (`.scratch/m5-full-screen/`) | done (device check and Instruments in ticket 07's human part) |
 | M6 | Offline feed (`.scratch/m6-offline-feed/`) | done, merged |
 | M7 | Polish: UX states, accessibility (`.scratch/m7-polish/`) | done, merged (VoiceOver and Accessibility Inspector check left for M8) |
-| M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | agent part done; ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
+| M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 done; **next: ticket 08** (snapshot matrix on the iOS simulator, ready-for-agent, not started); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
+
+## Resume here (2026-11-23)
+
+- Ticket 08 (`.scratch/m8-ship/issues/08-snapshot-matrix.md`): the user chose to move all snapshots to the iOS simulator (pinned iPhone 17 Pro). Devices iPhone SE, iPhone 17, iPad; the user also wants a new "iPhone Duo", which has no simulator in this Xcode, so ask the user for its point size and safe areas and add it as one line in the device list. Launch it as one agent (Sonnet), then look at every recorded image before merging.
+- Design system: small, in `GalleryUI/DesignSystem/` (tokens, `Scrim`, `.bannerStyle()`), deliberately not a module.
+- No agents or worktrees are running; only `main` exists. Never stage `project.pbxproj`, the scheme, or `Gallery.xcodeproj/project.xcworkspace/xcshareddata/` (Xcode rewrites).
 
 ## Carried into M6
 
