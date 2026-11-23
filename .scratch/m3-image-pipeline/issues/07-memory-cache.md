@@ -1,6 +1,6 @@
 # 07 — Memory-caching image loader
 
-Status: ready-for-agent
+Status: done
 Blocked by: 06 (protocol only)
 
 `MemoryCachingImageLoader(decoratee:costLimit:)` over `NSCache`, key = URL + max pixel size, cost = width × height × 4.
