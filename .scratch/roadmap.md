@@ -24,6 +24,7 @@ Entry point for a fresh session. Read this, then `CONTEXT.md`, `docs/adr/`, and 
 | M6 | Offline feed (`.scratch/m6-offline-feed/`) | done, merged |
 | M7 | Polish: UX states, accessibility (`.scratch/m7-polish/`) | done, merged (VoiceOver and Accessibility Inspector check left for M8) |
 | M8 | Review sweep, Instruments, dependency diagram, README, Loom (`.scratch/m8-ship/`) | tickets 01–06 done; **next: ticket 08** (snapshot matrix on the iOS simulator, ready-for-agent, not started); ticket 07 (Instruments, VoiceOver, live key, device, Loom, submission) is the user's |
+| M9 | Photos-style polish (`.scratch/m9-photos-polish/`), done before M8 ticket 08 so snapshots record the final look | spec written, seams approved; next: write tickets |
 
 ## Resume here (2026-11-23)
 
@@ -81,4 +82,4 @@ Recorded in ADRs: own image pipeline (0001), SPM modules testable on macOS (0002
 
 **Reviews before shipping**: `/code-review`, `/security-review`, performance (`swiftui-pro` + user-recorded Instruments: Time Profiler, Allocations, SwiftUI, after ~500 images), UX pass, `/ios-skills:essential-feed diagram` for the README, pre-submit sweep.
 
-**Repo rules**: no company names in any file or the repo name; repo stays private until submission; `.scratch/` is committed; README "AI usage" section points to it.
+**Repo rules**: no company names in any file or the repo name; repo is public on GitHub since 2026-11-23 (`origin`, `main`); `.scratch/` is committed; README "AI usage" section points to it.
