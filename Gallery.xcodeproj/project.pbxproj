@@ -10,6 +10,7 @@
 		0C6AD7D6B91AB18D71C88375 /* GalleryImageLoading in Frameworks */ = {isa = PBXBuildFile; productRef = 7EB721DFA9F1FA01F78C3D04 /* GalleryImageLoading */; };
 		5011A354B1C3901625CDB668 /* GalleryCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1E04472DA32A2669742D5003 /* GalleryCore */; };
 		F7EE718DA0E079B3AF5FA30D /* GalleryUI in Frameworks */ = {isa = PBXBuildFile; productRef = BB378F1E50E74748ED0EDCE1 /* GalleryUI */; };
+		A1C0E5D20000000000000001 /* GalleryComposition in Frameworks */ = {isa = PBXBuildFile; productRef = A1C0E5D20000000000000002 /* GalleryComposition */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 				F7EE718DA0E079B3AF5FA30D /* GalleryUI in Frameworks */,
 				5011A354B1C3901625CDB668 /* GalleryCore in Frameworks */,
 				0C6AD7D6B91AB18D71C88375 /* GalleryImageLoading in Frameworks */,
+				A1C0E5D20000000000000001 /* GalleryComposition in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,6 +139,7 @@
 				BB378F1E50E74748ED0EDCE1 /* GalleryUI */,
 				1E04472DA32A2669742D5003 /* GalleryCore */,
 				7EB721DFA9F1FA01F78C3D04 /* GalleryImageLoading */,
+				A1C0E5D20000000000000002 /* GalleryComposition */,
 			);
 			productName = GalleryApp;
 			productReference = 50C1C5A3119DCFD162B49B8F /* GalleryApp.app */;
@@ -482,6 +485,10 @@
 		BB378F1E50E74748ED0EDCE1 /* GalleryUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = GalleryUI;
+		};
+		A1C0E5D20000000000000002 /* GalleryComposition */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GalleryComposition;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

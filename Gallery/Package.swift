@@ -10,6 +10,7 @@ let package = Package(
         .library(name: "GalleryCore", targets: ["GalleryCore"]),
         .library(name: "GalleryImageLoading", targets: ["GalleryImageLoading"]),
         .library(name: "GalleryUI", targets: ["GalleryUI"]),
+        .library(name: "GalleryComposition", targets: ["GalleryComposition"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.17.0")
@@ -32,6 +33,12 @@ let package = Package(
                 "GalleryUI", "GalleryCore",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ]
+        ),
+
+        .target(name: "GalleryComposition", dependencies: ["GalleryCore", "GalleryImageLoading", "GalleryUI"]),
+        .testTarget(
+            name: "GalleryCompositionTests",
+            dependencies: ["GalleryComposition", "GalleryImageLoading"]
         ),
     ]
 )

@@ -3,14 +3,14 @@ import GalleryCore
 import GalleryImageLoading
 import GalleryUI
 
-final class ImagePipeline: Sendable {
+public final class ImagePipeline: Sendable {
     private let configuration: ImagePipelineConfiguration
     private let memoryCache: MemoryCachingImageLoader
     private let prefetcher: ImagePrefetcher
     private let previews: PreviewCache
     private let store: FileImageDataStore
 
-    init(fetch: @escaping RemoteImageDataLoader.Fetch, directory: URL, configuration: ImagePipelineConfiguration) {
+    public init(fetch: @escaping RemoteImageDataLoader.Fetch, directory: URL, configuration: ImagePipelineConfiguration) {
         self.configuration = configuration
         store = FileImageDataStore(directory: directory)
         let remote = RemoteImageDataLoader(fetch: fetch)
@@ -22,7 +22,7 @@ final class ImagePipeline: Sendable {
         previews = PreviewCache(size: configuration.previewSize)
     }
 
-    var photoImages: PhotoImages {
+    public var photoImages: PhotoImages {
         PhotoImages(
             preview: { [previews] photo in photo.blurHash.flatMap(previews.preview(for:)) },
             cachedImage: { [memoryCache, configuration] photo, size in
@@ -50,13 +50,13 @@ final class ImagePipeline: Sendable {
         )
     }
 
-    func evictDiskCache() {
+    public func evictDiskCache() {
         Task.detached(priority: .background) { [store, configuration] in
             try? await store.evict(toFit: configuration.diskByteLimit)
         }
     }
 
-    func clearMemoryCache() {
+    public func clearMemoryCache() {
         memoryCache.removeAll()
     }
 

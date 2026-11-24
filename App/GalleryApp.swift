@@ -1,4 +1,5 @@
 import Foundation
+import GalleryComposition
 import GalleryCore
 import GalleryImageLoading
 import GalleryUI
