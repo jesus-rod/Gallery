@@ -18,7 +18,7 @@ struct GalleryApp: App {
                 images: imagePipeline.photoImages,
                 referralAppName: "gallery_ios"
             )
-            .task { imagePipeline.evictDiskCache() }
+            .task(priority: .background) { await imagePipeline.evictDiskCache() }
             .onReceive(memoryWarnings) { _ in imagePipeline.clearMemoryCache() }
         }
     }

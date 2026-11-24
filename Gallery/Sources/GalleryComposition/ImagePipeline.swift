@@ -50,10 +50,8 @@ public final class ImagePipeline: Sendable {
         )
     }
 
-    public func evictDiskCache() {
-        Task.detached(priority: .background) { [store, configuration] in
-            try? await store.evict(toFit: configuration.diskByteLimit)
-        }
+    public func evictDiskCache() async {
+        try? await store.evict(toFit: configuration.diskByteLimit)
     }
 
     public func clearMemoryCache() {
